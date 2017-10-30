@@ -32,3 +32,5 @@ date_string = time.strftime('%A, %B %d, %Y at %I:%M:%S %p %Z')
 html = htmlFile.format(cgi.escape(date_string), cgi.escape(str(hit_count)))
 
 print header + html
+
+return 5
