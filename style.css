@@ -1,3 +1,151 @@
-#test-loading {
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-size: 20px;
+}
+
+#container {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+	margin: 0;
+	position: fixed;
+	width: 100%;
+	background: black;
+	color: white;
+	font-family: "Barlow Semi Condensed", sans-serif;
+}
+
+input {
+	font-size: 1em;
+	font-family: "Barlow Semi Condensed", sans-serif;
+	color: white;
+}
+
+input[type="text"] {
+	width: 100%;
+	background: unset;
+    border: unset;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+input[type="text"]:focus {
+	outline: none;
+	border-color: hsl(208, 100%, 55%);
+}
+
+::-webkit-input-placeholder{ /* Chrome/Opera/Safari */
+  color: rgba(255,255,255,0.2);
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: rgba(255,255,255,0.2);
+}
+:-ms-input-placeholder { /* IE 10+ */
+  color: rgba(255,255,255,0.2);
+}
+:-moz-placeholder { /* Firefox 18- */
+  color: rgba(255,255,255,0.2);
+}
+
+button {
+	border: unset;
+	color: white;
+}
+
+button:hover {
+	opacity: 0.8;
+}
+
+button:focus {
+	outline: unset;
+}
+
+button:active {
+	outline: unset;
+}
+
+button:disabled {
+	opacity: 0.4;
+}
+
+#button-run {
+	width: 75px;
+	height: 75px;
+	background: rgba(0,128,0,1);
+	position: absolute;
+	bottom: 50px;
+	right: 50px;
+	border-radius: 50%;
+	border: unset;
+}
+
+.icon.play {
+	width: 0;
+	height: 0;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	border-top: 15px solid transparent;
+	border-bottom: 15px solid transparent;
+	border-left: 25px solid white;
+	transform: translate(-45%, -50%);
+}
+
+#sidebar {
+	width: 300px;
+	background: rgba(255,255,255,0.1);
+	padding: 20px;
+}
+
+#main {
+	flex: 1;
+	position: relative;
+}
+
+.section {
+	flex: 0;
+	margin-bottom: 20px;
+}
+
+.section:last-child {
+	margin-bottom: unset;
+}
+
+.section.fill {
+	flex: 1;
+}
+
+.section.title {
+	font-size: 1.8em;
+}
+
+.section.subtitle {
+	font-size: 1.2em;
+}
+
+@keyframes fullrotation {
+	from {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	to {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+}
+
+.loader {
+	position: absolute;
+	width: 75px;
+	height: 75px;
+	left: 50%;
+	top: 50%;
+	border-radius: 50%;
+	border: 10px solid rgba(255,255,255,.5);
+	border-right: 10px solid transparent;
+	animation: fullrotation 1s ease-in-out infinite;
 	display: none;
 }

@@ -12,6 +12,8 @@ import ns.point_to_point
 @app.route("/python/simulator")
 def simulator():
 	packetSize = request.args.get("packetSize", type=int)
+	dataRate = request.args.get("packetSize", type=int)
+	
 	ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
 	ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
 
@@ -19,7 +21,7 @@ def simulator():
 	nodes.Create(2)
 
 	pointToPoint = ns.point_to_point.PointToPointHelper()
-	pointToPoint.SetDeviceAttribute("DataRate", ns.core.StringValue("5Mbps"))
+	pointToPoint.SetDeviceAttribute("DataRate", ns.core.StringValue(str(dataRate)+"Mbps"))
 	pointToPoint.SetChannelAttribute("Delay", ns.core.StringValue("2ms"))
 
 	devices = pointToPoint.Install(nodes)
