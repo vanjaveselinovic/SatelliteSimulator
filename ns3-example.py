@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import jsonify
+from flask import request
 app = Flask(__name__)
 
 import ns.applications
@@ -8,8 +9,9 @@ import ns.internet
 import ns.network
 import ns.point_to_point
 
-@app.route("/python/simulator/<int:packetSize>")
-def simulator(packetSize):
+@app.route("/python/simulator")
+def simulator():
+	packetSize = request.args.get("packetSize", type=int)
 	ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
 	ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
 
