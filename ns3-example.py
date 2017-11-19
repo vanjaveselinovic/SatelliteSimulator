@@ -8,8 +8,8 @@ import ns.internet
 import ns.network
 import ns.point_to_point
 
-@app.route("/python/simulator")
-def simulator():
+@app.route("/python/simulator/<int:packetSize>")
+def simulator(packetSize):
 	ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
 	ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
 
@@ -39,7 +39,7 @@ def simulator():
 	echoClient = ns.applications.UdpEchoClientHelper(interfaces.GetAddress(1), 9)
 	echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
 	echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds (1.0)))
-	echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
+	echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(packetSize))
 
 	clientApps = echoClient.Install(nodes.Get(0))
 	clientApps.Start(ns.core.Seconds(2.0))
