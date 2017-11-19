@@ -6,7 +6,10 @@ $(document).ready(function () {
 			$('#test-loading').css('display','block');
 			loading = true;
 
-			$.getJSON('http://127.0.0.1:5000/python/simulator/1024')
+			$.getJSON('http://127.0.0.1:5000/python/simulator',
+				{
+					 packetSize: 1024
+				})
 				.done(function(data, textStatus, jqXHR) {
 					loading = false;
 					console.log(data);
