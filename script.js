@@ -1,24 +1,25 @@
 $(document).ready(function () {
 	var loading = false;
 
-	$('#test-button').click(function() {
+	$('#button-run').click(function() {
 		if (!loading) {
-			$('#test-loading').css('display','block');
+			$('.loader').css('display','block');
 			loading = true;
 
 			$.getJSON('http://127.0.0.1:5000/python/simulator',
 				{
-					 packetSize: 1024
+					dataRate: $('#input-rate').val(),
+					packetSize: $('#input-size').val()
 				})
 				.done(function(data, textStatus, jqXHR) {
 					loading = false;
 					console.log(data);
-					$('#test-loading').css('display','none');
+					$('.loader').css('display','none');
 				})
 				.fail(function() {
 					loading = false;
 					console.log('error');
-					$('#test-loading').css('display','none');
+					$('.loader').css('display','none');
 				});
 		}
 	});

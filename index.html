@@ -10,15 +10,28 @@
     <script type="text/javascript" src="script.js"></script>
 
     <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed" rel="stylesheet">
 </head>
 <body>
-	<div id="test-input">
-		<button id="test-button">Test</button>
-	</div>
-	<div id="test-loading">
-		Loading...
-	</div>
-	<div id="test-output">
+	<div id="container">
+		<div id="sidebar">
+			<div class="section title">
+				Satellite Simulator
+			</div>
+			<div class="section subtitle">
+				Values
+			</div>
+			<div class="section">
+				<input type="text" id="input-rate" placeholder="Rate (in Mb/s)">
+				<input type="text" id="input-size" placeholder="Packet size (in b)">
+			</div>
+		</div>
+		<div id="main">
+			<div class="loader"></div>
+			<button id="button-run">
+				<div class="icon play"></div>
+			</button>
+		</div>
 	</div>
 </body>
 </html>
