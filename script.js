@@ -12,6 +12,8 @@ $(document).ready(function () {
 
 	resizeCanvas();
 
+	/* ---------- WEB WORLDWIND ---------- */
+
 	var wwd = new WorldWind.WorldWindow('canvas');
 
     wwd.addLayer(new WorldWind.BMNGOneImageLayer());
@@ -74,6 +76,15 @@ $(document).ready(function () {
 
 	//var layerManger = new LayerManager(wwd);
 	var highlightController = new WorldWind.HighlightController(wwd);
+
+	/* live update */
+
+	$('#input-alt').on('input', function() {
+		placemark.position.altitude = $('#input-alt').val();
+		wwd.redraw();
+	});
+
+	/* ---------- WEB SERVICE ---------- */
 
 	$('#button-run').click(function() {
 		if (!loading) {
