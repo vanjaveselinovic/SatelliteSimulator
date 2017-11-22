@@ -25,64 +25,92 @@ input {
 	color: white;
 }
 
-input[type="text"] {
-	width: 100%;
-	background: unset;
-    border: unset;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-}
+	input[type="text"] {
+		width: 100%;
+		background: unset;
+	    border: unset;
+	    border-bottom: 1px solid rgba(255,255,255,0.15);
+	    padding-bottom: 5px;
+	    margin-bottom: 10px;
+	    color: hsl(208, 100%, 55%);
+	}
 
-input[type="text"]:focus {
-	outline: none;
-	border-color: hsl(208, 100%, 55%);
-}
+		input[type="text"]:focus {
+			outline: none;
+			border-color: hsl(208, 100%, 55%);
+		}
 
 ::-webkit-input-placeholder{ /* Chrome/Opera/Safari */
   color: rgba(255,255,255,0.2);
 }
+
 ::-moz-placeholder { /* Firefox 19+ */
   color: rgba(255,255,255,0.2);
 }
+
 :-ms-input-placeholder { /* IE 10+ */
   color: rgba(255,255,255,0.2);
 }
+
 :-moz-placeholder { /* Firefox 18- */
   color: rgba(255,255,255,0.2);
 }
+
+.input-with-labels {
+	display: flex;
+	flex-direction: row;
+}
+
+	.input-with-labels .iwl-section {
+		margin-right: 5px;
+		white-space: nowrap;
+	}
+
+	.input-with-labels .iwl-section:last-child {
+		margin-right: unset;
+	}
+
+	.input-with-labels .label-before,
+	.input-with-labels .label-after
+	{
+		flex: 0;
+	}
+
+	.input-with-labels .input {
+		flex: 1;
+	}
 
 button {
 	border: unset;
 	color: white;
 }
 
-button:hover {
-	opacity: 0.8;
-}
+	button:hover {
+		opacity: 0.8;
+	}
 
-button:focus {
-	outline: unset;
-}
+	button:focus {
+		outline: unset;
+	}
 
-button:active {
-	outline: unset;
-}
+	button:active {
+		outline: unset;
+	}
 
-button:disabled {
-	opacity: 0.4;
-}
+	button:disabled {
+		opacity: 0.4;
+	}
 
-#button-run {
-	width: 75px;
-	height: 75px;
-	background: rgba(0,128,0,1);
-	position: absolute;
-	bottom: 50px;
-	right: 50px;
-	border-radius: 50%;
-	border: unset;
-}
+	#button-run {
+		width: 75px;
+		height: 75px;
+		background: rgba(0,128,0,1);
+		position: absolute;
+		bottom: 50px;
+		right: 50px;
+		border-radius: 50%;
+		border: unset;
+	}
 
 .icon.play {
 	width: 0;
@@ -112,21 +140,21 @@ button:disabled {
 	margin-bottom: 20px;
 }
 
-.section:last-child {
-	margin-bottom: unset;
-}
+	.section:last-child {
+		margin-bottom: unset;
+	}
 
-.section.fill {
-	flex: 1;
-}
+	.section.fill {
+		flex: 1;
+	}
 
-.section.title {
-	font-size: 1.8em;
-}
+	.section.title {
+		font-size: 1.8em;
+	}
 
-.section.subtitle {
-	font-size: 1.2em;
-}
+	.section.subtitle {
+		font-size: 1.2em;
+	}
 
 @keyframes fullrotation {
 	from {
