@@ -23,13 +23,18 @@ $(document).ready(function () {
     //wwd.addLayer(new WorldWind.CoordinatesDisplayLayer(wwd));
     //wwd.addLayer(new WorldWind.ViewControlsLayer(wwd));
 
-    var placemark,
+    var placemarks,
         placemarkAttributes = new WorldWind.PlacemarkAttributes(null),
         highlightAttributes,
         placemarkLayer = new WorldWind.RenderableLayer("Placemarks"),
         latitude = 45.4215,
         longitude = -75.6972,
         altitude = 1000000;
+
+    var MIN_LATITUDE = -90,
+        MAX_LATITUDE = 90,
+        MIN_LONGITUDE = -180,
+        MAX_LONGITUDE = 180;
 
     placemarkAttributes.drawLeaderLine = true;
     placemarkAttributes.imageScale = 1;
@@ -54,24 +59,40 @@ $(document).ready(function () {
 	ctx2d.fillStyle = "rgb(128, 128, 128)";
 	ctx2d.fillRect(4, 4, size - 8, size - 8);
 
-    placemark = new WorldWind.Placemark(
-    		new WorldWind.Position(latitude, longitude, altitude),
-    		false,
-    		null);
-    placemark.altitudeMode = WorldWind.ABSOLUTE;
-
-    placemarkAttributes =
+	placemarkAttributes =
     		new WorldWind.PlacemarkAttributes(placemarkAttributes);
     placemarkAttributes.imageSource =
     		new WorldWind.ImageSource(canvas);
-    placemark.attributes = placemarkAttributes;
 
- 	highlightAttributes =
+    highlightAttributes =
     		new WorldWind.PlacemarkAttributes(placemarkAttributes);
     highlightAttributes.imageScale = 1.2;
-    placemark.highlightAttributes = highlightAttributes;
 
-    placemarkLayer.addRenderable(placemark);
+	placemarks = [];
+	var currPlacemark;
+
+	var numRings = 10;
+	var numSatellitesPerRing = 10;
+
+	for (var i = 0; i < numRings; i++) {
+		for (var j = 0; j < numSatellitesPerRing; j++) {
+			placemarks.push(new WorldWind.Placemark(
+    		new WorldWind.Position(
+    				MIN_LATITUDE + j * MAX_LATITUDE*2 / numRings,
+    				MIN_LONGITUDE + i * MAX_LONGITUDE*2 / numSatellitesPerRing,
+    				altitude),
+    		false,
+    		null));
+
+    		currPlacemark = placemarks[placemarks.length - 1];
+    		currPlacemark.altitudeMode = WorldWind.ABSOLUTE;
+		    currPlacemark.attributes = placemarkAttributes;
+		    currPlacemark.highlightAttributes = highlightAttributes;
+
+		    placemarkLayer.addRenderable(currPlacemark);
+		}
+	}
+
 	wwd.addLayer(placemarkLayer);
 
 	//var layerManger = new LayerManager(wwd);
@@ -79,8 +100,15 @@ $(document).ready(function () {
 
 	/* live update */
 
+	var altitudeInput;
+
 	$('#input-alt').on('input', function() {
-		placemark.position.altitude = $('#input-alt').val();
+		altitudeInput = $('#input-alt').val();
+
+		for (var i = 0; i < placemarks.length; i++) {
+			placemarks[i].position.altitude = altitudeInput;
+		}
+
 		wwd.redraw();
 	});
 
