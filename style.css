@@ -187,7 +187,7 @@ button {
 	position: relative;
 }
 
-	#canvas {
+	#canvas-container {
 		position: absolute;
 		width: 100%;
 		height: 100%;
@@ -195,21 +195,21 @@ button {
 		left: 0;
 	}
 
-		#canvas .globe.view {
+		#canvas-container .globe.view {
 			
 		}
 
-		#canvas .side.view {
+		#canvas-container .side.view {
 			display: none;
 		}
 
-			#canvas .side.view .element {
+			#canvas-container .side.view .element {
 				position: absolute;
 				left: 50%;
 				transform: translate(-50%, 0);
 			}
 
-				#canvas .side.view .node {
+				#canvas-container .side.view .node {
 					width: 100px;
 					height: 100px;
 					background: rgba(255,255,255,0.5);
@@ -218,22 +218,22 @@ button {
 					align-items: center;
 				}
 
-					#canvas .side.view .satellite {
+					#canvas-container .side.view .satellite {
 						top: 20%;
 					}
 
-					#canvas .side.view .ground-station {
+					#canvas-container .side.view .ground-station {
 						top: calc(80% - 100px);
 					}
 
-				#canvas .side.view .connection {
+				#canvas-container .side.view .connection {
 					top: calc(20% + 100px);
 					width: 10px;
 					height: calc(60% - 200px);
 					background: white;
 				}
 
-				#canvas .side.view .ground {
+				#canvas-container .side.view .ground {
 					top: 80%;
 					width: 100%;
 					height: 20%;

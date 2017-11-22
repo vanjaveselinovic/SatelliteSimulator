@@ -1,6 +1,26 @@
 $(document).ready(function () {
 	var loading = false;
 
+	$(window).resize(function () {
+		resizeCanvas();
+	});
+
+	var resizeCanvas = function () {
+		$('#canvas').width($('#canvas-container').width());
+		$('#canvas').height($('#canvas-container').height());
+	};
+
+	resizeCanvas();
+
+	var wwd = new WorldWind.WorldWindow('canvas');
+
+    wwd.addLayer(new WorldWind.BMNGOneImageLayer());
+    wwd.addLayer(new WorldWind.BingAerialWithLabelsLayer());
+
+    wwd.addLayer(new WorldWind.CompassLayer());
+    wwd.addLayer(new WorldWind.CoordinatesDisplayLayer(wwd));
+    wwd.addLayer(new WorldWind.ViewControlsLayer(wwd));
+
 	$('#button-run').click(function() {
 		if (!loading) {
 			$('.loader').css('display','block');
