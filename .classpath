@@ -2,5 +2,21 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/orekit-9.0.1.jar" sourcepath="lib/orekit-9.0.1-sources.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SatelliteSimulator/lib/orekit-9.0.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-clustering-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-core-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-fft-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-fitting-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-geometry-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-migration-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-ode-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-optim-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-samples-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/hipparchus-stat-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
