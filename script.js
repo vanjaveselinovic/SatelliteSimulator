@@ -175,9 +175,8 @@ $(document).ready(function () {
 
 	/* ---------- CHOREOGRAPHING ---------- */
 
-	$('#input-vel').on('input', function() {
-		orbitalVelocity_km_s = $('#input-vel').val();
-		orbitalVelocity_d_s = orbitalVelocity_km_s / 111;
+	$('#input-per').on('input', function() {
+		orbitalPeriod = $('#input-per').val();
 	});
 
 	$('#input-ts').on('input', function() {
@@ -187,9 +186,8 @@ $(document).ready(function () {
 	var deltaTimeMillis = 0, prevTimeMillis = performance.now();
 	var i = 0;
 
-	var orbitalVelocity_km_s = $('#input-vel').val(); // km/s // default 7.8
-	var orbitalVelocity_d_s = orbitalVelocity_km_s / 111; // degree/s
-	var timeScale = $('#input-ts').val(); // default 1
+	var orbitalPeriod = $('#input-per').val() * 60; //seconds
+	var timeScale = $('#input-ts').val();
 
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
@@ -198,7 +196,7 @@ $(document).ready(function () {
 		for (i = 0; i < placemarks.length; i++) {
 			placemarks[i].position.latitude
 					= placemarks[i].position.latitude
-							+ deltaTimeMillis/1000 * orbitalVelocity_d_s * timeScale;
+							+ deltaTimeMillis/1000 * 360/orbitalPeriod * timeScale;
 		}
 
 		wwd.redraw();
