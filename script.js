@@ -31,7 +31,7 @@ $(document).ready(function () {
 	var mesh = null;
 
 	var meshAttributes = new WorldWind.ShapeAttributes(null);
-	meshAttributes.outlineColor = WorldWind.Color.WHITE;
+	meshAttributes.outlineColor = new WorldWind.Color(1, 1, 1, 0.5);
 	meshAttributes.interiorColor = new WorldWind.Color(0, 0, 0, 0);
 	meshAttributes.applyLighting = false;
 
@@ -53,6 +53,10 @@ $(document).ready(function () {
         MAX_LONGITUDE = 180;
 
     placemarkAttributes.drawLeaderLine = true;
+    placemarkAttributes.leaderLineAttributes
+    		= new WorldWind.ShapeAttributes();
+    placemarkAttributes.leaderLineAttributes.outlineColor
+    		= new WorldWind.Color(1, 1, 1, 0.25);
     placemarkAttributes.imageScale = 1;
     placemarkAttributes.imageOffset = new WorldWind.Offset(
         WorldWind.OFFSET_FRACTION, 0.5,
