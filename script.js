@@ -173,6 +173,26 @@ $(document).ready(function () {
 		wwd.redraw();
 	});
 
+	/* ---------- CHOREOGRAPHING ---------- */
+
+	var deltaTimeMillis = 0, prevTimeMillis = performance.now();
+	var i = 0;
+
+	function doFrame(currTimeMillis) {
+		deltaTimeMillis = currTimeMillis - prevTimeMillis;
+		prevTimeMillis = currTimeMillis;
+
+		for (i = 0; i < placemarks.length; i++) {
+			placemarks[i].position.latitude = placemarks[i].position.latitude + 0.1;
+		}
+
+		wwd.redraw();
+
+		window.requestAnimationFrame(doFrame);
+	}
+
+	window.requestAnimationFrame(doFrame);
+
 	/* ---------- WEB SERVICE ---------- */
 
 	$('#button-run').click(function() {
