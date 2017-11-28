@@ -23,6 +23,22 @@ $(document).ready(function () {
     //wwd.addLayer(new WorldWind.CoordinatesDisplayLayer(wwd));
     //wwd.addLayer(new WorldWind.ViewControlsLayer(wwd));
 
+    /* orbits */
+
+    var meshPositions = [];
+	var row = [];
+	var currLon = 0;
+	var mesh = null;
+
+	var meshAttributes = new WorldWind.ShapeAttributes(null);
+	meshAttributes.outlineColor = WorldWind.Color.WHITE;
+	meshAttributes.interiorColor = new WorldWind.Color(0, 0, 0, 0);
+	meshAttributes.applyLighting = false;
+
+	var meshLayer = new WorldWind.RenderableLayer();
+
+	/* satellites */
+
     var placemarks,
         placemarkAttributes = new WorldWind.PlacemarkAttributes(null),
         highlightAttributes,
@@ -74,7 +90,25 @@ $(document).ready(function () {
 	var numRings = 10;
 	var numSatellitesPerRing = 10;
 
+	/* adding */
+
 	for (var i = 0; i < numRings; i++) {
+		meshPositions = [];
+		row = [];
+		currLon = MIN_LONGITUDE + i * MAX_LONGITUDE*2 / numSatellitesPerRing;
+		for (var lat = -90; lat <= 90; lat += 10) {
+			row = [];
+			for (var lon = currLon; lon <= currLon + 180; lon += 180) {
+				row.push(new WorldWind.Position(lat, lon, 1000000));
+			}
+			meshPositions.push(row);
+		}
+
+		mesh = new WorldWind.GeographicMesh(meshPositions, null);
+		mesh.attributes = meshAttributes;
+
+		meshLayer.addRenderable(mesh);
+
 		for (var j = 0; j < numSatellitesPerRing; j++) {
 			placemarks.push(new WorldWind.Placemark(
     		new WorldWind.Position(
@@ -93,7 +127,30 @@ $(document).ready(function () {
 		}
 	}
 
+	wwd.addLayer(meshLayer);
 	wwd.addLayer(placemarkLayer);
+
+	/*
+	var shapesLayer = new WorldWind.RenderableLayer("Surface Shapes");
+	wwd.addLayer(shapesLayer);
+
+	var shapeAttributes = new WorldWind.ShapeAttributes(null);
+	shapeAttributes.outlineWidth = 5;
+	shapeAttributes.outlineColor = WorldWind.Color.WHITE;
+	shapeAttributes.interiorColor = new WorldWind.Color(0, 1, 1, 0.5);
+
+	var shapeHighlightAttributes = new WorldWind.ShapeAttributes(shapeAttributes);
+	shapeHighlightAttributes.outlineColor = new WorldWind.Color(0, 1, 1, 0.5);
+
+	var bigPolylineBoundary = [];
+	bigPolylineBoundary.push(new WorldWind.Location(-45, -135));
+	bigPolylineBoundary.push(new WorldWind.Location(45, -32));
+
+	var bigPolyline = new WorldWind.SurfacePolyline(bigPolylineBoundary, shapeAttributes);
+	bigPolyline.highlightAttributes = highlightAttributes;
+
+	shapesLayer.addRenderable(bigPolyline);
+	*/
 
 	//var layerManger = new LayerManager(wwd);
 	var highlightController = new WorldWind.HighlightController(wwd);
