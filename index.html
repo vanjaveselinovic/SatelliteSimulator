@@ -25,29 +25,59 @@
 			<div class="section">
 				<div class="input-with-labels">
 					<div class="iwl-section label-before">
-						Rate
+						Altitude
 					</div>
 					<div class="iwl-section input">
-						<input type="text" id="input-rate">
+						<input type="text" id="input-alt" value="1000000" autocomplete="off">
 					</div>
 					<div class="iwl-section label-after">
-						Mb/s
+						m
 					</div>
 				</div>
 				<div class="input-with-labels">
 					<div class="iwl-section label-before">
-						Packet size
+						Orbital period
 					</div>
 					<div class="iwl-section input">
-						<input type="text" id="input-size">
+						<input type="text" id="input-per" value="90" autocomplete="off">
 					</div>
 					<div class="iwl-section label-after">
-						b
+						min
+					</div>
+				</div>
+				<div class="input-with-labels">
+					<div class="iwl-section label-before">
+						Time scale
+					</div>
+					<div class="iwl-section input">
+						<input type="text" id="input-ts" value="100" autocomplete="off">
+					</div>
+					<div class="iwl-section label-after">
+						x
 					</div>
 				</div>
 			</div>
 		</div>
 		<div id="main">
+			<div id="canvas-container">
+				<div class="globe view">
+					<canvas id="canvas">
+						Your browser does not support HTML5 Canvas.
+					</canvas>
+				</div>
+				<div class="side view">
+					<div class="element node satellite">
+						Satellite node
+					</div>
+					<div class="element connection">
+					</div>
+					<div class="element node ground-station">
+						Ground station node
+					</div>
+					<div class="element ground">
+					</div>
+				</div>
+			</div>
 			<div class="loader"></div>
 			<button id="button-run">
 				<div class="icon play"></div>
