@@ -81,7 +81,7 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 import org.orekit.utils.TimeStampedPVCoordinates;
 
-public class Simulation {
+public class SatTest {
 	
 	static{
 		System.setProperty("orekit.data.path", "orekit-data.zip"); 
@@ -100,7 +100,7 @@ public class Simulation {
 	
 	private Map<KeplerianPropagator, Orbit> orbits = new HashMap<>();
 	
-	public Simulation(int rings, int satsPerRing, int radius, double inclination) throws OrekitException {
+	public SatTest(int rings, int satsPerRing, int radius, double inclination) throws OrekitException {
 		
 		
 		
@@ -178,7 +178,7 @@ public static double[] orbitToLLA(Orbit o) {
 }
 	
 	public static void main(String args[]) throws OrekitException {
-		Simulation sim = new Simulation(1, 1, 8000000, Math.toRadians(88));
+		SatTest sim = new SatTest(1, 1, 8000000, Math.toRadians(88));
 		
 		double duration = 86400.;
 		AbsoluteDate finalDate = sim.initialDate.shiftedBy(duration);

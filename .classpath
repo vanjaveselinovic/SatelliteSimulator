@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/hipparchus-optim-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/hipparchus-samples-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/hipparchus-stat-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/jns-1.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
