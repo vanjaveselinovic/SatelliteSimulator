@@ -189,14 +189,19 @@ $(document).ready(function () {
 	var orbitalPeriod = $('#input-per').val() * 60; //seconds
 	var timeScale = $('#input-ts').val();
 
+	var plusMinus = -1;
+
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
 
 		for (i = 0; i < placemarks.length; i++) {
+			if (i % numSatellitesPerRing === 0)
+				plusMinus = plusMinus*-1;
+
 			placemarks[i].position.latitude
 					= placemarks[i].position.latitude
-							+ deltaTimeMillis/1000 * 360/orbitalPeriod * timeScale;
+							+ (deltaTimeMillis/1000 * 360/orbitalPeriod * timeScale * plusMinus);
 		}
 
 		wwd.redraw();
