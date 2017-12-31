@@ -30,10 +30,18 @@ $(document).ready(function () {
 	var currLon = 0;
 	var mesh = null;
 
-	var meshAttributes = new WorldWind.ShapeAttributes(null);
-	meshAttributes.outlineColor = new WorldWind.Color(1, 1, 1, 0.5);
-	meshAttributes.interiorColor = new WorldWind.Color(0, 0, 0, 0);
-	meshAttributes.applyLighting = false;
+	var red = new WorldWind.Color(1, 0, 0, 0.75);
+	var blue = new WorldWind.Color(0, 0, 1, 0.75);
+
+	var meshAttributes = [];
+
+	meshAttributes[0] = new WorldWind.ShapeAttributes(null);
+	meshAttributes[0].outlineColor = red;
+	meshAttributes[0].interiorColor = new WorldWind.Color(0, 0, 0, 0);
+	meshAttributes[0].applyLighting = false;
+
+	meshAttributes[1] = new WorldWind.ShapeAttributes(meshAttributes[0]);
+	meshAttributes[1].outlineColor = blue;
 
 	var meshLayer = new WorldWind.RenderableLayer();
 
@@ -99,7 +107,7 @@ $(document).ready(function () {
 	for (var i = 0; i < numRings; i++) {
 		meshPositions = [];
 		row = [];
-		currLon = MIN_LONGITUDE + i * MAX_LONGITUDE*2 / numSatellitesPerRing;
+		currLon = MIN_LONGITUDE + i * MAX_LONGITUDE*2 / (numRings*2);
 		for (var lat = -90; lat <= 90; lat += 10) {
 			row = [];
 			for (var lon = currLon; lon <= currLon + 180; lon += 180) {
@@ -109,15 +117,15 @@ $(document).ready(function () {
 		}
 
 		mesh = new WorldWind.GeographicMesh(meshPositions, null);
-		mesh.attributes = meshAttributes;
+		mesh.attributes = meshAttributes[i % 2];
 
 		meshLayer.addRenderable(mesh);
 
 		for (var j = 0; j < numSatellitesPerRing; j++) {
 			placemarks.push(new WorldWind.Placemark(
     		new WorldWind.Position(
-    				MIN_LATITUDE + j * MAX_LATITUDE*2 / numRings,
-    				MIN_LONGITUDE + i * MAX_LONGITUDE*2 / numSatellitesPerRing,
+    				MIN_LATITUDE + 2 * j * MAX_LATITUDE*2 / numSatellitesPerRing,
+    				MIN_LONGITUDE + i * MAX_LONGITUDE*2 / (numRings*2),
     				altitude),
     		false,
     		null));
@@ -213,11 +221,13 @@ $(document).ready(function () {
 	var orbitalPeriod = $('#input-per').val() * 60; //seconds
 	var timeScale = $('#input-ts').val();
 
-	var plusMinus = -1;
+	var plusMinus = 1;
 
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
+
+		plusMinus = 1;
 
 		for (i = 0; i < placemarks.length; i++) {
 			if (i % numSatellitesPerRing === 0)
