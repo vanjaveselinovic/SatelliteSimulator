@@ -166,21 +166,45 @@ $(document).ready(function () {
 	$('#input-alt').on('input', function() {
 		altitudeInput = $('#input-alt').val();
 
-		for (var i = 0; i < placemarks.length; i++) {
-			placemarks[i].position.altitude = altitudeInput;
-		}
+		if (!isNaN(altitudeInput) && altitudeInput > 0) {
+			$('#input-alt').removeClass('invalid-input');
 
-		wwd.redraw();
+			for (var i = 0; i < placemarks.length; i++) {
+				placemarks[i].position.altitude = altitudeInput;
+			}
+
+			wwd.redraw();
+		} else {
+			$('#input-alt').addClass('invalid-input');
+		}
 	});
 
 	/* ---------- CHOREOGRAPHING ---------- */
 
+	var periodInput;
+
 	$('#input-per').on('input', function() {
-		orbitalPeriod = $('#input-per').val();
+		periodInput = $('#input-per').val();
+
+		if (!isNaN(periodInput) && periodInput > 0) {
+			$('#input-per').removeClass('invalid-input');
+			orbitalPeriod = periodInput * 60;
+		} else {
+			$('#input-per').addClass('invalid-input');
+		}
 	});
 
+	var timeScaleInput;
+
 	$('#input-ts').on('input', function() {
-		timeScale = $('#input-ts').val();
+		timeScaleInput = $('#input-ts').val();
+
+		if (!isNaN(timeScaleInput) && timeScaleInput > 0) {
+			$('#input-ts').removeClass('invalid-input');
+			timeScale = $('#input-ts').val();
+		} else {
+			$('#input-ts').addClass('invalid-input');
+		}
 	});
 
 	var deltaTimeMillis = 0, prevTimeMillis = performance.now();

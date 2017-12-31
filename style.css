@@ -42,6 +42,11 @@ input {
 			border-color: hsl(208, 100%, 55%);
 		}
 
+		input[type="text"].invalid-input {
+			color: red;
+			border-color: red;
+		}
+
 ::-webkit-input-placeholder{ /* Chrome/Opera/Safari */
   color: rgba(255,255,255,0.2);
 }
