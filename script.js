@@ -247,16 +247,30 @@ $(document).ready(function () {
 
 	/* ---------- WEB SERVICE ---------- */
 
+	function formatQuery(queryInJSON) {
+		var s = '';
+		for (var key in queryInJSON) {
+			if (queryInJSON.hasOwnProperty(key)) {
+				s+=key;
+				s+='=';
+				s+=queryInJSON[key];
+				s+='&';
+			}
+		}
+		s = s.slice(0, -1);
+		return s;
+	}
+
 	$('#button-run').click(function() {
 		if (!loading) {
 			$('.loader').css('display','block');
 			loading = true;
 
-			$.getJSON('http://127.0.0.1:8080/simulator',
-				{
-					dataRate: $('#input-rate').val(),
-					packetSize: $('#input-size').val()
-				})
+			$.getJSON('http://127.0.0.1:8080/simulator?'+formatQuery(
+						{
+							dataRate: 1000,
+							packetSize: 2000
+						}))
 				.done(function(data, textStatus, jqXHR) {
 					loading = false;
 					console.log(data);
