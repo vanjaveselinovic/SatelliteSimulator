@@ -252,7 +252,7 @@ $(document).ready(function () {
 			$('.loader').css('display','block');
 			loading = true;
 
-			$.getJSON('http://127.0.0.1:5000/python/simulator',
+			$.getJSON('http://127.0.0.1:8080/simulator',
 				{
 					dataRate: $('#input-rate').val(),
 					packetSize: $('#input-size').val()
