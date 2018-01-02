@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
@@ -17,11 +18,18 @@ public class SatelliteSimulatorServer {
 	static class MyHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange t) throws IOException {
+			InputStream is = t.getRequestBody();
+			System.out.print(t.getRequestURI().getQuery());
 			String response = "{\"test\": 5}";
 			t.sendResponseHeaders(200, response.length());
 			OutputStream os = t.getResponseBody();
 			os.write(response.getBytes());
 			os.close();
+		}
+
+		static String convertStreamToString(java.io.InputStream is) {
+		    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+		    return s.hasNext() ? s.next() : "";
 		}
 	}
 }
