@@ -73,19 +73,28 @@ $(document).ready(function () {
 
     var canvas = document.createElement("canvas"),
         ctx2d = canvas.getContext("2d"),
-        size = 20;
+        size = 30;
 
     canvas.width = size;
     canvas.height = size;
 
-    ctx2d.fillStyle = "rgb(255, 255, 255)";
-	ctx2d.fillRect(0, 0, size, size);
+    ctx2d.fillStyle = "rgb(0, 0, 0)";
+	ctx2d.fillRect(0, size/3, size, size/3);
 
 	ctx2d.fillStyle = "rgb(0, 0, 0)";
+	ctx2d.fillRect(size/3, 0, size/3, size);
+
+	ctx2d.fillStyle = "rgb(0, 128, 200)";
+	ctx2d.fillRect(2, size/3+2, size-4, size/3-4);
+
+	ctx2d.fillStyle = "rgb(200, 200, 200)";
+	ctx2d.fillRect(size/3+2, 2, size/3-4, size-4);
+
+	/*ctx2d.fillStyle = "rgb(0, 0, 0)";
 	ctx2d.fillRect(2, 2, size - 4, size - 4);
 
 	ctx2d.fillStyle = "rgb(128, 128, 128)";
-	ctx2d.fillRect(4, 4, size - 8, size - 8);
+	ctx2d.fillRect(4, 4, size - 8, size - 8);*/
 
 	placemarkAttributes =
     		new WorldWind.PlacemarkAttributes(placemarkAttributes);
@@ -179,7 +188,6 @@ $(document).ready(function () {
 	shapesLayer.addRenderable(bigPolyline);
 	*/
 
-	//var layerManger = new LayerManager(wwd);
 	var highlightController = new WorldWind.HighlightController(wwd);
 
 	/* live update */
