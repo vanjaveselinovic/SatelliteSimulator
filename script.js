@@ -96,16 +96,19 @@ $(document).ready(function () {
     		new WorldWind.PlacemarkAttributes(placemarkAttributes);
     highlightAttributes.imageScale = 1.2;
 
-	placemarks = [];
+	var placemarks = [];
 	var currPlacemark;
 
 	var numRings = 10;
 	var numSatellitesPerRing = 10;
 
+	var rings = [];
+	var currRing;
+
 	/* adding */
 
 	for (var i = 0; i < numRings; i++) {
-		meshPositions = [];
+		meshPositions[i] = [];
 		row = [];
 		currLon = MIN_LONGITUDE + i * MAX_LONGITUDE*2 / (numRings*2);
 		for (var lat = -90; lat <= 90; lat += 10) {
@@ -113,22 +116,22 @@ $(document).ready(function () {
 			for (var lon = currLon; lon <= currLon + 180; lon += 180) {
 				row.push(new WorldWind.Position(lat, lon, 1000000));
 			}
-			meshPositions.push(row);
+			meshPositions[i].push(row);
 		}
 
-		mesh = new WorldWind.GeographicMesh(meshPositions, null);
-		mesh.attributes = meshAttributes[i % 2];
+		currRing = new WorldWind.GeographicMesh(meshPositions[i], meshAttributes[i % 2])
+		rings.push(currRing);
 
-		meshLayer.addRenderable(mesh);
+		meshLayer.addRenderable(currRing);
 
 		for (var j = 0; j < numSatellitesPerRing; j++) {
 			placemarks.push(new WorldWind.Placemark(
-    		new WorldWind.Position(
-    				MIN_LATITUDE + 2 * j * MAX_LATITUDE*2 / numSatellitesPerRing,
-    				MIN_LONGITUDE + i * MAX_LONGITUDE*2 / (numRings*2),
-    				altitude),
-    		false,
-    		null));
+		    		new WorldWind.Position(
+		    				MIN_LATITUDE + 2 * j * MAX_LATITUDE*2 / numSatellitesPerRing,
+		    				MIN_LONGITUDE + i * MAX_LONGITUDE*2 / (numRings*2),
+		    				altitude),
+		    		false,
+		    		null));
 
     		currPlacemark = placemarks[placemarks.length - 1];
     		currPlacemark.altitudeMode = WorldWind.ABSOLUTE;
@@ -217,15 +220,36 @@ $(document).ready(function () {
 
 	var deltaTimeMillis = 0, prevTimeMillis = performance.now();
 	var i = 0;
+	var j = 0;
+	var k = 0;
 
 	var orbitalPeriod = $('#input-per').val() * 60; //seconds
 	var timeScale = $('#input-ts').val();
 
+	var rotationPeriod = 23*60*60 + 56*60 + 4; //earth's rotation in seconds
+
 	var plusMinus = 1;
+
+	var totalOffsetLon = 0;
 
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
+
+		totalOffsetLon += deltaTimeMillis/1000 * 360/rotationPeriod * timeScale;
+
+		meshLayer.renderables.length = 0;
+
+		for (i = 0; i < rings.length; i++) {
+			for (j = 0; j < rings[i].positions.length; j++) {
+				for (k = 0; k < rings[i].positions[j].length; k++) {
+					rings[i].positions[j][k].longitude
+							+= deltaTimeMillis/1000 * 360/rotationPeriod * timeScale;
+				}
+			}
+			//meshLayer.addRenderable(new WorldWind.GeographicMesh(rings[i].positions, rings[i].attributes));
+			meshLayer.addRenderable(rings[i]);
+		}
 
 		plusMinus = 1;
 
@@ -234,8 +258,10 @@ $(document).ready(function () {
 				plusMinus = plusMinus*-1;
 
 			placemarks[i].position.latitude
-					= placemarks[i].position.latitude
-							+ (deltaTimeMillis/1000 * 360/orbitalPeriod * timeScale * plusMinus);
+					+= (deltaTimeMillis/1000 * 360/orbitalPeriod * timeScale * plusMinus);
+
+			placemarks[i].position.longitude
+					+= (deltaTimeMillis/1000 * 360/rotationPeriod * timeScale);
 		}
 
 		wwd.redraw();
@@ -262,6 +288,7 @@ $(document).ready(function () {
 	}
 
 	$('#button-run').click(function() {
+		test();
 		if (!loading) {
 			$('.loader').css('display','block');
 			loading = true;

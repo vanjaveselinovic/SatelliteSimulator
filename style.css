@@ -204,6 +204,10 @@ button {
 			
 		}
 
+			#canvas-container .globe.view #canvas {
+				transform: scale3d(1, 1, 1);
+			}
+
 		#canvas-container .side.view {
 			display: none;
 		}
