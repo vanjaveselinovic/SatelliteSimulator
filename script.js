@@ -16,6 +16,10 @@ $(document).ready(function () {
 
 	var wwd = new WorldWind.WorldWindow('canvas');
 
+	wwd.goToAnimator.animationFrequency = 0;
+	wwd.goToAnimator.travelTime = 0;
+	wwd.goTo(new WorldWind.Position(45.4215, -75.6972, 50000000));
+
     wwd.addLayer(new WorldWind.BMNGOneImageLayer());
     //wwd.addLayer(new WorldWind.BingAerialWithLabelsLayer());
 
