@@ -314,8 +314,8 @@ $(document).ready(function () {
 		plusMinus = 1;
 
 		for (i = 0; i < placemarks.length; i++) {
-			if (i % numSatellitesPerRing === 0)
-				plusMinus = plusMinus*-1;
+			//if (i % numSatellitesPerRing === 0)
+			//	plusMinus = plusMinus*-1;
 
 			placemarks[i].position.latitude
 					+= (deltaTimeMillis/1000 * 360/orbitalPeriod * timeScale * plusMinus);
