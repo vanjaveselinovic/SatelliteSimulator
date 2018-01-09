@@ -13,8 +13,7 @@ public class NetTest {
 	    // Get a simulator
 
 	    Simulator sim=Simulator.getInstance();
-
-	      
+	    
 	    // Set up three nodes
 
 	    Node src=new Node("Source node");
