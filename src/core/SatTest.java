@@ -190,21 +190,15 @@ public static double[] orbitToLLA(Orbit o) {
 		    extrapDate = extrapDate.shiftedBy(stepT))  {
 		  
 			
-			//System.out.println("\t{\"minute\":"+ cpt++ +", \"points\":[");
 			
 			for(KeplerianPropagator kepler : sim.orbits.keySet()) {
 			    SpacecraftState currentState = kepler.propagate(extrapDate);
 			    
 			    System.out.println(Arrays.toString(orbitToLLA(currentState.getOrbit())));
 			    
-			  //System.out.println("{\"lat\":"+Math.toDegrees(orbit.getAlphaV()%(Math.PI*2.))+", \"long\":"+Math.toDegrees(orbit.getLv()%(Math.PI*2.))+"},");
-			  //System.out.println("\t\t{\"lat\":"+Math.toDegrees(orbit.getAlphaV()%(Math.PI*2.))+", \"long\":"+Math.toDegrees(orbit.getLv()%(Math.PI*2.))+"},");
 			}
-			//System.out.println("\t]},");
 		}
-		//System.out.println("]");
 		
-		//TopocentricFrame sta1Frame = new TopocentricFrame(earth, station1, "station1");
 	}
 }
 /**/
