@@ -6,7 +6,7 @@
 
 body {
 	margin: 0;
-	font-size: 20px;
+	font-size: 16px;
 }
 
 #container {
@@ -167,7 +167,6 @@ button {
 }
 
 .section {
-	flex: 0;
 	margin-bottom: 20px;
 }
 
@@ -186,6 +185,51 @@ button {
 	.section.subtitle {
 		font-size: 1.2em;
 	}
+
+	.section.page {
+		display: none;
+	}
+
+	.section.page.active {
+		display: block;
+	}
+
+.menu {
+	display: flex;
+	flex-direction: row;
+	background: rgba(255, 255, 255, 0.05);
+	width: calc(100% + 40px);
+	margin-left: -20px;
+	padding: 0 20px;
+}
+
+	.menu-item {
+		display: flex;
+		flex: 1;
+		align-items: center;
+		border-right: 1px solid rgba(255, 255, 255, 0.25);
+		cursor: default;
+	}
+
+		.menu-item:last-child {
+			border-right: unset;
+		}
+
+		.menu-item:hover {
+			background: rgba(255, 255, 255, 0.1);
+		}
+
+		.menu-item.active {
+			background: rgba(255, 255, 255, 0.25);
+		}
+
+		.menu-item-icon {
+			padding: 10px;
+		}
+
+		.menu-item-label {
+			flex: 1;
+		}
 
 /* ---------- MAIN ---------- */
 
