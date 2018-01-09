@@ -12,6 +12,14 @@ $(document).ready(function () {
 
 	resizeCanvas();
 
+	$('.menu-item').on('click', function() {
+		$('.menu-item.active').removeClass('active');
+		$(this).addClass('active');
+
+		$('.section.page.active').removeClass('active');
+		$($('.section.page')[$(this).data("menuItemNumber")-1]).addClass('active');
+	})
+
 	/* ---------- WEB WORLDWIND ---------- */
 
 	var wwd = new WorldWind.WorldWindow('canvas');
@@ -339,7 +347,7 @@ $(document).ready(function () {
 		return s;
 	}
 
-	$('#button-run').click(function() {
+	$('#button-run').on('click', function() {
 		test();
 		if (!loading) {
 			$('.loader').css('display','block');
