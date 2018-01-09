@@ -39,12 +39,12 @@ input {
 
 		input[type="text"]:focus {
 			outline: none;
-			border-color: hsl(208, 100%, 55%);
+			border-color: hsl(208, 100%, 55%) !important;
 		}
 
 		input[type="text"].invalid-input {
 			color: red;
-			border-color: red;
+			border-color: red !important;
 		}
 
 ::-webkit-input-placeholder{ /* Chrome/Opera/Safari */
@@ -193,6 +193,22 @@ button {
 	.section.page.active {
 		display: block;
 	}
+
+	.section.card {
+		border-radius: 5px;
+		background: white;
+		color: rgba(0, 0, 0, 0.67);
+		padding: 20px;
+		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+	}
+
+		.section.card .section.title {
+			color: rgba(0, 0, 0, 0.5);
+		}
+
+		.section.card input[type="text"] {
+			border-color: rgba(0, 0, 0, 0.15);
+		}
 
 .menu {
 	display: flex;
