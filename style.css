@@ -159,7 +159,7 @@ button {
 
 #sidebar {
 	width: 300px;
-	background: rgba(32, 32, 32, 0.67);
+	background: rgba(24, 24, 24, 0.8);
 	padding: 20px;
 	display: flex;
 	flex-direction: column;
@@ -207,8 +207,10 @@ button {
 		display: flex;
 		flex: 1;
 		align-items: center;
-		border-right: 1px solid rgba(255, 255, 255, 0.25);
+		/*border-right: 1px solid rgba(255, 255, 255, 0.25);*/
 		cursor: default;
+		position: relative;
+		color: rgba(255, 255, 255, 0.67);
 	}
 
 		.menu-item:last-child {
@@ -220,8 +222,18 @@ button {
 		}
 
 		.menu-item.active {
-			background: rgba(255, 255, 255, 0.25);
+			background: rgba(255, 255, 255, 0.15);
+			color: white;
 		}
+
+			.menu-item.active::after {
+				content: '';
+				position: absolute;
+				width: 100%;
+				height: 2px;
+				bottom: 0;
+				background: hsl(208, 100%, 55%);
+			}
 
 		.menu-item-icon {
 			padding: 10px;
