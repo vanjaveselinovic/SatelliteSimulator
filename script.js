@@ -28,7 +28,9 @@ $(document).ready(function () {
 	wwd.goToAnimator.travelTime = 0;
 	wwd.goTo(new WorldWind.Position(45.4215, -75.6972, 50000000));
 
-    wwd.addLayer(new WorldWind.BMNGOneImageLayer());
+	var earthLayer = new WorldWind.BMNGOneImageLayer();
+
+    wwd.addLayer(earthLayer);
     //wwd.addLayer(new WorldWind.BingAerialWithLabelsLayer());
 
     //wwd.addLayer(new WorldWind.CompassLayer());
@@ -63,6 +65,7 @@ $(document).ready(function () {
         placemarkAttributes = new WorldWind.PlacemarkAttributes(null),
         highlightAttributes,
         placemarkLayer = new WorldWind.RenderableLayer("Placemarks"),
+        testLayer = new WorldWind.RenderableLayer("Test"),
         latitude = 45.4215,
         longitude = -75.6972,
         altitude = 1000000;
@@ -130,6 +133,8 @@ $(document).ready(function () {
 
 	/* adding */
 
+	var globe = new WorldWind.Globe(new WorldWind.EarthElevationModel());
+
 	function configure() {
 		meshLayer.removeAllRenderables();
 		placemarkLayer.removeAllRenderables();
@@ -171,12 +176,48 @@ $(document).ready(function () {
 			    placemarkLayer.addRenderable(currPlacemark);
 			}
 		}
+
+		var testPosition1 = new WorldWind.Position(0, 0, 0);
+		var testPosition2 = new WorldWind.Position(0, 0, 0);
+		var testPosition3 = new WorldWind.Position(0, 0, 0);
+		var testPosition4 = new WorldWind.Position(0, 0, 0);
+
+		globe.computePositionFromPoint(0, 0, 0, testPosition1);
+		globe.computePositionFromPoint(10000000, 0, 0, testPosition2);
+		globe.computePositionFromPoint(0, 10000000, 0, testPosition3);
+		globe.computePositionFromPoint(0, 0, 10000000, testPosition4);
+
+		console.log(testPosition1);
+		console.log(testPosition2);
+		console.log(testPosition3);
+		console.log(testPosition4);
+
+		var testPlacemark1 = new WorldWind.Placemark(testPosition1, false, null);
+		var testPlacemark2 = new WorldWind.Placemark(testPosition2, false, null);
+		var testPlacemark3 = new WorldWind.Placemark(testPosition3, false, null);
+		var testPlacemark4 = new WorldWind.Placemark(testPosition4, false, null);
+
+		testPlacemark1.altitudeMode = WorldWind.ABSOLUTE;
+		testPlacemark2.altitudeMode = WorldWind.ABSOLUTE;
+		testPlacemark3.altitudeMode = WorldWind.ABSOLUTE;
+		testPlacemark4.altitudeMode = WorldWind.ABSOLUTE;
+
+		testPlacemark1.attributes = placemarkAttributes;
+		testPlacemark2.attributes = placemarkAttributes;
+		testPlacemark3.attributes = placemarkAttributes;
+		testPlacemark4.attributes = placemarkAttributes;
+
+		testLayer.addRenderable(testPlacemark1);
+		testLayer.addRenderable(testPlacemark2);
+		testLayer.addRenderable(testPlacemark3);
+		testLayer.addRenderable(testPlacemark4);
 	}
 
 	configure();
 
 	wwd.addLayer(meshLayer);
 	wwd.addLayer(placemarkLayer);
+	wwd.addLayer(testLayer);
 
 	/*
 	var shapesLayer = new WorldWind.RenderableLayer("Surface Shapes");
@@ -292,6 +333,9 @@ $(document).ready(function () {
 
 	var totalOffsetLon = 0;
 
+	var timeStamp = Date.now();
+	var date = new Date(timeStamp);
+
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
@@ -324,6 +368,9 @@ $(document).ready(function () {
 					+= (deltaTimeMillis/1000 * 360/rotationPeriod * timeScale);
 		}
 
+		//timeStamp += (timeScale * 60 * 1000);
+		//earthLayer.time = new Date(timeStamp);
+
 		wwd.redraw();
 
 		window.requestAnimationFrame(doFrame);
@@ -348,7 +395,6 @@ $(document).ready(function () {
 	}
 
 	$('#button-run').on('click', function() {
-		test();
 		if (!loading) {
 			$('.loader').css('display','block');
 			loading = true;
