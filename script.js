@@ -39,7 +39,7 @@ $(document).ready(function () {
 
     /* orbits */
 
-    var meshPositions = [];
+    var ringPositions = [];
 	var row = [];
 	var currLon = 0;
 	var mesh = null;
@@ -47,17 +47,17 @@ $(document).ready(function () {
 	var red = new WorldWind.Color(1, 0, 0, 0.75);
 	var blue = new WorldWind.Color(0, 0, 1, 0.75);
 
-	var meshAttributes = [];
+	var ringAttributes = [];
 
-	meshAttributes[0] = new WorldWind.ShapeAttributes(null);
-	meshAttributes[0].outlineColor = red;
-	meshAttributes[0].interiorColor = new WorldWind.Color(0, 0, 0, 0);
-	meshAttributes[0].applyLighting = false;
+	ringAttributes[0] = new WorldWind.ShapeAttributes(null);
+	ringAttributes[0].outlineColor = red;
+	ringAttributes[0].interiorColor = new WorldWind.Color(0, 0, 0, 0);
+	ringAttributes[0].applyLighting = false;
 
-	meshAttributes[1] = new WorldWind.ShapeAttributes(meshAttributes[0]);
-	meshAttributes[1].outlineColor = blue;
+	ringAttributes[1] = new WorldWind.ShapeAttributes(ringAttributes[0]);
+	ringAttributes[1].outlineColor = blue;
 
-	var meshLayer = new WorldWind.RenderableLayer();
+	var ringLayer = new WorldWind.RenderableLayer();
 
 	/* satellites */
 
@@ -136,30 +136,27 @@ $(document).ready(function () {
 	var globe = new WorldWind.Globe(new WorldWind.EarthElevationModel());
 
 	function configure() {
-		meshLayer.removeAllRenderables();
+		ringLayer.removeAllRenderables();
 		placemarkLayer.removeAllRenderables();
 
 		placemarks.length = 0;
 		rings.length = 0;
 
-		for (var i = 0; i < numRings; i++) {
-			meshPositions[i] = [];
-			row = [];
-			currLon = MIN_LONGITUDE + i * MAX_LONGITUDE*2 / (numRings*2);
-			for (var lat = -90; lat <= 90; lat += 10) {
-				row = [];
-				for (var lon = currLon; lon <= currLon + 180; lon += 180) {
-					row.push(new WorldWind.Position(lat, lon, 1000000));
-				}
-				meshPositions[i].push(row);
+		for (var i = 0; i < numRings*2; i++) {
+			ringPositions[i] = [];
+			lon = MIN_LONGITUDE + i * MAX_LONGITUDE*2 / (numRings*2);
+			for (var lat = -90; lat <= 90; lat += 90) {
+				ringPositions[i].push(new WorldWind.Position(lat, lon, 1000000));
 			}
 
-			rings.push(new WorldWind.GeographicMesh(meshPositions[i], meshAttributes[i % 2]));
+			rings.push(new WorldWind.Path(ringPositions[i], ringAttributes[i % 2]));
 
 			currRing = rings[rings.length - 1];
 
-			meshLayer.addRenderable(currRing);
+			ringLayer.addRenderable(currRing);
+		}
 
+		for (var i = 0; i < numRings; i++) {
 			for (var j = 0; j < numSatellitesPerRing; j++) {
 				placemarks.push(new WorldWind.Placemark(
 			    		new WorldWind.Position(
@@ -213,7 +210,7 @@ $(document).ready(function () {
 
 	configure();
 
-	wwd.addLayer(meshLayer);
+	wwd.addLayer(ringLayer);
 	wwd.addLayer(placemarkLayer);
 	//wwd.addLayer(testLayer);
 
@@ -331,24 +328,26 @@ $(document).ready(function () {
 
 	var totalOffsetLon = 0;
 
+	console.log(rings);
+
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
 
 		totalOffsetLon += deltaTimeMillis/1000 * 360/rotationPeriod * timeScale;
 
-		meshLayer.removeAllRenderables();
+		ringLayer.removeAllRenderables();
 
 		for (i = 0; i < rings.length; i++) {
 			for (j = 0; j < rings[i].positions.length; j++) {
-				for (k = 0; k < rings[i].positions[j].length; k++) {
-					rings[i].positions[j][k].longitude
-							+= deltaTimeMillis/1000 * 360/rotationPeriod * timeScale;
-				}
+				rings[i].positions[j].longitude
+						+= deltaTimeMillis/1000 * 360/rotationPeriod * timeScale;
 			}
-			//meshLayer.addRenderable(new WorldWind.GeographicMesh(rings[i].positions, rings[i].attributes));
-			meshLayer.addRenderable(rings[i]);
+			//ringLayer.addRenderable(new WorldWind.Path(rings[i].positions, rings[i].attributes));
+			ringLayer.addRenderable(rings[i]);
 		}
+
+		console.log(rings.length);
 
 		plusMinus = 1;
 
