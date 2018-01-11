@@ -154,8 +154,9 @@ $(document).ready(function () {
 				meshPositions[i].push(row);
 			}
 
-			currRing = new WorldWind.GeographicMesh(meshPositions[i], meshAttributes[i % 2])
-			rings.push(currRing);
+			rings.push(new WorldWind.GeographicMesh(meshPositions[i], meshAttributes[i % 2]));
+
+			currRing = rings[rings.length - 1];
 
 			meshLayer.addRenderable(currRing);
 
@@ -177,6 +178,8 @@ $(document).ready(function () {
 			}
 		}
 
+		/* xyz coordinates test placemarls */
+
 		var testPosition1 = new WorldWind.Position(0, 0, 0);
 		var testPosition2 = new WorldWind.Position(0, 0, 0);
 		var testPosition3 = new WorldWind.Position(0, 0, 0);
@@ -186,11 +189,6 @@ $(document).ready(function () {
 		globe.computePositionFromPoint(10000000, 0, 0, testPosition2);
 		globe.computePositionFromPoint(0, 10000000, 0, testPosition3);
 		globe.computePositionFromPoint(0, 0, 10000000, testPosition4);
-
-		console.log(testPosition1);
-		console.log(testPosition2);
-		console.log(testPosition3);
-		console.log(testPosition4);
 
 		var testPlacemark1 = new WorldWind.Placemark(testPosition1, false, null);
 		var testPlacemark2 = new WorldWind.Placemark(testPosition2, false, null);
@@ -217,7 +215,7 @@ $(document).ready(function () {
 
 	wwd.addLayer(meshLayer);
 	wwd.addLayer(placemarkLayer);
-	wwd.addLayer(testLayer);
+	//wwd.addLayer(testLayer);
 
 	/*
 	var shapesLayer = new WorldWind.RenderableLayer("Surface Shapes");
@@ -333,16 +331,13 @@ $(document).ready(function () {
 
 	var totalOffsetLon = 0;
 
-	var timeStamp = Date.now();
-	var date = new Date(timeStamp);
-
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
 
 		totalOffsetLon += deltaTimeMillis/1000 * 360/rotationPeriod * timeScale;
 
-		meshLayer.renderables.length = 0;
+		meshLayer.removeAllRenderables();
 
 		for (i = 0; i < rings.length; i++) {
 			for (j = 0; j < rings[i].positions.length; j++) {
@@ -367,9 +362,6 @@ $(document).ready(function () {
 			placemarks[i].position.longitude
 					+= (deltaTimeMillis/1000 * 360/rotationPeriod * timeScale);
 		}
-
-		//timeStamp += (timeScale * 60 * 1000);
-		//earthLayer.time = new Date(timeStamp);
 
 		wwd.redraw();
 
