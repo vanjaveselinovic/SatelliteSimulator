@@ -1,6 +1,4 @@
 $(document).ready(function () {
-	var loading = false;
-
 	$(window).resize(function () {
 		resizeCanvas();
 	});
@@ -189,28 +187,6 @@ $(document).ready(function () {
 	wwd.addLayer(placemarkLayer);
 	//wwd.addLayer(testLayer);
 
-	/*
-	var shapesLayer = new WorldWind.RenderableLayer("Surface Shapes");
-	wwd.addLayer(shapesLayer);
-
-	var shapeAttributes = new WorldWind.ShapeAttributes(null);
-	shapeAttributes.outlineWidth = 5;
-	shapeAttributes.outlineColor = WorldWind.Color.WHITE;
-	shapeAttributes.interiorColor = new WorldWind.Color(0, 1, 1, 0.5);
-
-	var shapeHighlightAttributes = new WorldWind.ShapeAttributes(shapeAttributes);
-	shapeHighlightAttributes.outlineColor = new WorldWind.Color(0, 1, 1, 0.5);
-
-	var bigPolylineBoundary = [];
-	bigPolylineBoundary.push(new WorldWind.Location(-45, -135));
-	bigPolylineBoundary.push(new WorldWind.Location(45, -32));
-
-	var bigPolyline = new WorldWind.SurfacePolyline(bigPolylineBoundary, shapeAttributes);
-	bigPolyline.highlightAttributes = highlightAttributes;
-
-	shapesLayer.addRenderable(bigPolyline);
-	*/
-
 	var highlightController = new WorldWind.HighlightController(wwd);
 
 	/* live update */
@@ -301,13 +277,9 @@ $(document).ready(function () {
 
 	var plusMinus = 1;
 
-	var totalOffsetLon = 0;
-
 	function doFrame(currTimeMillis) {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
-
-		totalOffsetLon += deltaTimeMillis/1000 * 360/rotationPeriod * timeScale;
 
 		ringLayer.removeAllRenderables();
 
@@ -342,40 +314,15 @@ $(document).ready(function () {
 
 	/* ---------- WEB SERVICE ---------- */
 
-	function formatQuery(queryInJSON) {
-		var s = '';
-		for (var key in queryInJSON) {
-			if (queryInJSON.hasOwnProperty(key)) {
-				s+=key;
-				s+='=';
-				s+=queryInJSON[key];
-				s+='&';
-			}
-		}
-		s = s.slice(0, -1);
-		return s;
-	}
+	var ws = new WebService();
 
 	$('#button-run').on('click', function() {
-		if (!loading) {
-			$('.loader').css('display','block');
-			loading = true;
-
-			$.getJSON('http://127.0.0.1:8080/simulator?'+formatQuery(
-						{
-							dataRate: 1000,
-							packetSize: 2000
-						}))
-				.done(function(data, textStatus, jqXHR) {
-					loading = false;
-					console.log(data);
-					$('.loader').css('display','none');
-				})
-				.fail(function() {
-					loading = false;
-					console.log('error');
-					$('.loader').css('display','none');
-				});
-		}
+		ws.request(
+				'http://127.0.0.1:8080/simulator',
+				{
+					dataRate: 1000,
+					packetSize: 2000
+				}
+		);
 	});
 });
