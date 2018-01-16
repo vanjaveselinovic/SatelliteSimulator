@@ -16,7 +16,17 @@ $(document).ready(function () {
 
 		$('.section.page.active').removeClass('active');
 		$($('.section.page')[$(this).data("menuItemNumber")-1]).addClass('active');
-	})
+	});
+
+	$('.input-numeric').on('keydown', function(e) {
+		if (!isNaN($(this).val())) {
+			if (e.which === 38)
+				$(this).val(parseInt($(this).val())+1);
+			else if (e.which === 40)
+				$(this).val(parseInt($(this).val())-1);
+		}
+		$(this).trigger('input');
+	});
 
 	/* ---------- GLOBE ---------- */
 
