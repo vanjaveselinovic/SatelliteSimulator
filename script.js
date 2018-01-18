@@ -132,6 +132,7 @@ $(document).ready(function () {
 		deltaTimeMillis = currTimeMillis - prevTimeMillis;
 		prevTimeMillis = currTimeMillis;
 
+		/*
 		globe.ringLayer.removeAllRenderables();
 
 		for (i = 0; i < globe.rings.length; i++) {
@@ -155,6 +156,7 @@ $(document).ready(function () {
 			globe.placemarks[i].position.longitude
 					+= (deltaTimeMillis/1000 * 360/rotationPeriod * timeScale);
 		}
+		*/
 
 		globe.propagate(deltaTimeMillis/1000 * timeScale);
 

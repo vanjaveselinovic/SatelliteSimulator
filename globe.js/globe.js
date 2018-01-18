@@ -1,70 +1,6 @@
 var Globe = function(params) {
 	if (params === undefined) params = {};
 
-	function generateTLELine1() {
-		return '1'+' '+ //line number
-				'99999'+'U'+' '+ //satellite number and classification
-				'18'+'001'+'A  '+' '+ //launch year, number, and piece
-				'00'+'001.00000000'+' '+ //epoch year and day
-				'−.00002182'+' '+ //first time derivate of mean motion / 2 (zero here)
-				' 00000-0'+' '+ //second time derivative of mean motion / 6 (zero here)
-				'-11606-4'+' '+ //drag term (zero here)
-				'0'+' '+
-				'001'+' '+ //element set number
-				'0'; //should be checksum but we don't need to have one	
-	};
-
-	function generateTLELine2(inclination, rAscOfAscNode, eccentricity, argOfPer, meanAnom, meanMotion) {
-		return '2'+' '+ //line number
-				'99999'+' '+ //satellite number
-				inclination+' '+ //inclination (degrees)
-				rAscOfAscNode+' '+ //right ascension of the ascending node (degrees)
-				eccentricity+' '+ //eccentricity (decimal point assumed)
-				argOfPer+' '+ //argument of perigree (degrees)
-				meanAnom+' '+ //mean anomaly (degrees)
-				meanMotion+' '+ //mean motion (revolutions per day)
-				'56353'+' '+ //revolution number at epoch (revolutions)
-				'0'; //should be checksum but we don't need to have one
-	};
-
-	var date = new Date(2018, 1, 1, 12, 0, 0);
-
-	var tleLine1 = generateTLELine1();//'1 99999U 18067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927',
-    	tleLine2 = generateTLELine2(
-    			'51.6416',
-    			'247.4627',
-    			'0006703',
-    			'130.5360',
-    			'325.0288',
-    			'15.72125391'
-    	);
-
-    var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
-    var positionAndVelocity, positionEci, gmst, positionGd, lonRad, latRad, height;
-    const EARTH_RADIUS = 6371000; //in meters
-
-    function getPosition(date) {
-	    positionAndVelocity = satellite.propagate(satrec, date);
-
-	    positionEci = positionAndVelocity.position;
-
-	    gmst = satellite.gstime(date);
-
-	    positionGd = satellite.eciToGeodetic(positionEci, gmst);
-	    
-	    lonRad = positionGd.longitude;
-	    latRad = positionGd.latitude;
-	    height = positionGd.height;
-
-	    if (lonRad < -1*Math.PI) lonRad += 2*Math.PI;
-
-	    return {
-	    	longitude: satellite.degreesLong(lonRad),
-	    	latitude: satellite.degreesLat(latRad),
-	    	altitude: height*1000 - EARTH_RADIUS
-	    };
-    };
-
 	this.numRings = params.numRings;
 	this.numSatellitesPerRing = params.numSatellitesPerRing;
 	this.altitude = params.numSatellitesPerRing;
@@ -191,38 +127,40 @@ var Globe = function(params) {
 		*/
 	}
 
-	this.configure();
+	//this.configure();
 
-	this.wwd.addLayer(this.ringLayer);
-	this.wwd.addLayer(placemarkLayer);
+	//this.wwd.addLayer(this.ringLayer);
+	//this.wwd.addLayer(placemarkLayer);
 
-	this.iss = new WorldWind.Placemark(
-			new WorldWind.Position(
-					getPosition().latitude,
-					getPosition().longitude,
-					getPosition().altitude),
-			false,
-			null);
+	this.rings.push(new Ring({
+		inclination: '51.6416',
+		ascendingNode: '247.4627',
+		numSatellites: 1,
+		placemarkAttributes: placemarkAttributes,
+		highlightAttributes: highlightAttributes
+	}));
 
-	this.iss.altitudeMode = WorldWind.ABSOLUTE;
-	this.iss.attributes = placemarkAttributes;
-	this.iss.highlightAttributes = highlightAttributes;
-
-	testLayer.addRenderable(this.iss);
+	for (var i = 0; i < this.rings.length; i++) {
+		for (var j = 0; j < this.rings[i].satellites.length; j++) {
+			testLayer.addRenderable(this.rings[i].satellites[j].placemark);
+		}
+	}
 
 	this.wwd.addLayer(testLayer);
 
 	var highlightController = new WorldWind.HighlightController(this.wwd);
 
-	var positionUpdate;
+	var date = new Date(2018, 1, 1, 12, 0, 0);
+
+	var i, j;
 
 	this.propagate = function(deltaTimeSeconds) {
 		date.setSeconds(date.getSeconds() + deltaTimeSeconds);
 
-		positionUpdate = getPosition(date);
-
-		this.iss.position.latitude = positionUpdate.latitude;
-		this.iss.position.longitude = positionUpdate.longitude;
-		this.iss.position.altitude = positionUpdate.altitude;
+		for (i = 0; i < this.rings.length; i++) {
+			for (j = 0; j < this.rings[i].satellites.length; j++) {
+				this.rings[i].satellites[j].update(date);
+			}
+		}
 	}
 }
