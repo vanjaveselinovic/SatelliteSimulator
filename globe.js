@@ -38,7 +38,6 @@ var Globe = function(params) {
     			'325.0288',
     			'15.72125391'
     	);
-    			//'2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537';
 
     var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
     var positionAndVelocity, positionEci, gmst, positionGd, lonRad, latRad, height;
@@ -57,16 +56,13 @@ var Globe = function(params) {
 	    latRad = positionGd.latitude;
 	    height = positionGd.height;
 
-	    try {
-		    return {
-		    	longitude: satellite.degreesLong(lonRad),
-		    	latitude: satellite.degreesLat(latRad),
-		    	altitude: height*1000 - EARTH_RADIUS
-		    };
-		} catch(e) {
-			console.log(e);
-			console.log(positionAndVelocity);
-		}
+	    if (lonRad < -1*Math.PI) lonRad += 2*Math.PI;
+
+	    return {
+	    	longitude: satellite.degreesLong(lonRad),
+	    	latitude: satellite.degreesLat(latRad),
+	    	altitude: height*1000 - EARTH_RADIUS
+	    };
     };
 
 	this.numRings = params.numRings;
@@ -153,6 +149,7 @@ var Globe = function(params) {
 	/* adding */
 
 	this.configure = function() {
+		/*
 		this.ringLayer.removeAllRenderables();
 		placemarkLayer.removeAllRenderables();
 
@@ -191,6 +188,7 @@ var Globe = function(params) {
 			    placemarkLayer.addRenderable(currPlacemark);
 			}
 		}
+		*/
 	}
 
 	this.configure();
