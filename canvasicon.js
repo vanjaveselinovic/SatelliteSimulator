@@ -1,4 +1,4 @@
-function satellite(params) {
+function satelliteIcon(params) {
 	if (params === undefined) params = {};
 
 	var size = params.size === undefined ? 100 : params.size,
@@ -66,5 +66,5 @@ function satellite(params) {
 }
 
 var CanvasIcon = {
-	Satellite: satellite
+	Satellite: satelliteIcon
 };

@@ -28,6 +28,31 @@ $(document).ready(function () {
 		$(this).trigger('input');
 	});
 
+	/*
+
+	var tleLine1 = '1 25544U 98067A   13149.87225694  .00009369  00000-0  16828-3 0  9031',
+    	tleLine2 = '2 25544 051.6485 199.1576 0010128 012.7275 352.5669 15.50581403831869';
+
+    var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
+
+    var positionAndVelocity = satellite.propagate(satrec, new Date());
+
+    var positionEci = positionAndVelocity.position;
+
+    var gmst = satellite.gstimeFromDate(new Date());
+
+    var positionGd = satellite.eciToGeodetic(positionEci, gmst);
+    
+    var longitude1 = positionGd.longitude,
+    	latitude1 = positionGd.latitude,
+    	height1 = positionGd.height;
+
+	console.log(longitude1);
+	console.log(latitude1);
+	console.log(height1);
+
+	*/
+
 	/* ---------- GLOBE ---------- */
 
 	var numRings = $('#input-nr').val();
