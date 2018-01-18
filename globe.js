@@ -1,6 +1,74 @@
 var Globe = function(params) {
 	if (params === undefined) params = {};
 
+	function generateTLELine1() {
+		return '1'+' '+ //line number
+				'99999'+'U'+' '+ //satellite number and classification
+				'18'+'001'+'A  '+' '+ //launch year, number, and piece
+				'00'+'001.00000000'+' '+ //epoch year and day
+				'−.00002182'+' '+ //first time derivate of mean motion / 2 (zero here)
+				' 00000-0'+' '+ //second time derivative of mean motion / 6 (zero here)
+				'-11606-4'+' '+ //drag term (zero here)
+				'0'+' '+
+				'001'+' '+ //element set number
+				'0'; //should be checksum but we don't need to have one	
+	};
+
+	function generateTLELine2(inclination, rAscOfAscNode, eccentricity, argOfPer, meanAnom, meanMotion) {
+		return '2'+' '+ //line number
+				'99999'+' '+ //satellite number
+				inclination+' '+ //inclination (degrees)
+				rAscOfAscNode+' '+ //right ascension of the ascending node (degrees)
+				eccentricity+' '+ //eccentricity (decimal point assumed)
+				argOfPer+' '+ //argument of perigree (degrees)
+				meanAnom+' '+ //mean anomaly (degrees)
+				meanMotion+' '+ //mean motion (revolutions per day)
+				'56353'+' '+ //revolution number at epoch (revolutions)
+				'0'; //should be checksum but we don't need to have one
+	};
+
+	var date = new Date(2018, 1, 1, 12, 0, 0);
+
+	var tleLine1 = generateTLELine1();//'1 99999U 18067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927',
+    	tleLine2 = generateTLELine2(
+    			'51.6416',
+    			'247.4627',
+    			'0006703',
+    			'130.5360',
+    			'325.0288',
+    			'15.72125391'
+    	);
+    			//'2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537';
+
+    var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
+    var positionAndVelocity, positionEci, gmst, positionGd, lonRad, latRad, height;
+    const EARTH_RADIUS = 6371000; //in meters
+
+    function getPosition(date) {
+	    positionAndVelocity = satellite.propagate(satrec, date);
+
+	    positionEci = positionAndVelocity.position;
+
+	    gmst = satellite.gstime(date);
+
+	    positionGd = satellite.eciToGeodetic(positionEci, gmst);
+	    
+	    lonRad = positionGd.longitude;
+	    latRad = positionGd.latitude;
+	    height = positionGd.height;
+
+	    try {
+		    return {
+		    	longitude: satellite.degreesLong(lonRad),
+		    	latitude: satellite.degreesLat(latRad),
+		    	altitude: height*1000 - EARTH_RADIUS
+		    };
+		} catch(e) {
+			console.log(e);
+			console.log(positionAndVelocity);
+		}
+    };
+
 	this.numRings = params.numRings;
 	this.numSatellitesPerRing = params.numSatellitesPerRing;
 	this.altitude = params.numSatellitesPerRing;
@@ -49,11 +117,9 @@ var Globe = function(params) {
 	    highlightAttributes,
 	    placemarkLayer = new WorldWind.RenderableLayer("Placemarks"),
 	    testLayer = new WorldWind.RenderableLayer("Test"),
-	    latitude = 45.4215,
-	    longitude = -75.6972,
 	    altitude = 1000000;
 
-	var MIN_LATITUDE = -90,
+	const MIN_LATITUDE = -90,
 	    MAX_LATITUDE = 90,
 	    MIN_LONGITUDE = -180,
 	    MAX_LONGITUDE = 180;
@@ -85,8 +151,6 @@ var Globe = function(params) {
 	var currRing;
 
 	/* adding */
-
-	var globe = new WorldWind.Globe(new WorldWind.EarthElevationModel());
 
 	this.configure = function() {
 		this.ringLayer.removeAllRenderables();
@@ -127,45 +191,40 @@ var Globe = function(params) {
 			    placemarkLayer.addRenderable(currPlacemark);
 			}
 		}
-
-		/* xyz coordinates test placemarls */
-
-		var testPosition1 = new WorldWind.Position(0, 0, 0);
-		var testPosition2 = new WorldWind.Position(0, 0, 0);
-		var testPosition3 = new WorldWind.Position(0, 0, 0);
-		var testPosition4 = new WorldWind.Position(0, 0, 0);
-
-		globe.computePositionFromPoint(0, 0, 0, testPosition1);
-		globe.computePositionFromPoint(10000000, 0, 0, testPosition2);
-		globe.computePositionFromPoint(0, 10000000, 0, testPosition3);
-		globe.computePositionFromPoint(0, 0, 10000000, testPosition4);
-
-		var testPlacemark1 = new WorldWind.Placemark(testPosition1, false, null);
-		var testPlacemark2 = new WorldWind.Placemark(testPosition2, false, null);
-		var testPlacemark3 = new WorldWind.Placemark(testPosition3, false, null);
-		var testPlacemark4 = new WorldWind.Placemark(testPosition4, false, null);
-
-		testPlacemark1.altitudeMode = WorldWind.ABSOLUTE;
-		testPlacemark2.altitudeMode = WorldWind.ABSOLUTE;
-		testPlacemark3.altitudeMode = WorldWind.ABSOLUTE;
-		testPlacemark4.altitudeMode = WorldWind.ABSOLUTE;
-
-		testPlacemark1.attributes = placemarkAttributes;
-		testPlacemark2.attributes = placemarkAttributes;
-		testPlacemark3.attributes = placemarkAttributes;
-		testPlacemark4.attributes = placemarkAttributes;
-
-		testLayer.addRenderable(testPlacemark1);
-		testLayer.addRenderable(testPlacemark2);
-		testLayer.addRenderable(testPlacemark3);
-		testLayer.addRenderable(testPlacemark4);
 	}
 
 	this.configure();
 
 	this.wwd.addLayer(this.ringLayer);
 	this.wwd.addLayer(placemarkLayer);
-	//wwd.addLayer(testLayer);
+
+	this.iss = new WorldWind.Placemark(
+			new WorldWind.Position(
+					getPosition().latitude,
+					getPosition().longitude,
+					getPosition().altitude),
+			false,
+			null);
+
+	this.iss.altitudeMode = WorldWind.ABSOLUTE;
+	this.iss.attributes = placemarkAttributes;
+	this.iss.highlightAttributes = highlightAttributes;
+
+	testLayer.addRenderable(this.iss);
+
+	this.wwd.addLayer(testLayer);
 
 	var highlightController = new WorldWind.HighlightController(this.wwd);
+
+	var positionUpdate;
+
+	this.propagate = function(deltaTimeSeconds) {
+		date.setSeconds(date.getSeconds() + deltaTimeSeconds);
+
+		positionUpdate = getPosition(date);
+
+		this.iss.position.latitude = positionUpdate.latitude;
+		this.iss.position.longitude = positionUpdate.longitude;
+		this.iss.position.altitude = positionUpdate.altitude;
+	}
 }
