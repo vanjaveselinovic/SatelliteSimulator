@@ -2,8 +2,10 @@ package core;
 
 import org.orekit.propagation.Propagator;
 
+import jns.element.IPHandler;
 import jns.element.Node;
 import jns.trace.Trace;
+import jns.util.RoutingTable;
 
 /*
  * 
@@ -20,11 +22,13 @@ import jns.trace.Trace;
 public class Satellite {
 	private Node n;
 	private Propagator o;
-	
+	private IPHandler h;
+	private RoutingTable r;
 	public Satellite(jns.element.Node node, org.orekit.propagation.Propagator orbit) {
 		n = node;
 		o = orbit;
+		h = n.getIPHandler();
+		r = h.getRoutingTable();
 	}
-	
 	
 }
