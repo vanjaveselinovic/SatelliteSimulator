@@ -89,5 +89,8 @@ var Satellite = function(params) {
 		date = newDate;
 
 		position = getPosition(date);
+		this.placemark.position.latitude = position.latitude;
+		this.placemark.position.longitude = position.longitude;
+		this.placemark.position.altitude = position.altitude;
 	};
 };
