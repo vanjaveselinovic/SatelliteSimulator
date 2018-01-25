@@ -7,6 +7,8 @@ var Satellite = function(params) {
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
 
+	var perigree = params.perigree;
+
 	var date = new Date(2018, 1, 1, 12, 0, 0);
 
 	function generateTLELine1() {
@@ -35,15 +37,21 @@ var Satellite = function(params) {
 				'0'; //should be checksum but we don't need to have one
 	};
 
+	function precise(x) {
+		return Number.parseFloat(x).toPrecision(7);
+	}
+
 	var tleLine1 = generateTLELine1();
    	var tleLine2 = generateTLELine2(
 			'51.6416',
 			'247.4627',
 			'0006703',
-			'130.5360',
+			precise(perigree)+'',//'130.5360',
 			'325.0288',
 			'15.72125391'
 	);
+
+	console.log(precise(perigree));
 
     var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
     var positionAndVelocity, positionEci, gmst, positionGd, lonRad, latRad, height;

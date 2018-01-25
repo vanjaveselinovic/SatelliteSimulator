@@ -135,7 +135,7 @@ var Globe = function(params) {
 	this.rings.push(new Ring({
 		inclination: '51.6416',
 		ascendingNode: '247.4627',
-		numSatellites: 1,
+		numSatellites: 10,
 		placemarkAttributes: placemarkAttributes,
 		highlightAttributes: highlightAttributes
 	}));

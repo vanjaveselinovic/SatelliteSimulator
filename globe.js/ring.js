@@ -14,7 +14,8 @@ var Ring = function(params) {
 			ascendingNode: ascendingNode,
 			relativeProcession: 0,
 			placemarkAttributes: placemarkAttributes,
-			highlightAttributes: highlightAttributes
+			highlightAttributes: highlightAttributes,
+			perigree: i * 360/numSatellites
 		}));
 	}
 };
