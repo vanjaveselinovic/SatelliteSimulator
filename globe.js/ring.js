@@ -6,6 +6,7 @@ var Ring = function(params) {
 	var numSatellites = params.numSatellites;
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
+	var revPerDay = params.revPerDay;
 
 	this.satellites = [];
 	for (var i = 0; i < numSatellites; i++) {
@@ -15,7 +16,8 @@ var Ring = function(params) {
 			relativeProcession: 0,
 			placemarkAttributes: placemarkAttributes,
 			highlightAttributes: highlightAttributes,
-			perigree: i * 360/numSatellites
+			periapsis: i * 360/numSatellites,
+			revPerDay: revPerDay
 		}));
 	}
 };

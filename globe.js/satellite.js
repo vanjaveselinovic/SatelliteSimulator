@@ -7,7 +7,8 @@ var Satellite = function(params) {
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
 
-	var perigree = params.perigree;
+	var periapsis = params.periapsis;
+	var revPerDay = params.revPerDay;
 
 	var date = new Date(2018, 1, 1, 12, 0, 0);
 
@@ -30,28 +31,26 @@ var Satellite = function(params) {
 				inclination+' '+ //inclination (degrees)
 				rAscOfAscNode+' '+ //right ascension of the ascending node (degrees)
 				eccentricity+' '+ //eccentricity (decimal point assumed)
-				argOfPer+' '+ //argument of perigree (degrees)
+				argOfPer+' '+ //argument of periapsis (degrees)
 				meanAnom+' '+ //mean anomaly (degrees)
 				meanMotion+' '+ //mean motion (revolutions per day)
-				'56353'+' '+ //revolution number at epoch (revolutions)
+				'00000'+' '+ //revolution number at epoch (revolutions)
 				'0'; //should be checksum but we don't need to have one
 	};
 
-	function precise(x) {
-		return Number.parseFloat(x).toPrecision(7);
+	function precise(number, precision) {
+		return Number.parseFloat(number).toPrecision(precision);
 	}
 
 	var tleLine1 = generateTLELine1();
    	var tleLine2 = generateTLELine2(
-			'51.6416',
-			'247.4627',
-			'0006703',
-			precise(perigree)+'',//'130.5360',
-			'325.0288',
-			'15.72125391'
+			'00.0000',
+			'000.0000',
+			'0000000',
+			precise(periapsis, 7)+'',//'130.5360',
+			'000.0000',
+			precise(revPerDay, 10)+''
 	);
-
-	console.log(precise(perigree));
 
     var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
     var positionAndVelocity, positionEci, gmst, positionGd, lonRad, latRad, height;
