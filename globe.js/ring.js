@@ -16,7 +16,7 @@ var Ring = function(params) {
 			relativeProcession: 0,
 			placemarkAttributes: placemarkAttributes,
 			highlightAttributes: highlightAttributes,
-			periapsis: i * 360/numSatellites,
+			offset: i * 16*60*60/numSatellites,
 			revPerDay: revPerDay
 		}));
 	}

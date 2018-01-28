@@ -6,7 +6,7 @@ var Globe = function(params) {
 	this.altitude = params.numSatellitesPerRing;
 	this.orbitalPeriod = params.orbitalPeriod;
 
-	const SECONDS_PER_DAY = 24 * 60 * 60;
+	const SECONDS_PER_DAY = (23 * 60 * 60) + (56 * 60) + 4.1;
 
 	this.wwd = new WorldWind.WorldWindow('canvas');
 
@@ -137,7 +137,7 @@ var Globe = function(params) {
 	this.rings.push(new Ring({
 		inclination: '51.6416',
 		ascendingNode: '247.4627',
-		numSatellites: 10,
+		numSatellites: this.numSatellitesPerRing,
 		placemarkAttributes: placemarkAttributes,
 		highlightAttributes: highlightAttributes,
 		revPerDay: SECONDS_PER_DAY / this.orbitalPeriod
@@ -158,11 +158,9 @@ var Globe = function(params) {
 	var i, j;
 
 	this.propagate = function(deltaTimeSeconds) {
-		date.setSeconds(date.getSeconds() + deltaTimeSeconds);
-
 		for (i = 0; i < this.rings.length; i++) {
 			for (j = 0; j < this.rings[i].satellites.length; j++) {
-				this.rings[i].satellites[j].update(date);
+				this.rings[i].satellites[j].update(deltaTimeSeconds);
 			}
 		}
 	}

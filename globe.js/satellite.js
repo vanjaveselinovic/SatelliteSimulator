@@ -7,21 +7,21 @@ var Satellite = function(params) {
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
 
-	var periapsis = params.periapsis;
+	var offset = params.offset;
 	var revPerDay = params.revPerDay;
 
-	var date = new Date(2018, 1, 1, 12, 0, 0);
+	var date = new Date(2018, 1, 1, 0, 0, offset);
 
 	function generateTLELine1() {
 		return '1'+' '+ //line number
 				'99999'+'U'+' '+ //satellite number and classification
-				'18'+'001'+'A  '+' '+ //launch year, number, and piece
-				'00'+'001.00000000'+' '+ //epoch year and day
-				'−.00002182'+' '+ //first time derivate of mean motion / 2 (zero here)
-				' 00000-0'+' '+ //second time derivative of mean motion / 6 (zero here)
-				'-11606-4'+' '+ //drag term (zero here)
+				'00'+'000'+'A  '+' '+ //launch year, number, and piece
+				'00'+'000.00000000'+' '+ //epoch year and day
+				'0000000000'+' '+ //first time derivate of mean motion / 2
+				'00000000'+' '+ //second time derivative of mean motion / 6
+				'00000000'+' '+ //drag term
 				'0'+' '+
-				'001'+' '+ //element set number
+				'000'+' '+ //element set number
 				'0'; //should be checksum but we don't need to have one	
 	};
 
@@ -47,9 +47,9 @@ var Satellite = function(params) {
 			'00.0000',
 			'000.0000',
 			'0000000',
-			precise(periapsis, 7)+'',//'130.5360',
 			'000.0000',
-			precise(revPerDay, 10)+''
+			'000.0000',
+			'15.50000000'
 	);
 
     var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
@@ -92,8 +92,8 @@ var Satellite = function(params) {
 	this.placemark.attributes = placemarkAttributes;
 	this.placemark.highlightAttributes = highlightAttributes;
 
-	this.update = function(newDate) {
-		date = newDate;
+	this.update = function(deltaTimeSeconds) {
+		date.setSeconds(date.getSeconds() + deltaTimeSeconds);
 
 		position = getPosition(date);
 		this.placemark.position.latitude = position.latitude;
