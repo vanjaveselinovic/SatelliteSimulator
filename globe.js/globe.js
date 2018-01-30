@@ -134,14 +134,16 @@ var Globe = function(params) {
 	//this.wwd.addLayer(this.ringLayer);
 	//this.wwd.addLayer(placemarkLayer);
 
-	this.rings.push(new Ring({
-		inclination: '51.6416',
-		ascendingNode: '247.4627',
-		numSatellites: this.numSatellitesPerRing,
-		placemarkAttributes: placemarkAttributes,
-		highlightAttributes: highlightAttributes,
-		revPerDay: SECONDS_PER_DAY / this.orbitalPeriod
-	}));
+	for (var i = 0; i < this.numRings; i++) {
+		this.rings.push(new Ring({
+			inclination: 90,
+			longitude: -180 + i*(180/this.numRings),
+			numSatellites: this.numSatellitesPerRing,
+			placemarkAttributes: placemarkAttributes,
+			highlightAttributes: highlightAttributes,
+			orbitalPeriod: this.orbitalPeriod
+		}));
+	}
 
 	for (var i = 0; i < this.rings.length; i++) {
 		for (var j = 0; j < this.rings[i].satellites.length; j++) {

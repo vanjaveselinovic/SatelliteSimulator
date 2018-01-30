@@ -2,22 +2,38 @@ var Ring = function(params) {
 	if (params === undefined) params = {};
 
 	var inclination = params.inclination;
-	var ascendingNode = params.ascendingNode;
+	var longitude = params.longitude;
 	var numSatellites = params.numSatellites;
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
-	var revPerDay = params.revPerDay;
+	var orbitalPeriod = params.orbitalPeriod;
+
+	const SECONDS_PER_DAY = 86400;
+	var launchOffset = 278*60 / numSatellites / SECONDS_PER_DAY;
 
 	this.satellites = [];
 	for (var i = 0; i < numSatellites; i++) {
 		this.satellites.push(new Satellite({
 			inclination: inclination,
-			ascendingNode: ascendingNode,
-			relativeProcession: 0,
+			longitude: longitude,
 			placemarkAttributes: placemarkAttributes,
 			highlightAttributes: highlightAttributes,
-			offset: i * 16*60*60/numSatellites,
-			revPerDay: revPerDay
+			offset: i * launchOffset,
+			revPerDay: SECONDS_PER_DAY / orbitalPeriod
 		}));
 	}
 };
+
+/*
+90 240
+91 249
+92 257
+93 263
+94 270
+95 278
+96 287
+97 296
+98 204
+99 315
+100 326
+*/

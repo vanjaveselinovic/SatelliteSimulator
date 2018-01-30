@@ -2,7 +2,7 @@ var Satellite = function(params) {
 	if (params === undefined) params = {};
 
 	var inclination = params.inclination;
-	var ascendingNode = params.longitude;
+	var longitudeOffset = params.longitude;
 
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
@@ -10,13 +10,19 @@ var Satellite = function(params) {
 	var offset = params.offset;
 	var revPerDay = params.revPerDay;
 
-	var date = new Date(2018, 1, 1, 0, 0, offset);
+	var date = new Date(2018, 1, 1, 0, 0, 0);
+
+	var epoch = '00'+precise(offset, 5);
+
+	for (var j = epoch.length; j < 12; j++) {
+		epoch += '0';
+	}
 
 	function generateTLELine1() {
 		return '1'+' '+ //line number
 				'99999'+'U'+' '+ //satellite number and classification
 				'00'+'000'+'A  '+' '+ //launch year, number, and piece
-				'00'+'000.00000000'+' '+ //epoch year and day
+				'00'+epoch+' '+ //epoch year and day
 				'0000000000'+' '+ //first time derivate of mean motion / 2
 				'00000000'+' '+ //second time derivative of mean motion / 6
 				'00000000'+' '+ //drag term
@@ -44,12 +50,12 @@ var Satellite = function(params) {
 
 	var tleLine1 = generateTLELine1();
    	var tleLine2 = generateTLELine2(
-			'00.0000',
+			precise(inclination, 6),
 			'000.0000',
 			'0000000',
 			'000.0000',
 			'000.0000',
-			'15.50000000'
+			precise(revPerDay, 10)
 	);
 
     var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
@@ -72,7 +78,7 @@ var Satellite = function(params) {
 	    if (lonRad < -1*Math.PI) lonRad += 2*Math.PI;
 
 	    return {
-	    	longitude: satellite.degreesLong(lonRad),
+	    	longitude: satellite.degreesLong(lonRad) + longitudeOffset,
 	    	latitude: satellite.degreesLat(latRad),
 	    	altitude: height*1000 - EARTH_RADIUS
 	    };
