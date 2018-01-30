@@ -111,7 +111,7 @@ $(document).ready(function () {
 	$('#input-ts').on('input', function() {
 		timeScaleInput = $('#input-ts').val();
 
-		if (!isNaN(timeScaleInput) && timeScaleInput > 0) {
+		if (!isNaN(timeScaleInput) && timeScaleInput > 0 && timeScaleInput < 1000000) {
 			$('#input-ts').removeClass('invalid-input');
 			timeScale = $('#input-ts').val();
 		} else {

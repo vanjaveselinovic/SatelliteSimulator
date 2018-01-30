@@ -155,7 +155,7 @@ var Globe = function(params) {
 
 	var highlightController = new WorldWind.HighlightController(this.wwd);
 
-	var date = new Date(2018, 1, 1, 12, 0, 0);
+	var date = new Date();
 
 	var i, j;
 
