@@ -151,6 +151,11 @@ button {
 
 	.section.fill {
 		flex: 1;
+		overflow: auto;
+	}
+
+	.section.fill::-webkit-scrollbar { 
+		display: none; 
 	}
 
 	.section.title {
@@ -236,6 +241,40 @@ button {
 		.menu-item-label {
 			flex: 1;
 		}
+
+.preset:hover {
+	opacity: 0.8;
+}
+
+	.preset .icon {
+		visibility: hidden;
+	}
+
+	.preset.active {
+		color: hsl(208, 100%, 55%);
+	}
+
+	.preset.active .icon {
+		visibility: visible;
+	}
+
+.apply-link {
+	text-align: right;
+	color: hsl(208, 100%, 55%);
+	cursor: default;
+}
+
+	.apply-link.disabled {
+		opacity: 0.4;
+	}
+
+	.apply-link:hover {
+		color: white;
+	}
+
+	.apply-link.disabled:hover {
+		color: hsl(208, 100%, 55%);
+	}
 
 /* ---------- MAIN ---------- */
 

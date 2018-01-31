@@ -49,17 +49,23 @@
 				</div>
 			</div>
 			<div class="section fill page active" id="page-1" data-page-number="1">
-				<div class="section card">
-					<div class="section subtitle">
-						Constellation configuration
-					</div>
-					<div class="section fill">
+				<div class="section subtitle">
+					Constellation configuration
+				</div>
+				<div class="section">
+					<span class="constellation-info">
+						Preset: Iridium-like
+					</span>
+				</div>
+				<div class="section fill" id="elements">
+					<!--
+					<div class="section card">
 						<div class="input-with-labels">
 							<div class="iwl-section label-before">
 								Num. rings
 							</div>
 							<div class="iwl-section input">
-								<input type="text" id="input-nr" value="10" autocomplete="off" class="input-numeric">
+								<input type="text" id="" value="5" autocomplete="off" class="input-numeric input-nr">
 							</div>
 						</div>
 						<div class="input-with-labels">
@@ -67,15 +73,27 @@
 								Num. sat per ring
 							</div>
 							<div class="iwl-section input">
-								<input type="text" id="input-nspr" value="10" autocomplete="off" class="input-numeric">
+								<input type="text" id="" value="10" autocomplete="off" class="input-numeric input-nspr">
 							</div>
 						</div>
+						<div class="input-with-labels">
+							<div class="iwl-section label-before">
+								Inclination
+							</div>
+							<div class="iwl-section input">
+								<input type="text" id="" value="90" autocomplete="off" class="input-numeric input-inc">
+							</div>
+							<div class="iwl-section label-after">
+								deg
+							</div>
+						</div>
+						<!--
 						<div class="input-with-labels">
 							<div class="iwl-section label-before">
 								Altitude
 							</div>
 							<div class="iwl-section input">
-								<input type="text" id="input-alt" value="1000000" autocomplete="off" class="input-numeric">
+								<input type="text" id="" value="1000000" autocomplete="off" class="input-numeric input-alt">
 							</div>
 							<div class="iwl-section label-after">
 								m
@@ -86,18 +104,27 @@
 								Orbital period
 							</div>
 							<div class="iwl-section input">
-								<input type="text" id="input-per" value="95" autocomplete="off" class="input-numeric">
+								<input type="text" id="" value="92" autocomplete="off" class="input-numeric input-per">
 							</div>
 							<div class="iwl-section label-after">
 								min
 							</div>
 						</div>
-					</div>
+					- ->
+					</div>-->
 				</div>
 			</div>
 			<div class="section fill page" id="page-2" data-page-number="2">
 				<div class="section subtitle">
-					Configurations
+					Presets
+				</div>
+				<div class="section card preset active" id="iridium">
+					<i class="fas fa-check icon"></i>
+					<span class="name"></span>
+				</div>
+				<div class="section card preset" id="telesat">
+					<i class="fas fa-check icon"></i>
+					<span class="name"></span>
 				</div>
 			</div>
 			<div class="section subtitle">
