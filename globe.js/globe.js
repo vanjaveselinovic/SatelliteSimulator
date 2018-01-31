@@ -43,14 +43,13 @@ var Globe = function(params) {
 	ringAttributes[1] = new WorldWind.ShapeAttributes(ringAttributes[0]);
 	ringAttributes[1].outlineColor = blue;
 
-	this.ringLayer = new WorldWind.RenderableLayer();
+	var ringLayer = new WorldWind.RenderableLayer("Rings");
 
 	/* satellites */
 
 	var placemarkAttributes = new WorldWind.PlacemarkAttributes(null),
 	    highlightAttributes,
-	    placemarkLayer = new WorldWind.RenderableLayer("Placemarks"),
-	    testLayer = new WorldWind.RenderableLayer("Test"),
+	    satelliteLayer = new WorldWind.RenderableLayer("Satellites"),
 	    altitude = 1000000;
 
 	const MIN_LATITUDE = -90,
@@ -83,8 +82,6 @@ var Globe = function(params) {
 
 	this.rings = [];
 	var currRing;
-
-	/* adding */
 
 	this.configure = function() {
 		/*
@@ -139,6 +136,7 @@ var Globe = function(params) {
 			inclination: 90,
 			longitude: -180 + i*(180/this.numRings),
 			numSatellites: this.numSatellitesPerRing,
+			ringAttributes: ringAttributes[0],
 			placemarkAttributes: placemarkAttributes,
 			highlightAttributes: highlightAttributes,
 			orbitalPeriod: this.orbitalPeriod
@@ -146,12 +144,16 @@ var Globe = function(params) {
 	}
 
 	for (var i = 0; i < this.rings.length; i++) {
+		ringLayer.addRenderable(this.rings[i].path);
 		for (var j = 0; j < this.rings[i].satellites.length; j++) {
-			testLayer.addRenderable(this.rings[i].satellites[j].placemark);
+			satelliteLayer.addRenderable(this.rings[i].satellites[j].placemark);
 		}
 	}
 
-	this.wwd.addLayer(testLayer);
+	this.wwd.addLayer(ringLayer);
+	this.wwd.addLayer(satelliteLayer);
+
+	console.log(ringLayer);
 
 	var highlightController = new WorldWind.HighlightController(this.wwd);
 
@@ -164,6 +166,7 @@ var Globe = function(params) {
 			for (j = 0; j < this.rings[i].satellites.length; j++) {
 				this.rings[i].satellites[j].update(deltaTimeSeconds);
 			}
+			this.rings[i].update();
 		}
 	}
 }

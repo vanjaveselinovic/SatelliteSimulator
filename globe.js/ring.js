@@ -4,12 +4,15 @@ var Ring = function(params) {
 	var inclination = params.inclination;
 	var longitude = params.longitude;
 	var numSatellites = params.numSatellites;
+	var ringAttributes = params.ringAttributes;
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
 	var orbitalPeriod = params.orbitalPeriod;
 
 	const SECONDS_PER_DAY = 86400;
 	var launchOffset = 278*60 / numSatellites / SECONDS_PER_DAY;
+
+	var pathPositions = []
 
 	this.satellites = [];
 	for (var i = 0; i < numSatellites; i++) {
@@ -21,7 +24,19 @@ var Ring = function(params) {
 			offset: i * launchOffset,
 			revPerDay: SECONDS_PER_DAY / orbitalPeriod
 		}));
+		pathPositions.push(this.satellites[this.satellites.length - 1].placemark.position);
 	}
+
+	this.path = new WorldWind.Path(pathPositions, ringAttributes);
+
+	var i = 0;
+
+	this.update = function() {
+		for (i = 0; i < this.satellites.length; i++) {
+			pathPositions[i] = this.satellites[i].placemark.position;
+		}
+		this.path.positions = pathPositions;
+	};
 };
 
 /*
