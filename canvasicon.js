@@ -15,15 +15,15 @@ function satelliteIcon(params) {
 
 		ctx2d.fillRect(0, size/3, size, size/3);
 
-		ctx2d.fillRect(size/3, 0, size/3, size);
+		ctx2d.fillRect(size/3, 0, size/3, size-line*3);
 
 		ctx2d.beginPath();
-		ctx2d.ellipse(size/2, line*2, size/6+line, size/6+line, Math.PI/2, 0, 2*Math.PI);
+		ctx2d.ellipse(size/2, line*4, size/8+line, size/8+line, Math.PI/2, 0, 2*Math.PI);
 		ctx2d.fill();
 
-		ctx2d.clearRect(0, 0, size, line);
+		ctx2d.clearRect(0, 0, size, line*3);
 
-		ctx2d.fillRect(size/3+line, 0, line*3, line*3);
+		ctx2d.fillRect(size/3+line, line*2, line*3, line*3);
 	}
 
 	var canvasMain = document.createElement("canvas");
@@ -32,24 +32,28 @@ function satelliteIcon(params) {
 	canvasMain.height = size;
 
 	ctx2d.fillStyle = "rgb(0, 128, 200)";
-
 	ctx2d.fillRect(line, size/3+line, size-line*2, size/3-line*2);
 
+	ctx2d.fillStyle = "rgb(0, 64, 100)";
+	ctx2d.fillRect(line*3, size/3+line, line, size/3-line*2);
+	ctx2d.fillRect(line*11, size/3+line, line, size/3-line*2);
+
+	ctx2d.fillStyle = "rgb(160, 160, 160)";
+	ctx2d.fillRect(size/3+line, line*4, size/3-line*2, size-line*8);
+
 	ctx2d.fillStyle = "rgb(200, 200, 200)";
-
-	ctx2d.fillRect(size/3+line, line*4, size/3-line*2, size-line*6);
-
 	ctx2d.beginPath();
-	ctx2d.ellipse(size/2, line*2, size/6, size/6, Math.PI/2, 0, 2*Math.PI);
+	ctx2d.ellipse(size/2, line*4, size/8, size/8, Math.PI/2, 0, 2*Math.PI);
 	ctx2d.fill();
 
 	ctx2d.fillStyle = "rgb(128, 128, 128)";
+	ctx2d.fillRect(size/3+line, size-line*7, size/3-line*2, line*2);
 
-	ctx2d.fillRect(size/3+line, size-line*2, size/3-line*2, line);
+	ctx2d.clearRect(0, 0, size, line*4);
 
-	ctx2d.clearRect(0, 0, size, line*2);
-
-	ctx2d.fillRect(size/3+line*2, line, line, line);
+	ctx2d.fillStyle = "rgb(150, 128, 0)";
+	ctx2d.fillRect(size/3+line*2, line*3, line, line);
+	ctx2d.fillRect(size/3+line, size-line*8, size/3-line*2, line*2);
 
 	var canvasComposite = document.createElement("canvas");
 	ctx2d = canvasComposite.getContext("2d");
