@@ -23,11 +23,11 @@ public class Satellite {
 	private Node node;
 	private RoutingTable table;
 	private Propagator orbit;
-	
+
 	public Satellite(Node node, Propagator orbit) {
 		this.node = node;
 		table = node.getIPHandler().getRoutingTable();
 		this.orbit = orbit;
 	}
-	
+
 }
