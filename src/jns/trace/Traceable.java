@@ -5,27 +5,20 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 
-public abstract class Traceable
+public interface Traceable
 {
 
     /**
      List of Trace objects that are listening to us.
      */
-    Vector m_traces = null;
+    public Vector m_traces = new Vector();
 
-    public Traceable()
-    {
-        m_traces = new Vector();
-    }
-
-    public void attach(Trace trace)
+    public default void attach(Trace trace)
     {
         m_traces.addElement(trace);
     }
 
-    public void detach(Trace trace)
-    {
-    }
+    public default void detach(Trace trace) {};
 
 
     /**
@@ -33,22 +26,13 @@ public abstract class Traceable
      lots of if/else code by making the decision if anyone is listening
      in here.
      */
-    protected void sendEvent(Event event)
+    public default void sendEvent(Event event)
     {
         Enumeration e = m_traces.elements();
         while(e.hasMoreElements())
         {
             Trace trace = (Trace) e.nextElement();
-
-            try
-            {
-                trace.handleEvent(event);
-            }
-            catch(IOException xept)
-            {
-                System.out.println("ERROR: An I/O exception occured while writing" +
-                                   " an event!");
-            }
+            trace.handleEvent(event);
         }
 
 

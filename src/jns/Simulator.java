@@ -159,15 +159,8 @@ public class Simulator implements Runnable
     public void run()
     {
 
-        try
-        {
-            m_trace.writePreamble();
+        m_trace.writePreamble();
 
-        }
-        catch(IOException e)
-        {
-            Simulator.error("Caught IOException writing preamble: " + e.getMessage());
-        }
         while(m_commands.size() > 0 || !m_finished)
         {
 
@@ -199,16 +192,9 @@ public class Simulator implements Runnable
             current_command.execute();
 
         }
-        try
-        {
-            m_trace.writePostamble();
-        }
-        catch(IOException e)
-        {
-            Simulator.error("Caught IOException writing postamble: " + e.getMessage());
-        }
+        m_trace.writePostamble();
         Simulator.verbose("The simulator has stopped, and has successfully written a JVS file");
-        System.exit(0);
+        //System.exit(0); //I want to be able to run more than one of these
     }
 
 

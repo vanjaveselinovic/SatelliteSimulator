@@ -20,14 +20,14 @@ public class SimplexLink extends Link
     private Interface m_in = null,m_out = null;
 
     // The bandwidth of the link in bps
-    private int m_bandwidth;
+    public int m_bandwidth;
 
     // The propagation delay of the link in seconds
-    private double m_delay;
+    public double m_delay;
 
     // Error rate (between 0-1, where 1 is 100% error). Probability that a
     // packet is corrupted.
-    private double m_error;
+    public double m_error;
 
     // m_cansend is false if someone is busy putting bits onto the wire.
     // The link will normally block (packet size/bandwidth) seconds if someone

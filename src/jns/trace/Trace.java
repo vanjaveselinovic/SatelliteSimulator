@@ -1,6 +1,5 @@
 package jns.trace;
 
-import java.io.IOException;
 
 /**
  Trace defines an abstract class that can be extended to implement a class
@@ -40,7 +39,7 @@ public abstract class Trace
      Write the leading section of the output that should appear before the
      actual trace data. Very useful if a given file-format has to be used.
      */
-    public abstract void writePreamble() throws IOException;
+    public abstract void writePreamble();
 
 
     /**
@@ -48,11 +47,11 @@ public abstract class Trace
      entirely on the subclass. It could be added to a statistic our just
      be displayed on the screen.
      */
-    public abstract void handleEvent(Event e) throws IOException;
+    public abstract void handleEvent(Event e);
 
     /**
      Write any trailing output that has to be written. Useful if a given
      file-format has to be used.
      */
-    public abstract void writePostamble() throws IOException;
+    public abstract void writePostamble();
 }

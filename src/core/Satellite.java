@@ -11,7 +11,7 @@ import jns.util.RoutingTable;
  * 
  * on simulation start, connect every node to every other node,
  * Model in our own code what edges work and what edges don't
- * Every time we need to, 'manually' reach into every node's routing table and setting it up propperly.
+ * Every time we need to, 'manually' reach into every node's routing table and setting it up.
  * 
  * 
  * to decide when to recalculate, look at 'public class JavisTrace extends Trace'
@@ -20,15 +20,14 @@ import jns.util.RoutingTable;
  */
 
 public class Satellite {
-	private Node n;
-	private Propagator o;
-	private IPHandler h;
-	private RoutingTable r;
-	public Satellite(jns.element.Node node, org.orekit.propagation.Propagator orbit) {
-		n = node;
-		o = orbit;
-		h = n.getIPHandler();
-		r = h.getRoutingTable();
+	private Node node;
+	private RoutingTable table;
+	private Propagator orbit;
+	
+	public Satellite(Node node, Propagator orbit) {
+		this.node = node;
+		table = node.getIPHandler().getRoutingTable();
+		this.orbit = orbit;
 	}
 	
 }

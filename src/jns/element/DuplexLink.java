@@ -9,7 +9,7 @@ import jns.trace.Trace;
 public class DuplexLink extends Link
 {
 
-    private SimplexLink m_link1,m_link2;
+    public SimplexLink m_link1,m_link2;
 
     public DuplexLink(int bandwidth, double delay)
     {

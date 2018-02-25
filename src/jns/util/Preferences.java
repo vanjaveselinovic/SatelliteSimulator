@@ -32,5 +32,5 @@ public class Preferences
     // otherwise they all get thrown away
     public static final double ip_fragmentation_timeout = 1.0;
 
-    public static final boolean verbose = false;
+    public static final boolean verbose = true;
 }

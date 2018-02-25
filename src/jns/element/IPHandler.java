@@ -164,10 +164,10 @@ public class IPHandler extends Element implements CL_Agent
             }
 
             boolean canSend = true;
-            for(int j = 0; j < targets.size(); j++)
+            for(Interface target : (Vector<Interface>)targets)
             {
                 //check that we canSend() on all the interfaces..
-                 if(!((Interface)targets.get(j)).canSend(curpacket.destination, curpacket.length))
+                 if(!target.canSend(curpacket.destination, curpacket.length))
                     {
                         m_packets_send.pushFront(curpacket);
                         canSend = false;

@@ -7,7 +7,7 @@ import jns.trace.Traceable;
  Element is the abstract superclass of all the static elements in the
  simulator, such as Nodes, Links, etc.
  */
-public abstract class Element extends Traceable
+public abstract class Element implements Traceable
 {
 
     /**
