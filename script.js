@@ -72,7 +72,7 @@ $(document).ready(function () {
 
 	/* live update */
 
-	$('.input-numeric').on('keydown', function(e) {
+	$('#input-ts.input-numeric').on('keydown', function(e) {
 		if (!isNaN($(this).val())) {
 			if (e.which === 38)
 				$(this).val(parseInt($(this).val())+1);
@@ -124,6 +124,16 @@ $(document).ready(function () {
 			} else {
 				$(this).addClass('invalid-input');
 			}
+		});
+
+		$('#elements .input-numeric').on('keydown', function(e) {
+			if (!isNaN($(this).val())) {
+				if (e.which === 38)
+					$(this).val(parseInt($(this).val())+1);
+				else if (e.which === 40)
+					$(this).val(parseInt($(this).val())-1);
+			}
+			$(this).trigger('input');
 		});
 	}
 
