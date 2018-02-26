@@ -47,9 +47,11 @@ $(document).ready(function () {
 		globe.applyPreset(preset);
 
 		$('#elements').empty();
+
 		for (var i = 0; i < preset.elements.length; i++) {
 			$('#elements').append(getElementHTML(preset.elements[i], i));
 		}
+
 		registerInputs();
 	};
 
@@ -70,6 +72,16 @@ $(document).ready(function () {
 
 	/* live update */
 
+	$('#input-ts.input-numeric').on('keydown', function(e) {
+		if (!isNaN($(this).val())) {
+			if (e.which === 38)
+				$(this).val(parseInt($(this).val())+1);
+			else if (e.which === 40)
+				$(this).val(parseInt($(this).val())-1);
+		}
+		$(this).trigger('input');
+	});
+
 	var numRingsInput;
 	var numSatellitesPerRingInput;
 	var inclinationInput;
@@ -81,6 +93,7 @@ $(document).ready(function () {
 			if (!isNaN(numRingsInput) && numRingsInput > 0) {
 				$('.input-nr').removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].numRings = numRingsInput;
+				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
 			} else {
 				$(this).addClass('invalid-input');
@@ -93,6 +106,7 @@ $(document).ready(function () {
 			if (!isNaN(numSatellitesPerRingInput) && numSatellitesPerRingInput > 0) {
 				$('.input-nspr').removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].numSatellitesPerRing = numSatellitesPerRingInput;
+				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
 			} else {
 				$(this).addClass('invalid-input');
@@ -105,13 +119,14 @@ $(document).ready(function () {
 			if (!isNaN(inclinationInput) && inclinationInput > 0 && inclinationInput < 360) {
 				$('.input-inc').removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].inclination = inclinationInput;
+				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
 			} else {
 				$(this).addClass('invalid-input');
 			}
 		});
 
-		$('.input-numeric').on('keydown', function(e) {
+		$('#elements .input-numeric').on('keydown', function(e) {
 			if (!isNaN($(this).val())) {
 				if (e.which === 38)
 					$(this).val(parseInt($(this).val())+1);
