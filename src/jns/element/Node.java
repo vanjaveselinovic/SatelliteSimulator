@@ -16,11 +16,11 @@ public class Node extends Element {
 
 	private String m_name;
 	private IPHandler m_iphandler;
-	private int m_number; // Node number (see m_counter)
+	private long m_number; // Node number (see m_counter)
 
 	// Count the number of nodes (used for NAM/Javis output because they don't
 	// understand IP adresses.. so we use numbers).
-	private static int m_counter = 0;
+	private static long m_counter = 1L;
 
 	/**
 	 * Default constructor, sets the name of this node to "Node" and creates a new
@@ -126,7 +126,7 @@ public class Node extends Element {
 	/**
 	 * Return this node's node number.
 	 */
-	public int getNumber() {
+	public long getNumber() {
 		return m_number;
 	}
 
@@ -159,4 +159,16 @@ public class Node extends Element {
 		return m_iphandler;
 	}
 
+	@Override
+	public String dumpJson() {
+		return 
+				"{"
+				+ "\"id\":"+this.id+","
+				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
+				+ "\"node_number\":\""+this.getNumber()+"\","
+				+ "\"ip\":\""+this.getIPHandler().getAddress()+"\","
+				+ "\"iphandler_id\":\""+this.m_iphandler.id+"\","
+				+ "\"name\":\""+this.m_name+"\","
+				+ "}";
+	}
 }

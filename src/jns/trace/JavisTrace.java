@@ -124,4 +124,10 @@ public class JavisTrace extends Trace {
 		}
 	}
 
+	@Override
+	public void attach(Traceable t) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -18,10 +18,8 @@ public abstract class Trace {
 	 * @param t
 	 *            The Traceable object to attach to
 	 */
-	public void attach(Traceable t) {
-		t.attach(this);
-	}
-
+	public abstract void attach(Traceable t);
+	
 	/**
 	 * Detach from a Traceable object. This will forward the call to the detach
 	 * method of the Traceable.

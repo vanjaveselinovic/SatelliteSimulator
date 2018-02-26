@@ -68,9 +68,7 @@ public class Simulator implements Runnable {
 	 *            the element to add
 	 */
 	public void attach(Element element) {
-		Enumeration e = m_elements.elements();
-
-		m_elements.addElement(element);
+		attachWithTrace(element, this.m_trace);
 	}
 
 	/**

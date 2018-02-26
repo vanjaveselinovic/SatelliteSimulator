@@ -71,6 +71,10 @@ public class DuplexLink extends Link {
 	public double getDelay() {
 		return m_link1.getDelay();
 	}
+	
+	public double getError() {
+		return m_link1.getError();
+	}
 
 	public Interface getIncomingInterface() {
 		return m_link1.getIncomingInterface();
@@ -79,5 +83,19 @@ public class DuplexLink extends Link {
 	public Interface getOutgoingInterface() {
 		return m_link1.getOutgoingInterface();
 	}
-
+	
+	@Override
+	public String dumpJson() {
+		
+		return 
+				"{"
+				+ "\"id\":"+this.id+","
+				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
+				+ "\"bandwidth\":\""+this.getBandwidth()+"\","
+				+ "\"delay\":\""+this.getDelay()+"\","
+				+ "\"error\":\""+this.getError()+"\","
+				+ "\"addresses\":\"["+this.getSimplexLink1().m_in.getIPAddr()+","+this.getSimplexLink1().m_out.getIPAddr()+"]\","
+				+ "\"link_ids\":\"["+this.getSimplexLink1().id+","+this.getSimplexLink1().id+"]\","
+				+ "}";
+	}
 }

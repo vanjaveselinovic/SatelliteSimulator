@@ -198,4 +198,17 @@ public class SimplexInterface extends Interface {
 
 	}
 
+	@Override
+	public String dumpJson() {
+		
+		return 
+				"{"
+				+ "\"id\":"+this.id+","
+				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
+				+ "\"node_id\":\""+this.getNode().id+"\","
+				+ "\"link_id\":\""+this.m_link.id+"\","
+				+ "\"is_sender\":\""+(this.m_direction == Interface.SENDER)+"\","
+				+ "\"is_receiver\":\""+(this.m_direction == Interface.RECEIVER)+"\","
+				+ "}";
+	}
 }

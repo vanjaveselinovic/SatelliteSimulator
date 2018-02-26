@@ -102,4 +102,17 @@ public class DuplexInterface extends Interface {
 
 	}
 
+	
+	@Override
+	public String dumpJson() {
+		
+		return 
+				"{"
+				+ "\"id\":"+this.id+","
+				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
+				+ "\"node_id\":\""+this.getNode().id+"\","
+				+ "\"sender_interface_id\":\""+this.m_out.id+"\","
+				+ "\"receiver_interface_id\":\""+this.m_in.id+"\","
+				+ "}";
+	}
 }

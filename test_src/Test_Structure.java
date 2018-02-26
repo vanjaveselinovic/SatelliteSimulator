@@ -5,9 +5,11 @@
 	displays the contents of the simulator.
 */
 
+import core.VerboseTrace;
 import jns.Simulator;
 
 import jns.element.*;
+import jns.trace.Trace;
 import jns.util.*;
 
 public class Test_Structure {
@@ -18,7 +20,8 @@ public class Test_Structure {
     // Get a simulator
 
     Simulator sim=Simulator.getInstance();
-
+    Trace trace=new VerboseTrace();
+    sim.setTrace(trace);
       
     // Set up three nodes
 

@@ -13,6 +13,8 @@ import jns.command.*;
 
 import java.io.IOException;
 
+import core.VerboseTrace;
+
 
 public class Test_LinkDown {
 
@@ -24,16 +26,10 @@ public class Test_LinkDown {
 
     // Create a trace object
 
-    Trace trace=null;
-    try {
-      trace=new JavisTrace("test_linkdown.jvs");
-    }
-    catch (IOException e) {
-      System.out.println("Could not create test_linkdown.jvs!");
-      System.exit(1);
-    }
-
+    Trace trace=new VerboseTrace();
       
+    sim.setTrace(trace);
+    
     // Set up three nodes
 
     Node src=new Node("Source node");
@@ -111,11 +107,11 @@ public class Test_LinkDown {
 
     // Create a trace object and start simulating
 
-	  trace.writePreamble();
+	  //trace.writePreamble();
 	
 	  sim.run();
 	
-	  trace.writePostamble();
+	  //trace.writePostamble();
 
   }
 

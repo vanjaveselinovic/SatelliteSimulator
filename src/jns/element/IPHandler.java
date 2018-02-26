@@ -450,6 +450,17 @@ public class IPHandler extends Element implements CL_Agent {
 	public Enumeration enumerateInterfaces() {
 		return m_interfaces.elements();
 	}
+	
+	@Override
+	public String dumpJson() {
+		
+		return 
+				"{"
+				+ "\"id\":"+this.id+","
+				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
+				+ "\"ip\":\""+this.getAddress()+"\","
+				+ "}";
+	}
 
 }
 
@@ -549,5 +560,6 @@ class Fragment {
 
 		return packet;
 	}
-
+	
+	
 }

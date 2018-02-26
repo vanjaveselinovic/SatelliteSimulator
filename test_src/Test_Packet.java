@@ -13,6 +13,8 @@ import jns.command.*;
 
 import java.io.IOException;
 
+import core.VerboseTrace;
+
 
 
 
@@ -26,16 +28,8 @@ public class Test_Packet {
     // Get a simulator
 
     Simulator sim=Simulator.getInstance();
-    // Create a trace object
-
-    Trace trace=null;
-    try {
-      trace=new JavisTrace("test_packet.jvs");
-    }
-    catch (IOException e) {
-      System.out.println("Could not create test_packet.jvs!");
-      System.exit(1);
-    }
+    Trace trace=new VerboseTrace();
+    sim.setTrace(trace);
 
       
     // Set up three nodes

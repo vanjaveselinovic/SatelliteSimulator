@@ -40,7 +40,7 @@ public abstract class JavisHandler {
 	 *            the IP address to translate
 	 * @return a node number
 	 */
-	protected static int translateIP(IPAddr addr) {
+	protected static long translateIP(IPAddr addr) {
 		for (Enumeration e = Simulator.getInstance().enumerateElements(); e.hasMoreElements();) {
 			Object curelement = e.nextElement();
 			if (curelement instanceof Node) {
@@ -49,7 +49,7 @@ public abstract class JavisHandler {
 					return curnode.getNumber();
 			}
 		}
-		return 0;
+		return 0L;
 	}
 
 }

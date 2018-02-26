@@ -6,9 +6,8 @@ import jns.element.DuplexLink;
 import jns.trace.Event;
 import jns.trace.EventParameter;
 import jns.trace.Trace;
-import jns.trace.Traceable;
 
-public class VariableDuplexLink extends DuplexLink implements Traceable {
+public class VariableDuplexLink extends DuplexLink{
 
 	private Trace trace;
 
@@ -51,4 +50,15 @@ public class VariableDuplexLink extends DuplexLink implements Traceable {
 		m_link2.m_error = error;
 	}
 
+	@Override
+	public String dumpJson() {
+		
+		return 
+				"{"
+				+ "\"id\":"+this.id+","
+				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
+				+ "\"addresses\":\"["+this.getSimplexLink1().m_in.getIPAddr()+","+this.getSimplexLink1().m_out.getIPAddr()+"]\","
+				+ "\"link_ids\":\"["+this.getSimplexLink1().id+","+this.getSimplexLink1().id+"]\","
+				+ "}";
+	}
 }

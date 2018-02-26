@@ -1,5 +1,7 @@
 package jns.element;
 
+import java.util.StringJoiner;
+
 import jns.Simulator;
 import jns.agent.Agent;
 import jns.command.*;
@@ -14,7 +16,7 @@ public class SimplexLink extends Link {
 	// Incoming and outgoing interface. That is m_in is a RECEIVER and m_out
 	// is a SENDER interface, i.e. outgoint means 'out of the node' not
 	// 'out of the link'
-	private Interface m_in = null, m_out = null;
+	public Interface m_in = null, m_out = null;
 
 	// The bandwidth of the link in bps
 	public int m_bandwidth;
@@ -194,6 +196,10 @@ public class SimplexLink extends Link {
 		return m_delay;
 	}
 
+	public double getError() {
+		return m_error;
+	}
+
 	public Interface getIncomingInterface() {
 		return m_in;
 	}
@@ -256,4 +262,21 @@ public class SimplexLink extends Link {
 		double totaltime = m_delay + transmittime;
 		Simulator.getInstance().schedule(new ElementUpdateCommand(this, Simulator.getInstance().getTime() + totaltime));
 	}
+
+	@Override
+	public String dumpJson() {
+		
+		return 
+				"{"
+				+ "\"id\":"+this.id+","
+				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
+				+ "\"bandwidth\":\""+this.getBandwidth()+"\","
+				+ "\"delay\":\""+this.getDelay()+"\","
+				+ "\"error\":\""+this.getError()+"\","
+				+ "\"source\":\""+this.m_out.getIPAddr()+"\","
+				+ "\"destination\":\""+this.m_in.getIPAddr()+"\","
+				+ "}";
+	}
+	
+	
 }
