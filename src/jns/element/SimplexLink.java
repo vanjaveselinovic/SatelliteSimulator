@@ -1,10 +1,7 @@
 package jns.element;
 
-import java.util.StringJoiner;
-
 import jns.Simulator;
 import jns.agent.Agent;
-import jns.command.*;
 import jns.command.Command;
 import jns.command.ElementUpdateCommand;
 import jns.trace.Event;
@@ -28,6 +25,7 @@ public class SimplexLink extends Link {
 	// packet is corrupted.
 	public double m_error;
 
+	
 	// m_cansend is false if someone is busy putting bits onto the wire.
 	// The link will normally block (packet size/bandwidth) seconds if someone
 	// puts a packet on it
@@ -88,9 +86,9 @@ public class SimplexLink extends Link {
 		IPPacket packet = (IPPacket) m_packets.peekBack();
 		m_packets.popBack();
 
-		// Play the lottery with the packet's integrity
-
-		if (Math.random() < m_error)
+		
+		//(1-bitErrorRate)^messageLengthInBits
+		if (Math.pow( 1.0d-m_error, ((double)packet.length)*8.0d) < Math.random());
 			packet.crc = false;
 
 		// Put packet in the arrived packets queue and indicate to interface

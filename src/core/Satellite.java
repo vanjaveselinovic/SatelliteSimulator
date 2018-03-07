@@ -1,6 +1,11 @@
 package core;
 
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
+import org.orekit.bodies.GeodeticPoint;
+import org.orekit.orbits.CartesianOrbit;
+import org.orekit.orbits.Orbit;
 import org.orekit.propagation.Propagator;
+import org.orekit.time.AbsoluteDate;
 
 import jns.element.IPHandler;
 import jns.element.Node;
@@ -19,15 +24,40 @@ import jns.util.RoutingTable;
  * 
  */
 
-public class Satellite {
-	private Node node;
-	private RoutingTable table;
-	private Propagator orbit;
+public class Satellite extends Station{
+	Orbit lastOrbit;
+	private Propagator orbitPropagator;
+	
+	public Satellite(Node node, Propagator orbitPropagator, Orbit orbit) {
+		super.node = node;
+		super.table = node.getIPHandler().getRoutingTable();
+		this.orbitPropagator = orbitPropagator;
+		this.lastOrbit = orbit;
+	}
 
-	public Satellite(Node node, Propagator orbit) {
-		this.node = node;
-		table = node.getIPHandler().getRoutingTable();
-		this.orbit = orbit;
+	@Override
+	public Vector3D getSpacePositionVector(AbsoluteDate date) {
+		return lastOrbit.getPVCoordinates().getPosition();
+	}
+
+	@Override
+	public Vector3D getSpaceVelocityVector(AbsoluteDate date) {
+		return lastOrbit.getPVCoordinates().getVelocity();
+	}
+
+	@Override
+	public Vector3D getGroundPositionVector(AbsoluteDate date) {
+		return Earth.toGroundPosition(this.getSpacePositionVector(date), date);
+	}
+
+	@Override
+	public GeodeticPoint getGroundPoint(AbsoluteDate date) {
+		return Earth.toGroundPoint(this.getGroundPositionVector(date));
+	}
+
+	@Override
+	public boolean isGroundStation() {
+		return false;
 	}
 
 }

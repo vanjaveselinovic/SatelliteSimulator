@@ -85,15 +85,10 @@ import org.orekit.utils.TimeStampedPVCoordinates;
 
 public class SatTest {
 
-	static {
-		System.setProperty("orekit.data.path", "orekit-data.zip");
-	}
 
-	private static final double EARTH_MU = 3.986004415e+14;// Earth's mu value
-	static private Frame earthFrame = FramesFactory.getGCRF();
+	
 	AbsoluteDate initialDate;
-	static private BodyShape earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-			Constants.WGS84_EARTH_FLATTENING, earthFrame);
+	
 
 	// private int rings;
 	// private int satsPerRing;
@@ -105,16 +100,16 @@ public class SatTest {
 
 	public SatTest(int rings, int satsPerRing, int radius, double inclination) throws OrekitException {
 
-		TimeScale utc = TimeScalesFactory.getUTC();
-		initialDate = new AbsoluteDate(2004, 01, 01, 23, 30, 00.000, utc);
+		
+		
+		//initialDate = new AbsoluteDate(2004, 01, 01, 23, 30, 00.000, utc);
 
 		for (int ring = 0; ring < rings; ring++) {
 			for (int sat = 0; sat < satsPerRing; sat++) {
 				double raan = Math.PI * ((double) ring) / ((double) rings);
 				double a = Math.PI * 2.0 * ((double) sat) / ((double) satsPerRing);
 
-				Orbit initialOrbit = new KeplerianOrbit(radius, 0, inclination, 0, raan, a, PositionAngle.TRUE,
-						earthFrame, initialDate, EARTH_MU);
+				Orbit initialOrbit = new KeplerianOrbit(radius, 0, inclination, 0, raan, a, PositionAngle.TRUE,	Earth.spaceFrame, initialDate, Earth.mu);
 				KeplerianPropagator kepler = new KeplerianPropagator(initialOrbit);
 				kepler.setSlaveMode();
 				orbits.put(kepler, initialOrbit);
@@ -167,6 +162,11 @@ public class SatTest {
 	}
 
 	public static void main(String args[]) throws OrekitException {
+		
+		//Earth.setStartDate(2018, 1, 1, 1, 1);
+		
+		
+		
 		SatTest sim = new SatTest(1, 1, 8000000, Math.toRadians(88));
 
 		double duration = 86400.;
@@ -184,6 +184,7 @@ public class SatTest {
 
 			}
 		}
+		
 
 	}
 }

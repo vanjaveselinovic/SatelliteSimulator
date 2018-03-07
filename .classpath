@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="lib/hipparchus-samples-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/hipparchus-stat-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jns-1.7.zip"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

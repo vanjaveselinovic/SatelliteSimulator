@@ -213,7 +213,7 @@ public class IPHandler extends Element implements CL_Agent {
 
 			if (!curpacket.crc) {
 				// TODO: Generate drop packet event ?
-
+				
 				// Get next packet instead
 				continue;
 			}
