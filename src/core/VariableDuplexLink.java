@@ -49,7 +49,7 @@ public class VariableDuplexLink extends DuplexLink{
 		m_link1.m_error = error;
 		m_link2.m_error = error;
 	}
-
+/*
 	@Override
 	public String dumpJson() {
 		
@@ -60,5 +60,5 @@ public class VariableDuplexLink extends DuplexLink{
 				+ "\"addresses\":\"["+this.getSimplexLink1().m_in.getIPAddr()+","+this.getSimplexLink1().m_out.getIPAddr()+"]\","
 				+ "\"link_ids\":\"["+this.getSimplexLink1().id+","+this.getSimplexLink1().id+"]\","
 				+ "}";
-	}
+	}*/
 }

@@ -84,6 +84,7 @@ public class DuplexLink extends Link {
 		return m_link1.getOutgoingInterface();
 	}
 	
+	/*
 	@Override
 	public String dumpJson() {
 		
@@ -97,5 +98,5 @@ public class DuplexLink extends Link {
 				+ "\"addresses\":\"["+this.getSimplexLink1().m_in.getIPAddr()+","+this.getSimplexLink1().m_out.getIPAddr()+"]\","
 				+ "\"link_ids\":\"["+this.getSimplexLink1().id+","+this.getSimplexLink1().id+"]\","
 				+ "}";
-	}
+	}*/
 }

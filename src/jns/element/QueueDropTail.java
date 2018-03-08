@@ -137,7 +137,7 @@ public class QueueDropTail extends Queue {
 	 */
 	public void update() {
 	}
-	
+	/*
 	@Override
 	public String dumpJson() {
 		
@@ -146,5 +146,5 @@ public class QueueDropTail extends Queue {
 				+ "\"id\":"+this.id+","
 				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
 				+ "}";
-	}
+	}*/
 }

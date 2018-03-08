@@ -159,6 +159,7 @@ public class Node extends Element {
 		return m_iphandler;
 	}
 
+	/*
 	@Override
 	public String dumpJson() {
 		return 
@@ -170,5 +171,5 @@ public class Node extends Element {
 				+ "\"iphandler_id\":\""+this.m_iphandler.id+"\","
 				+ "\"name\":\""+this.m_name+"\","
 				+ "}";
-	}
+	}*/
 }

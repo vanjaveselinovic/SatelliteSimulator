@@ -261,6 +261,7 @@ public class SimplexLink extends Link {
 		Simulator.getInstance().schedule(new ElementUpdateCommand(this, Simulator.getInstance().getTime() + totaltime));
 	}
 
+	/*
 	@Override
 	public String dumpJson() {
 		
@@ -274,7 +275,7 @@ public class SimplexLink extends Link {
 				+ "\"source\":\""+this.m_out.getIPAddr()+"\","
 				+ "\"destination\":\""+this.m_in.getIPAddr()+"\","
 				+ "}";
-	}
+	}*/
 	
 	
 }

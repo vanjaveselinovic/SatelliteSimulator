@@ -20,6 +20,11 @@
 	<classpathentry kind="lib" path="lib/hipparchus-samples-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/hipparchus-stat-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jns-1.7.zip"/>
+	<classpathentry kind="lib" path="lib/gson-2.8.2.jar" sourcepath="lib/gson-2.8.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SatelliteSimulator/lib/gson-2.8.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

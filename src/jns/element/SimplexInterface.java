@@ -198,6 +198,7 @@ public class SimplexInterface extends Interface {
 
 	}
 
+/*
 	@Override
 	public String dumpJson() {
 		
@@ -210,5 +211,5 @@ public class SimplexInterface extends Interface {
 				+ "\"is_sender\":\""+(this.m_direction == Interface.SENDER)+"\","
 				+ "\"is_receiver\":\""+(this.m_direction == Interface.RECEIVER)+"\","
 				+ "}";
-	}
+	}*/
 }

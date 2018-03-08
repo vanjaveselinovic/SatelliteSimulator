@@ -43,7 +43,7 @@ public class VerboseTrace extends Trace {
 
 		synchronized(elements){
 			for(Traceable t : elements) {
-				sj.add(t.dumpJson());
+				sj.add(t.toString());//dumpJson());
 			}
 		}
 		return sj.toString();

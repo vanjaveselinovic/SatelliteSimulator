@@ -102,7 +102,7 @@ public class DuplexInterface extends Interface {
 
 	}
 
-	
+	/*
 	@Override
 	public String dumpJson() {
 		
@@ -114,5 +114,5 @@ public class DuplexInterface extends Interface {
 				+ "\"sender_interface_id\":\""+this.m_out.id+"\","
 				+ "\"receiver_interface_id\":\""+this.m_in.id+"\","
 				+ "}";
-	}
+	}*/
 }

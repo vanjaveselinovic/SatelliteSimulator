@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-public abstract class Traceable implements Comparable<Traceable> {
-	private static long traceableIdCounter = 1L;
-	public final long id = traceableIdCounter++;
+public abstract class Traceable {
 	/**
 	 * List of Trace objects that are listening to us.
 	 */
@@ -34,27 +32,6 @@ public abstract class Traceable implements Comparable<Traceable> {
 
 	}
 	
-	public abstract String dumpJson();
 	
-	@Override
-	public final boolean equals(Object o) {
-		if(o == null) {
-			return false;
-		}else if(!(o instanceof Traceable)) {
-			return false;
-		}else {
-			Traceable t = (Traceable)o;
-			return this.id==t.id;
-		}
-	}
 	
-	@Override
-	public final int hashCode() {
-		return Long.valueOf(id).intValue();
-	}
-	
-	@Override
-	public int compareTo(Traceable t) {
-		return Long.compare(this.id, t.id);
-	}
 }

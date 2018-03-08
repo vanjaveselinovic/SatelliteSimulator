@@ -450,7 +450,7 @@ public class IPHandler extends Element implements CL_Agent {
 	public Enumeration enumerateInterfaces() {
 		return m_interfaces.elements();
 	}
-	
+	/*
 	@Override
 	public String dumpJson() {
 		
@@ -460,7 +460,7 @@ public class IPHandler extends Element implements CL_Agent {
 				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
 				+ "\"ip\":\""+this.getAddress()+"\","
 				+ "}";
-	}
+	}*/
 
 }
 
