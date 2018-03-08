@@ -208,12 +208,9 @@ $(document).ready(function () {
 	var ws = new WebService();
 
 	$('#button-run').on('click', function() {
-		ws.request(
-				'http://127.0.0.1:8080/simulator',
-				{
-					dataRate: 1000,
-					packetSize: 2000
-				}
+		ws.postWithData(
+				'http://127.0.0.1:4321/simulator',
+				customPreset
 		);
 	});
 });
