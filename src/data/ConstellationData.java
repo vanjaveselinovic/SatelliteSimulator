@@ -10,11 +10,34 @@ public class ConstellationData {
     double argumentOfPeriapsis;			//{in rad} defines the orientation of the ellipse in the orbital plane, as an angle measured from the ascending node to the periapsis (the closest point the satellite object comes to the primary object around which it orbits)
     double trueAnomaly;					//{in rad} defines the position of the orbiting body along the ellipse at simulation time 0
 
-    int satelitesPerRing;
+    int satellitesPerRing;
     int numberOfRings;
     double offsetBetweenRings;	//0 	satellites of absent rings are right beside one another, 
     							//0.5 	rings are offset by half a satellite gap
     							//-0.5  the same as 0.5, but in the other direction (only effects numbering)
+    
+    public ConstellationData(
+	    		double eccentricity,
+	    		double semimajorAxis,
+	    		double inclination,
+	    		double longitudeOFAscendingNode,
+	    		double argumentOfPeriapsis,
+	    		double trueAnomaly,
+	    		int satellitesPerRing,
+	    		int numberOfRings,
+	    		double offsetBetweenRings
+	    	) {
+    	this.eccentricity = eccentricity;
+    	this.semimajorAxis = semimajorAxis;
+    	this.inclination = inclination;
+    	this.longitudeOfAscendingNode = longitudeOfAscendingNode;
+    	this.argumentOfPeriapsis = argumentOfPeriapsis;
+    	this.trueAnomaly = trueAnomaly;
+    	
+    	this.satellitesPerRing = satellitesPerRing;
+    	this.numberOfRings = numberOfRings;
+    	this.offsetBetweenRings = offsetBetweenRings;
+    }
     
 
 	/*

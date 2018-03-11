@@ -12,6 +12,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import data.ConstellationData;
+import data.GroundStationData;
+import data.SimulationConfigurationData;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,20 +56,54 @@ public class Server {
 				try {
 					JSONObject jsonObject = new JSONObject(jsonString);
 					
-					System.out.println("Name: " + jsonObject.getString("name"));
+					// Constellations
+					
+					JSONArray elements = jsonObject.getJSONArray("elements");
+					
+					ConstellationData constellations[] = new ConstellationData[elements.length()];
+					
+					JSONObject currentElement;
+					
+					for (int i = 0; i < constellations.length; i++) {
+						currentElement = elements.getJSONObject(i);
+						
+						constellations[i] = new ConstellationData(
+									1,
+									currentElement.getDouble("orbitalPeriod"), //TODO: convert period to axis
+									currentElement.getDouble("inclination"),
+									0,
+									0,
+									0,
+									currentElement.getInt("numSatellitesPerRing"),
+									currentElement.getInt("numRings"),
+									0.5
+								);
+					}
+					
+					// Ground stations
+					
+					GroundStationData groundStations[] = new GroundStationData[1];
+					
+					System.out.println("Done taking in configuation data");
+					
+					SimulationConfigurationData simulationConfigurationData =
+							new SimulationConfigurationData(
+										constellations,
+										groundStations
+									);
+					
+					// Run simulation
+					
+					// Manager manager = new Manager(simulationConfigurationData);
+					// manager.run();
+	
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 			}
-			
-			/*
-			 * Run simulation
-			 */
-			
-			// Manager manager = new Manager(simulationConfigurationData);
-			// manager.run();
 			
 			// Response
 			

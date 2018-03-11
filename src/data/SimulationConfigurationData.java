@@ -16,4 +16,12 @@ public class SimulationConfigurationData {
 	
 	double deltaT;//how far apart are the satellite movement time steps?
 	
+	public SimulationConfigurationData(
+				ConstellationData[] constellations,
+				GroundStationData[] groundStations
+			) {
+		this.constellations = constellations;
+		this.groundStations = groundStations;
+	}
+	
 }
