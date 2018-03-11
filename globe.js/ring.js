@@ -1,3 +1,20 @@
+var map = {};
+map['p' + (90 * 60)] = 240;
+map['p' + (91 * 60)] = 249;
+map['p' + (92 * 60)] = 257;
+map['p' + (93 * 60)] = 263;
+map['p' + (94 * 60)] = 270;
+map['p' + (95 * 60)] = 278;
+map['p' + (96 * 60)] = 287;
+map['p' + (97 * 60)] = 296;
+map['p' + (98 * 60)] = 304;
+map['p' + (99 * 60)] = 315;
+map['p' + (100 * 60)] = 326;
+
+const EARTH_RADIUS = 6371000; //in meters
+const SECONDS_PER_DAY = 86400;
+const STANDARD_GRAVITATIONAL_PARAMETER = 3.986004418 * (Math.pow(10, 14));
+
 var Ring = function(params) {
 	if (params === undefined) params = {};
 
@@ -9,8 +26,7 @@ var Ring = function(params) {
 	var highlightAttributes = params.highlightAttributes;
 	var orbitalPeriod = params.orbitalPeriod;
 
-	const SECONDS_PER_DAY = 86400;
-	var launchOffset = 257*60 / numSatellites / SECONDS_PER_DAY;
+	var launchOffset = (map['p' + orbitalPeriod] * 60 / numSatellites) / SECONDS_PER_DAY;
 
 	var pathPositions = []
 
@@ -41,17 +57,3 @@ var Ring = function(params) {
 		this.path.positions = pathPositions;
 	};
 };
-
-/*
-90 240
-91 249
-92 257
-93 263
-94 270
-95 278
-96 287
-97 296
-98 204
-99 315
-100 326
-*/

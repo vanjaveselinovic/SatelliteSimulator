@@ -50,7 +50,7 @@ var Globe = function(params) {
 				numSatellitesPerRing: 10,
 				inclination: 90,
 				ringAttributes: ringAttributes[0],
-				orbitalPeriod: 92*60
+				orbitalPeriod: 90*60
 			}]
 		},
 		telesat: {
