@@ -8,11 +8,12 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class Server {
@@ -26,14 +27,6 @@ public class Server {
 	static class MyHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange t) throws IOException {
-			// Response
-			
-			String response = "{\"started\": true}";
-			t.sendResponseHeaders(200, response.length());
-			OutputStream os = t.getResponseBody();
-			os.write(response.getBytes());
-			os.close();
-			
 			// Deal with request
 			
 			System.out.println("Uri: " + t.getRequestURI());
@@ -51,17 +44,19 @@ public class Server {
 			isr.close();
 			
 			String jsonString = buffer.toString().replace('"', '\'');
-			System.out.println(jsonString);
 			
 			if (jsonString != null && !jsonString.isEmpty()) {
-				System.out.println("Test");
+				System.out.println(jsonString);
 				
-				Gson gson = new Gson();
-				Map<String, String> myMap = gson.fromJson(
-						jsonString,
-						new TypeToken<Map<String, String>>(){}.getType());
+				try {
+					JSONObject jsonObject = new JSONObject(jsonString);
+					
+					System.out.println("Name: " + jsonObject.getString("name"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
-				System.out.println("Test: " + myMap.get("name"));
 			}
 			
 			/*
@@ -70,6 +65,15 @@ public class Server {
 			
 			// Manager manager = new Manager(simulationConfigurationData);
 			// manager.run();
+			
+			// Response
+			
+			String response = "{\"started\": true}";
+			System.out.println("Response: " + response);
+			t.sendResponseHeaders(200, response.length());
+			OutputStream os = t.getResponseBody();
+			os.write(response.getBytes());
+			os.close();
 		}
 
 		static String convertStreamToString(java.io.InputStream is) {
