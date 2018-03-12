@@ -1,3 +1,7 @@
+const TRAFFIC_LO = 'l';
+const TRAFFIC_MD = 'm';
+const TRAFFIC_HI = 'h';
+
 function satelliteIcon(params) {
 	if (params === undefined) params = {};
 
@@ -90,7 +94,48 @@ function circle(params) {
 	return canvasMain;
 }
 
+function groundStation(params) {
+	if (params === undefined) params = {};
+
+	var size = 0;
+	var color = '';
+	var colorDark = '';
+
+	if (params.traffic === TRAFFIC_LO) {
+		size = 8;
+		color = 'rgb(0, 255, 0)';
+		colorDark = 'rgb(0, 128, 0)';
+	}
+	else if (params.traffic === TRAFFIC_MD) {
+		size = 10;
+		color = 'rgb(255, 255, 0)';
+		colorDark = 'rgb(255, 128, 0)';
+	}
+	else {
+		size = 12;
+		color = 'rgb(255, 0, 0)';
+		colorDark = 'rgb(128, 0, 0)';
+	}
+
+	var canvasMain = document.createElement("canvas");
+	ctx2d = canvasMain.getContext("2d");
+	canvasMain.width = size*2;
+	canvasMain.height = size*2;
+	
+	ctx2d.rotate(Math.PI/4);
+	ctx2d.translate(size, -1*size/2);
+
+	ctx2d.fillStyle = colorDark;
+	ctx2d.fillRect(0, 0, size, size);
+
+	ctx2d.fillStyle = color;
+	ctx2d.fillRect(2, 2, size-4, size-4);
+
+	return canvasMain;
+}
+
 var CanvasIcon = {
 	Satellite: satelliteIcon,
-	Circle: circle
+	Circle: circle,
+	GroundStation: groundStation
 };

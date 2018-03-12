@@ -39,7 +39,7 @@ $(document).ready(function () {
 		$('#presets').append(getPresetHTML(constellations[i], i === 0 ? true : false));
 	}
 
-	/* load configuation */
+	/* load configuration */
 
 	var getElementHTML = function(element, i) {
 		var singleChecked = element.type === TYPE_SINGLE ? 'checked' : '';
@@ -121,6 +121,14 @@ $(document).ready(function () {
 
 		applyPreset(customPreset);
 	});
+
+	/* ground stations */
+
+	var gsKeys = Object.keys(globe.groundStationPresets);
+
+	for (var i = 0; i < gsKeys.length; i++) {
+		globe.addGroundStation(globe.groundStationPresets[gsKeys[i]]);
+	}
 
 	/* live update */
 

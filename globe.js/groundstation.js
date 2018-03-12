@@ -1,9 +1,11 @@
 var GroundStation = function(params) {
 	if (params === undefined) params = {};
 
+	var name = params.name;
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
 	var position = params.position;
+	var traffic = params.traffic;
 
 	this.placemark = new WorldWind.Placemark(
 			position,
