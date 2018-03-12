@@ -25,6 +25,7 @@ var Ring = function(params) {
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
 	var orbitalPeriod = params.orbitalPeriod * 60;
+	var type = params.type;
 
 	var launchOffset = (map['p' + orbitalPeriod] * 60 / numSatellites) / SECONDS_PER_DAY;
 

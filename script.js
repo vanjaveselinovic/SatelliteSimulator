@@ -30,7 +30,12 @@ $(document).ready(function () {
 	$('.preset .name')[1].innerHTML = globe.constellations.telesat.name;
 
 	var getElementHTML = function(element, i) {
-		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div></div>';
+		var singleChecked = element.type === TYPE_SINGLE ? 'checked' : '';
+		var doubleChecked = element.type === TYPE_DOUBLE ? 'checked' : '';
+
+		var radio = '<div class="input-radio"><input type="radio" id="type-single" name="type'+i+'" value="'+TYPE_SINGLE+'" '+singleChecked+'><label for="type-single">Single</label><input type="radio" id="type-double" name="type'+i+'" value="'+TYPE_DOUBLE+'" '+doubleChecked+'><label for="type-double">Double reverse</label></div>';
+
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div>'+radio+'</div>';
 	}
 
 	var customPreset = {};
@@ -134,6 +139,12 @@ $(document).ready(function () {
 			} else {
 				$('.input-per').addClass('invalid-input');
 			}
+		});
+
+		$('.input-radio input').on('click', function() {
+			customPreset.elements[$(this)[0].parentElement.parentElement.dataset.i].type = $(this).val();
+			customPreset.name = 'Custom';
+			globe.applyPreset(customPreset);
 		});
 
 		$('#elements .input-numeric').on('keydown', function(e) {

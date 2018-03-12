@@ -1,3 +1,6 @@
+const TYPE_SINGLE = 'single';
+const TYPE_DOUBLE = 'double';
+
 var Globe = function(params) {
 	if (params === undefined) params = {};
 
@@ -50,7 +53,8 @@ var Globe = function(params) {
 				numSatellitesPerRing: 10,
 				inclination: 90,
 				ringAttributes: ringAttributes[0],
-				orbitalPeriod: 95
+				orbitalPeriod: 95,
+				type: TYPE_SINGLE
 			}]
 		},
 		telesat: {
@@ -61,29 +65,17 @@ var Globe = function(params) {
 					numSatellitesPerRing: 10,
 					inclination: 50,
 					ringAttributes: ringAttributes[0],
-					orbitalPeriod: 95
-				},
-				{
-					numRings: 10,
-					numSatellitesPerRing: 10,
-					inclination: 310,
-					ringAttributes: ringAttributes[0],
-					orbitalPeriod: 95
+					orbitalPeriod: 95,
+					type: TYPE_DOUBLE
 				},
 				{
 					numRings: 3,
 					numSatellitesPerRing: 10,
 					inclination: 80,
 					ringAttributes: ringAttributes[1],
-					orbitalPeriod: 95
+					orbitalPeriod: 95,
+					type: TYPE_DOUBLE
 				},
-				{
-					numRings: 3,
-					numSatellitesPerRing: 10,
-					inclination: 280,
-					ringAttributes: ringAttributes[1],
-					orbitalPeriod: 95
-				}
 			]
 		}
 	};
@@ -143,6 +135,18 @@ var Globe = function(params) {
 					highlightAttributes: highlightAttributes,
 					orbitalPeriod: elements[i].orbitalPeriod
 				}));
+
+				if (elements[i].type === TYPE_DOUBLE) {
+					rings.push(new Ring({
+						inclination: 360 - elements[i].inclination,
+						longitude: -180 + j*(180/elements[i].numRings),
+						numSatellites: elements[i].numSatellitesPerRing,
+						ringAttributes: elements[i].ringAttributes,
+						placemarkAttributes: placemarkAttributes,
+						highlightAttributes: highlightAttributes,
+						orbitalPeriod: elements[i].orbitalPeriod
+					}));
+				}
 			}
 		}
 
