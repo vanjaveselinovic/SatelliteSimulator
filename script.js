@@ -26,8 +26,20 @@ $(document).ready(function () {
 
 	var globe = new Globe();
 
-	$('.preset .name')[0].innerHTML = globe.constellations.iridium.name;
-	$('.preset .name')[1].innerHTML = globe.constellations.telesat.name;
+	/* load library */
+
+	var getPresetHTML = function(presetKey, active) {
+		var activeProp = active ? 'active' : '';
+		return '<div class="section card preset '+activeProp+'" id="'+presetKey+'"><i class="fas fa-check icon"></i><span class="name">'+globe.constellations[presetKey].name+'</span></div>';
+	};
+
+	var constellations = Object.keys(globe.constellations);
+
+	for (var i = 0; i < constellations.length; i++) {
+		$('#presets').append(getPresetHTML(constellations[i], i === 0 ? true : false));
+	}
+
+	/* load configuation */
 
 	var getElementHTML = function(element, i) {
 		var singleChecked = element.type === TYPE_SINGLE ? 'checked' : '';
@@ -62,7 +74,16 @@ $(document).ready(function () {
 	var applyPreset = function(preset) {
 		customPreset = preset;
 
-		$('.constellation-info').text('Preset: '+preset.name);
+		$('.constellation-info select').empty();
+
+		var constellations = Object.keys(globe.constellations);
+
+		for (var i = 0; i < constellations.length; i++) {
+			$('.constellation-info select').append($('<option>', {
+				value: constellations[i],
+				text: globe.constellations[constellations[i]].name
+			}));
+		}
 
 		globe.applyPreset(preset);
 
@@ -84,14 +105,8 @@ $(document).ready(function () {
 	$('.preset').on('click', function() {
 		$('.preset.active').removeClass('active');
 		$(this).addClass('active');
-	});
 
-	$('#iridium').on('click', function() {
-		applyPreset(globe.constellations.iridium);
-	});
-
-	$('#telesat').on('click', function() {
-		applyPreset(globe.constellations.telesat);
+		applyPreset(globe.constellations[$(this).attr('id')]);
 	});
 
 	$('#add-constellation').on('click', function() {

@@ -319,6 +319,7 @@ button {
 
 	.preset .icon {
 		visibility: hidden;
+		margin-right: 5px;
 	}
 
 	.preset.active {
@@ -347,16 +348,16 @@ button {
 		color: hsl(208, 100%, 55%);
 	}
 
-#add-constellation {
+.add-item {
 	cursor: default !important;
 	opacity: 0.75;
 }
 
-	#add-constellation:hover {
+	.add-item:hover {
 		opacity: 1;
 	}
 
-	#add-constellation .svg-inline--fa {
+	.add-item .svg-inline--fa {
 		color: hsl(208, 100%, 55%);
 		margin-right: 5px;
 	}

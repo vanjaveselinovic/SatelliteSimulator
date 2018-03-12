@@ -220,4 +220,18 @@ var Globe = function(params) {
 			//rings[i].update();
 		}
 	}
+
+	var handleClick = function(recognizer) {
+		var x = recognizer.clientX;
+		var y = recognizer.clientY;
+
+		var pickList = this.wwd.pick(this.wwd.canvasCoordinates(x, y));
+
+		if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
+			var position = pickList.objects[0].position;
+			console.log(new WorldWind.Location(position.latitude, position.longitude));
+		}
+	}.bind(this);
+
+	var clickRecognizer = new WorldWind.ClickRecognizer(this.wwd, handleClick);
 }
