@@ -1,6 +1,49 @@
 const TYPE_SINGLE = 'single';
 const TYPE_DOUBLE = 'double';
 
+const COLORS = [
+	{ //red 0
+		r: 244,
+		g: 66,
+		b: 66
+	},
+	{ //orange 1
+		r: 244,
+		g: 110,
+		b: 66
+	},
+	{ //yellow 2
+		r: 252,
+		g: 172,
+		b: 42
+	},
+	{ //green 3
+		r: 28,
+		g: 204,
+		b: 72
+	},
+	{ //cyan 4
+		r: 30,
+		g: 209,
+		b: 219
+	},
+	{ //blue 5
+		r: 49,
+		g: 62,
+		b: 244
+	},
+	{ //purple 6
+		r: 152,
+		g: 60,
+		b: 234
+	},
+	{ //magenta 7
+		r: 216,
+		g: 32,
+		b: 121
+	}
+];
+
 var Globe = function(params) {
 	if (params === undefined) params = {};
 
@@ -39,11 +82,7 @@ var Globe = function(params) {
 				numRings: 5,
 				numSatellitesPerRing: 10,
 				inclination: 90,
-				color: {
-					r: 255,
-					g: 0,
-					b: 0
-				},
+				color: COLORS[0],
 				orbitalPeriod: 95,
 				type: TYPE_SINGLE
 			}]
@@ -55,11 +94,7 @@ var Globe = function(params) {
 					numRings: 10,
 					numSatellitesPerRing: 10,
 					inclination: 50,
-					color: {
-						r: 255,
-						g: 0,
-						b: 0
-					},
+					color: COLORS[0],
 					orbitalPeriod: 95,
 					type: TYPE_DOUBLE
 				},
@@ -67,11 +102,7 @@ var Globe = function(params) {
 					numRings: 3,
 					numSatellitesPerRing: 10,
 					inclination: 80,
-					color: {
-						r: 0,
-						g: 0,
-						b: 255
-					},
+					color: COLORS[5],
 					orbitalPeriod: 95,
 					type: TYPE_DOUBLE
 				},

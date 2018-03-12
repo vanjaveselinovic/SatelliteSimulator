@@ -33,9 +33,28 @@ $(document).ready(function () {
 		var singleChecked = element.type === TYPE_SINGLE ? 'checked' : '';
 		var doubleChecked = element.type === TYPE_DOUBLE ? 'checked' : '';
 
-		var radio = '<div class="input-radio"><input type="radio" id="type-single" name="type'+i+'" value="'+TYPE_SINGLE+'" '+singleChecked+'><label for="type-single"><div class="type-icon"></div>Single</label><input type="radio" id="type-double" name="type'+i+'" value="'+TYPE_DOUBLE+'" '+doubleChecked+'><label for="type-double"><div class="type-icon"></div>Double</label></div>';
+		var radioSD = '<div class="input-radio"><input type="radio" id="type-single" name="type'+i+'" value="'+TYPE_SINGLE+'" '+singleChecked+'><label for="type-single"><div class="type-icon"></div>Single</label><input type="radio" id="type-double" name="type'+i+'" value="'+TYPE_DOUBLE+'" '+doubleChecked+'><label for="type-double"><div class="type-icon"></div>Double</label></div>';
 
-		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div>'+radio+'</div>';
+		var radioColor = '<div class="input-radio-color">';
+
+		var checkedTemp = '';
+		var colorTemp = '';
+
+		for (var c = 0; c < COLORS.length; c++) {
+
+			colorTemp = 'rgb('
+					+COLORS[c].r+', '
+					+COLORS[c].g+', '
+					+COLORS[c].b+')';
+
+			checkedTemp = element.color === COLORS[c] ? 'checked="checked"' : '';
+
+			radioColor += '<label style="background-color: '+colorTemp+'"><input type="radio" name="color'+i+'" value="color'+c+'" '+checkedTemp+'><i class="fas fa-check icon"></i></label>';
+		}
+
+		radioColor += '</div>'
+
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div>'+radioSD+radioColor+'</div>';
 	}
 
 	var customPreset = {};
@@ -51,6 +70,10 @@ $(document).ready(function () {
 
 		for (var i = 0; i < preset.elements.length; i++) {
 			$('#elements').append(getElementHTML(preset.elements[i], i));
+			$('#elements .card:last-child').css('border-bottom', '8px solid rgb('
+					+preset.elements[i].color.r+', '
+					+preset.elements[i].color.g+', '
+					+preset.elements[i].color.b+')');
 		}
 
 		registerInputs();
@@ -76,11 +99,7 @@ $(document).ready(function () {
 				numRings: 1,
 				numSatellitesPerRing: 10,
 				inclination: 90,
-				color: {
-					r: 255,
-					g: 0,
-					b: 0
-				},
+				color: COLORS[0],
 				orbitalPeriod: 95,
 				type: TYPE_SINGLE
 			});
@@ -161,6 +180,20 @@ $(document).ready(function () {
 		$('.input-radio input').on('click', function() {
 			customPreset.elements[$(this)[0].parentElement.parentElement.dataset.i].type = $(this).val();
 			customPreset.name = 'Custom';
+			globe.applyPreset(customPreset);
+		});
+
+		$('.input-radio-color input').on('click', function() {
+			var i = $(this)[0].parentElement.parentElement.parentElement.dataset.i;
+			var color = COLORS[parseInt($(this).val().replace('color', ''))];
+			customPreset.elements[i].color = color;
+			customPreset.name = 'Custom';
+
+			$($('#elements .card')[i]).css('border-color', 'rgb('
+					+color.r+', '
+					+color.g+', '
+					+color.b+')');
+
 			globe.applyPreset(customPreset);
 		});
 
