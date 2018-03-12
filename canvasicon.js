@@ -101,20 +101,21 @@ function groundStation(params) {
 	var color = '';
 	var colorDark = '';
 
+	var r = params.color.r === undefined ? 255 : params.color.r;
+	var g = params.color.g === undefined ? 255 : params.color.g;
+	var b = params.color.b === undefined ? 255 : params.color.b;
+
+	color = "rgb("+r+", "+g+", "+b+")";
+	colorDark = "rgb("+r/2+", "+g/2+", "+b/2+")";
+
 	if (params.traffic === TRAFFIC_LO) {
 		size = 8;
-		color = 'rgb(0, 255, 0)';
-		colorDark = 'rgb(0, 128, 0)';
 	}
 	else if (params.traffic === TRAFFIC_MD) {
 		size = 10;
-		color = 'rgb(255, 255, 0)';
-		colorDark = 'rgb(255, 128, 0)';
 	}
 	else {
 		size = 12;
-		color = 'rgb(255, 0, 0)';
-		colorDark = 'rgb(128, 0, 0)';
 	}
 
 	var canvasMain = document.createElement("canvas");

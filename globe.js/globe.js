@@ -5,7 +5,9 @@ const COLORS = [
 	{ //red 0
 		r: 244,
 		g: 66,
-		b: 66
+		b: 66,
+		traffic: TRAFFIC_HI,
+		trafficName: 'High'
 	},
 	{ //orange 1
 		r: 244,
@@ -15,12 +17,16 @@ const COLORS = [
 	{ //yellow 2
 		r: 252,
 		g: 172,
-		b: 42
+		b: 42,
+		traffic: TRAFFIC_MD,
+		trafficName: 'Medium'
 	},
 	{ //green 3
 		r: 28,
 		g: 204,
-		b: 72
+		b: 72,
+		traffic: TRAFFIC_LO,
+		trafficName: 'Low'
 	},
 	{ //cyan 4
 		r: 30,
@@ -106,19 +112,22 @@ var Globe = function(params) {
 			name: 'Ottawa',
 			lat: 45.4215,
 			lon: -75.6972,
-			traffic: TRAFFIC_LO
+			traffic: TRAFFIC_LO,
+			color: COLORS[3]
 		},
 		toronto: {
 			name: 'Toronto',
 			lat: 43.6532,
 			lon: -79.3832,
-			traffic: TRAFFIC_MD
+			traffic: TRAFFIC_MD,
+			color: COLORS[2]
 		},
 		london: {
 			name: 'London',
 			lat: 51.5074,
 			lon: 0.1278,
-			traffic: TRAFFIC_HI
+			traffic: TRAFFIC_HI,
+			color: COLORS[0]
 		}
 	};
 
@@ -256,27 +265,35 @@ var Globe = function(params) {
 		}
 	};*/
 
-	this.addGroundStation = function(gs) {
-		groundStationAttributes = new WorldWind.PlacemarkAttributes(placemarkAttributes);
-		groundStationAttributes.imageSource =
-			new WorldWind.ImageSource(CanvasIcon.GroundStation({
-					traffic: gs.traffic,
-					outline: true
+	this.applyGroundStations = function(groundStationsInput) {
+		groundStations.length = 0;
+		groundStationLayer.removeAllRenderables();
+
+		for (var i = 0; i < groundStationsInput.length; i++) {
+			groundStationAttributes = new WorldWind.PlacemarkAttributes(placemarkAttributes);
+			groundStationAttributes.imageSource =
+				new WorldWind.ImageSource(CanvasIcon.GroundStation({
+						traffic: groundStationsInput[i].traffic,
+						color: groundStationsInput[i].color
+					}));
+
+			groundStationHighlightAttributes = new WorldWind.PlacemarkAttributes(groundStationAttributes);
+			groundStationHighlightAttributes.imageScale = 1.2;
+
+			groundStations.push(new GroundStation({
+					name: groundStationsInput[i].name,
+					placemarkAttributes: groundStationAttributes,
+					highlightAttributes: groundStationHighlightAttributes,
+					position: new WorldWind.Position(
+						groundStationsInput[i].lat,
+						groundStationsInput[i].lon,
+						0
+					),
+					traffic: groundStationsInput[i].traffic
 				}));
 
-		groundStations.push(new GroundStation({
-				name: gs.name,
-				placemarkAttributes: groundStationAttributes,
-				highlightAttributes: groundStationAttributes,
-				position: new WorldWind.Position(
-					gs.lat,
-					gs.lon,
-					0
-				),
-				traffic: gs.traffic
-			}));
-
-		groundStationLayer.addRenderable(groundStations[groundStations.length - 1].placemark);
+			groundStationLayer.addRenderable(groundStations[groundStations.length - 1].placemark);
+		}
 	};
 
 	this.wwd.addLayer(groundStationLayer);

@@ -47,7 +47,7 @@ $(document).ready(function () {
 
 		var radioSD = '<div class="input-radio"><input type="radio" id="type-single" name="type'+i+'" value="'+TYPE_SINGLE+'" '+singleChecked+'><label for="type-single"><div class="type-icon"></div>Single</label><input type="radio" id="type-double" name="type'+i+'" value="'+TYPE_DOUBLE+'" '+doubleChecked+'><label for="type-double"><div class="type-icon"></div>Double</label></div>';
 
-		var radioColor = '<div class="input-radio-color">';
+		var radioColor = '<div class="input-radio-color irc-c">';
 
 		var checkedTemp = '';
 		var colorTemp = '';
@@ -124,10 +124,55 @@ $(document).ready(function () {
 
 	/* ground stations */
 
+	var getGSHTML = function(gs, i) {
+		var radioColor = '<div class="input-radio-color irc-gs">';
+
+		var checkedTemp = '';
+		var colorTemp = '';
+
+		for (var c = COLORS.length - 1; c >= 0; c--) {
+
+			if (c === 0 || c === 2 || c === 3) {
+				colorTemp = 'rgb('
+						+COLORS[c].r+', '
+						+COLORS[c].g+', '
+						+COLORS[c].b+')';
+
+				checkedTemp = gs.color === COLORS[c] ? 'checked="checked"' : '';
+
+				radioColor += '<label style="background-color: '+colorTemp+'"><input type="radio" name="color-gs'+i+'" value="color'+c+'" '+checkedTemp+'><i class="fas fa-check icon icon-next-to-text"></i> <span>'+COLORS[c].trafficName+'</span></label>';
+			}
+		}
+
+		radioColor += '</div>'
+
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Name</div><div class="iwl-section input"><input type="text" id="" value="'+gs.name+'" autocomplete="off" class="input-name"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Latitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lat+'" autocomplete="off" class="input-numeric input-lat"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Longitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lon+'" autocomplete="off" class="input-numeric input-lon"></div><div class="iwl-section label-after">deg</div></div>'+radioColor+'</div>';
+	};
+
+	var addGroundStation = function(gs) {
+		groundStations.push(gs);
+
+		globe.applyGroundStations(groundStations);
+
+		$('#ground-stations').empty();
+
+		for (var i = 0; i < groundStations.length; i++) {
+			$('#ground-stations').append(getGSHTML(groundStations[i], i));
+			$('#ground-stations .card:last-child').css('border-bottom', '8px solid rgb('
+						+groundStations[i].color.r+', '
+						+groundStations[i].color.g+', '
+						+groundStations[i].color.b+')');
+			}
+
+		registerGSInputs();
+	};
+
+	var groundStations = [];
+
 	var gsKeys = Object.keys(globe.groundStationPresets);
 
 	for (var i = 0; i < gsKeys.length; i++) {
-		globe.addGroundStation(globe.groundStationPresets[gsKeys[i]]);
+		addGroundStation(globe.groundStationPresets[gsKeys[i]]);
 	}
 
 	/* live update */
@@ -206,7 +251,7 @@ $(document).ready(function () {
 			globe.applyPreset(customPreset);
 		});
 
-		$('.input-radio-color input').on('click', function() {
+		$('.irc-c input').on('click', function() {
 			var i = $(this)[0].parentElement.parentElement.parentElement.dataset.i;
 			var color = COLORS[parseInt($(this).val().replace('color', ''))];
 			customPreset.elements[i].color = color;
@@ -228,6 +273,22 @@ $(document).ready(function () {
 					$(this).val(parseInt($(this).val())-1);
 			}
 			$(this).trigger('input');
+		});
+	}
+
+	function registerGSInputs() {
+		$('.irc-gs input').on('click', function() {
+			var i = $(this)[0].parentElement.parentElement.parentElement.dataset.i;
+			var color = COLORS[parseInt($(this).val().replace('color', ''))];
+			groundStations[i].color = color;
+			groundStations[i].traffic = color.traffic;
+
+			$($('#ground-stations .card')[i]).css('border-color', 'rgb('
+					+color.r+', '
+					+color.g+', '
+					+color.b+')');
+
+			globe.applyGroundStations(groundStations);
 		});
 	}
 
