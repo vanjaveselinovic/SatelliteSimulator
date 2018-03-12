@@ -64,15 +64,6 @@ var Globe = function(params) {
 	//wwd.addLayer(new WorldWind.CoordinatesDisplayLayer(wwd));
 	//wwd.addLayer(new WorldWind.ViewControlsLayer(wwd));
 
-	/* orbits */
-
-	var ringPositions = [];
-	var row = [];
-	var currLon = 0;
-	var mesh = null;
-
-	var ringLayer = new WorldWind.RenderableLayer("Rings");
-
 	/* presets */
 
 	this.constellations = {
@@ -99,7 +90,7 @@ var Globe = function(params) {
 					type: TYPE_DOUBLE
 				},
 				{
-					numRings: 3,
+					numRings: 5,
 					numSatellitesPerRing: 10,
 					inclination: 80,
 					color: COLORS[5],
@@ -113,6 +104,28 @@ var Globe = function(params) {
 	this.applyPreset = function(preset) {
 		this.configure(preset.elements);
 	};
+
+
+	this.updateGroundStations = function(preset) {
+		this.configureGroundStations(preset.groundStations);
+	}
+
+	/* ground stations */
+
+	var groundStationAttributes = new WorldWind.PlacemarkAttributes(null),
+		groundStationHighlightAttributes,
+		groundStationLayer = new WorldWind.RenderableLayer("Ground Stations");
+
+	var groundStations = [];
+
+	/* orbits */
+
+	var ringPositions = [];
+	var row = [];
+	var currLon = 0;
+	var mesh = null;
+
+	var ringLayer = new WorldWind.RenderableLayer("Rings");
 
 	/* satellites */
 
@@ -205,6 +218,36 @@ var Globe = function(params) {
 		}
 	};
 
+	groundStationAttributes = new WorldWind.PlacemarkAttributes(placemarkAttributes);
+	groundStationAttributes.imageSource =
+			new WorldWind.ImageSource(CanvasIcon.Satellite({
+					size: 30,
+					outline: true
+				}));
+
+	this.configureGroundStations = function(groundStationsInput) {
+		groundStationLayer.removeAllRenderables();
+
+		groundStations = [];
+
+		for (var i = 0; i < groundStationsInput.length; i++) {
+			groundStations.push(new GroundStation({
+				placemarkAttributes: groundStationAttributes,
+				highlightAttributes: highlightAttributes,
+				position: new WorldWind.Position(
+					groundStationsInput[i].lat,
+					groundStationsInput[i].lon,
+					0
+				)
+			}));
+		}
+
+		for (var i = 0; i < groundStations.length; i++) {
+			groundStationLayer.addRenderable(groundStations[i].placemark);
+		}
+	}
+
+	this.wwd.addLayer(groundStationLayer);
 	this.wwd.addLayer(ringLayer);
 	this.wwd.addLayer(satelliteLayer);
 
@@ -223,6 +266,8 @@ var Globe = function(params) {
 		}
 	}
 
+	var tempGroundStations = [];
+
 	var handleClick = function(recognizer) {
 		var x = recognizer.clientX;
 		var y = recognizer.clientY;
@@ -231,7 +276,13 @@ var Globe = function(params) {
 
 		if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
 			var position = pickList.objects[0].position;
-			console.log(new WorldWind.Location(position.latitude, position.longitude));
+			
+			tempGroundStations.push({
+				lat: position.latitude,
+				lon: position.longitude
+			});
+
+			this.configureGroundStations(tempGroundStations);
 		}
 	}.bind(this);
 
