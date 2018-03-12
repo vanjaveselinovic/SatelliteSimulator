@@ -76,7 +76,11 @@ $(document).ready(function () {
 				numRings: 1,
 				numSatellitesPerRing: 10,
 				inclination: 90,
-				ringAttributes: globe.ringAttributes[0],
+				color: {
+					r: 255,
+					g: 0,
+					b: 0
+				},
 				orbitalPeriod: 95,
 				type: TYPE_SINGLE
 			});

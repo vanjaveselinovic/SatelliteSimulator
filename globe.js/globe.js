@@ -28,19 +28,6 @@ var Globe = function(params) {
 	var currLon = 0;
 	var mesh = null;
 
-	var red = new WorldWind.Color(1, 0, 0, 0.75);
-	var blue = new WorldWind.Color(0, 0, 1, 0.75);
-
-	this.ringAttributes = [];
-
-	this.ringAttributes[0] = new WorldWind.ShapeAttributes(null);
-	this.ringAttributes[0].outlineColor = red;
-	this.ringAttributes[0].interiorColor = new WorldWind.Color(0, 0, 0, 0);
-	this.ringAttributes[0].applyLighting = false;
-
-	this.ringAttributes[1] = new WorldWind.ShapeAttributes(this.ringAttributes[0]);
-	this.ringAttributes[1].outlineColor = blue;
-
 	var ringLayer = new WorldWind.RenderableLayer("Rings");
 
 	/* presets */
@@ -52,7 +39,11 @@ var Globe = function(params) {
 				numRings: 5,
 				numSatellitesPerRing: 10,
 				inclination: 90,
-				ringAttributes: this.ringAttributes[0],
+				color: {
+					r: 255,
+					g: 0,
+					b: 0
+				},
 				orbitalPeriod: 95,
 				type: TYPE_SINGLE
 			}]
@@ -64,7 +55,11 @@ var Globe = function(params) {
 					numRings: 10,
 					numSatellitesPerRing: 10,
 					inclination: 50,
-					ringAttributes: this.ringAttributes[0],
+					color: {
+						r: 255,
+						g: 0,
+						b: 0
+					},
 					orbitalPeriod: 95,
 					type: TYPE_DOUBLE
 				},
@@ -72,7 +67,11 @@ var Globe = function(params) {
 					numRings: 3,
 					numSatellitesPerRing: 10,
 					inclination: 80,
-					ringAttributes: this.ringAttributes[1],
+					color: {
+						r: 0,
+						g: 0,
+						b: 255
+					},
 					orbitalPeriod: 95,
 					type: TYPE_DOUBLE
 				},
@@ -110,13 +109,19 @@ var Globe = function(params) {
 	placemarkAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
 	placemarkAttributes.imageSource =
-			new WorldWind.ImageSource(CanvasIcon.Satellite({size: 30, outline: true}));
+			new WorldWind.ImageSource(CanvasIcon.Circle({size: 10, r: 255, g: 0, b: 0}));
 
 	highlightAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
-	highlightAttributes.imageScale = 1.2;
+	highlightAttributes.imageSource =
+			new WorldWind.ImageSource(CanvasIcon.Satellite({size: 30, outline: true}));
 
 	var rings = [];
+	var tempPlacemarkAttributes;
+
+	var ringAttributes = new WorldWind.ShapeAttributes(null);
+	ringAttributes.interiorColor = new WorldWind.Color(0, 0, 0, 0);
+	ringAttributes.applyLighting = false;
 
 	this.configure = function(elements) {
 		ringLayer.removeAllRenderables();
@@ -125,24 +130,33 @@ var Globe = function(params) {
 		rings = [];
 
 		for (var i = 0; i < elements.length; i++) {
-			for (var j = 0; j < elements[i].numRings; j++) {
-				rings.push(new Ring({
-					inclination: elements[i].inclination,
-					longitude: -180 + j*(180/elements[i].numRings),
-					numSatellites: elements[i].numSatellitesPerRing,
-					ringAttributes: elements[i].ringAttributes,
-					placemarkAttributes: placemarkAttributes,
-					highlightAttributes: highlightAttributes,
-					orbitalPeriod: elements[i].orbitalPeriod
-				}));
+			tempPlacemarkAttributes =
+					new WorldWind.PlacemarkAttributes(placemarkAttributes);
 
-				if (elements[i].type === TYPE_DOUBLE) {
+			tempPlacemarkAttributes.imageSource =
+					new WorldWind.ImageSource(CanvasIcon.Circle({
+							size: 5,
+							r: elements[i].color.r,
+							g: elements[i].color.g,
+							b: elements[i].color.b
+						}));
+
+			var doub = elements[i].type === TYPE_DOUBLE ? 2 : 1;
+
+			for (var k = 0; k < doub; k++) {
+
+				var inc = k === 1 ?
+						360 - elements[i].inclination :
+						elements[i].inclination;
+
+				for (var j = 0; j < elements[i].numRings; j++) {
 					rings.push(new Ring({
-						inclination: 360 - elements[i].inclination,
+						inclination: inc,
 						longitude: -180 + j*(180/elements[i].numRings),
 						numSatellites: elements[i].numSatellitesPerRing,
-						ringAttributes: elements[i].ringAttributes,
-						placemarkAttributes: placemarkAttributes,
+						color: elements[i].color,
+						ringAttributes: new WorldWind.ShapeAttributes(ringAttributes),
+						placemarkAttributes: tempPlacemarkAttributes,
 						highlightAttributes: highlightAttributes,
 						orbitalPeriod: elements[i].orbitalPeriod
 					}));

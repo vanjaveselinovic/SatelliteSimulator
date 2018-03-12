@@ -69,6 +69,28 @@ function satelliteIcon(params) {
 	return canvasComposite;
 }
 
+function circle(params) {
+	if (params === undefined) params = {};
+
+	var size = params.size === undefined ? 100 : params.size;
+
+	var canvasMain = document.createElement("canvas");
+	ctx2d = canvasMain.getContext("2d");
+	canvasMain.width = size;
+	canvasMain.height = size;
+
+	var r = params.r === undefined ? 255 : params.r;
+	var g = params.g === undefined ? 255 : params.g;
+	var b = params.b === undefined ? 255 : params.b;
+
+	ctx2d.fillStyle = "rgb("+r+", "+g+", "+b+")";
+	ctx2d.arc(size/2, size/2, size/2, 0, 2*Math.PI);
+	ctx2d.fill();
+
+	return canvasMain;
+}
+
 var CanvasIcon = {
-	Satellite: satelliteIcon
+	Satellite: satelliteIcon,
+	Circle: circle
 };

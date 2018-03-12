@@ -21,6 +21,7 @@ var Ring = function(params) {
 	var inclination = params.inclination;
 	var longitude = params.longitude;
 	var numSatellites = params.numSatellites;
+	var color = params.color;
 	var ringAttributes = params.ringAttributes;
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
@@ -29,7 +30,14 @@ var Ring = function(params) {
 
 	var launchOffset = (map['p' + orbitalPeriod] * 60 / numSatellites) / SECONDS_PER_DAY;
 
-	var pathPositions = []
+	var pathPositions = [];
+
+	ringAttributes.outlineColor = new WorldWind.Color(
+			color.r/255,
+			color.g/255,
+			color.b/255,
+			0.75
+		);
 
 	this.satellites = [];
 	for (var i = 0; i < numSatellites; i++) {
