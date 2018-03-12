@@ -14,6 +14,8 @@ public class SimulationConfigurationData {
 	int startHour;
 	int startMinute;
 	
+	int simulationDurationMinutes;
+	
 	double deltaT;//how far apart are the satellite movement time steps?
 	
 	public SimulationConfigurationData(

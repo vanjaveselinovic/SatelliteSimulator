@@ -79,8 +79,8 @@ var Globe = function(params) {
 		iridium: {
 			name: "Iridium-like",
 			elements: [{
-				numRings: 5,
-				numSatellitesPerRing: 10,
+				numRings: 10,
+				numSatellitesPerRing: 20,
 				inclination: 90,
 				color: COLORS[0],
 				orbitalPeriod: 95,
@@ -91,8 +91,8 @@ var Globe = function(params) {
 			name: "Telesat-like",
 			elements: [
 				{
-					numRings: 10,
-					numSatellitesPerRing: 10,
+					numRings: 20,
+					numSatellitesPerRing: 20,
 					inclination: 50,
 					color: COLORS[0],
 					orbitalPeriod: 95,
@@ -172,27 +172,29 @@ var Globe = function(params) {
 							b: elements[i].color.b
 						}));
 
-			var doub = elements[i].type === TYPE_DOUBLE ? 2 : 1;
+			//var doub = elements[i].type === TYPE_DOUBLE ? 2 : 1;
 
-			for (var k = 0; k < doub; k++) {
+			//for (var k = 0; k < doub; k++) {
 
-				var inc = k === 1 ?
+				/*var inc = k === 1 ?
 						360 - elements[i].inclination :
-						elements[i].inclination;
+						elements[i].inclination;*/
 
-				for (var j = 0; j < elements[i].numRings; j++) {
-					rings.push(new Ring({
-						inclination: inc,
-						longitude: -180 + j*(180/elements[i].numRings),
-						numSatellites: elements[i].numSatellitesPerRing,
-						color: elements[i].color,
-						ringAttributes: new WorldWind.ShapeAttributes(ringAttributes),
-						placemarkAttributes: tempPlacemarkAttributes,
-						highlightAttributes: highlightAttributes,
-						orbitalPeriod: elements[i].orbitalPeriod
-					}));
-				}
+			var totalDeg = elements[i].type === TYPE_DOUBLE ? 360 : 180;
+
+			for (var j = 0; j < elements[i].numRings; j++) {
+				rings.push(new Ring({
+					inclination: elements[i].inclination,
+					longitude: (-1*totalDeg) + j*(totalDeg/elements[i].numRings),
+					numSatellites: elements[i].numSatellitesPerRing,
+					color: elements[i].color,
+					ringAttributes: new WorldWind.ShapeAttributes(ringAttributes),
+					placemarkAttributes: tempPlacemarkAttributes,
+					highlightAttributes: highlightAttributes,
+					orbitalPeriod: elements[i].orbitalPeriod
+				}));
 			}
+			//}
 		}
 
 		for (var i = 0; i < rings.length; i++) {
