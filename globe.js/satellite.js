@@ -72,7 +72,7 @@ var Satellite = function(params) {
 	    
 	    lonRad = positionGd.longitude;
 	    latRad = positionGd.latitude;
-	    height = Math.max(positionGd.height, 1000 + EARTH_RADIUS/1000);
+	    height = Math.max(positionGd.height, 500 + EARTH_RADIUS/1000);
 
 	    if (lonRad < -1*Math.PI) lonRad += 2*Math.PI;
 

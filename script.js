@@ -20,10 +20,6 @@ $(document).ready(function () {
 
 	/* ---------- GLOBE ---------- */
 
-	var numRings = $('.input-nr').val();
-	var numSatellitesPerRing = $('.input-nspr').val();
-	var altitude = $('.input-alt').val();
-	var orbitalPeriod = 92*60; //$('.input-per').val() * 60; //seconds
 	var timeScale = $('#input-ts').val();
 
 	var rotationPeriod = 23*60*60 + 56*60 + 4; //earth's rotation in seconds
@@ -34,7 +30,7 @@ $(document).ready(function () {
 	$('.preset .name')[1].innerHTML = globe.constellations.telesat.name;
 
 	var getElementHTML = function(element, i) {
-		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div></div>';
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div></div>';
 	}
 
 	var customPreset = {};
@@ -85,6 +81,7 @@ $(document).ready(function () {
 	var numRingsInput;
 	var numSatellitesPerRingInput;
 	var inclinationInput;
+	var periodInput;
 
 	function registerInputs() {
 		$('.input-nr').on('input', function() {
@@ -126,6 +123,19 @@ $(document).ready(function () {
 			}
 		});
 
+		$('.input-per').on('input', function() {
+			periodInput = $('.input-per').val();
+
+			if (!isNaN(periodInput) && periodInput >= 90 && periodInput <= 100) {
+				$('.input-per').removeClass('invalid-input');
+				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].orbitalPeriod = periodInput;
+				customPreset.name = 'Custom';
+				globe.applyPreset(customPreset);
+			} else {
+				$('.input-per').addClass('invalid-input');
+			}
+		});
+
 		$('#elements .input-numeric').on('keydown', function(e) {
 			if (!isNaN($(this).val())) {
 				if (e.which === 38)
@@ -152,19 +162,6 @@ $(document).ready(function () {
 			globe.wwd.redraw();
 		} else {
 			$('.input-alt').addClass('invalid-input');
-		}
-	});
-
-	var periodInput;
-
-	$('.input-per').on('input', function() {
-		periodInput = $('.input-per').val();
-
-		if (!isNaN(periodInput) && periodInput > 0) {
-			$('.input-per').removeClass('invalid-input');
-			orbitalPeriod = periodInput * 60;
-		} else {
-			$('.input-per').addClass('invalid-input');
 		}
 	});
 
