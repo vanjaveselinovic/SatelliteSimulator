@@ -68,12 +68,8 @@ public class Server {
 						currentElement = elements.getJSONObject(i);
 						
 						constellations[i] = new ConstellationData(
-									1,
 									currentElement.getDouble("orbitalPeriod"), //TODO: convert period to axis
 									currentElement.getDouble("inclination"),
-									0,
-									0,
-									0,
 									currentElement.getInt("numSatellitesPerRing"),
 									currentElement.getInt("numRings"),
 									0.5
