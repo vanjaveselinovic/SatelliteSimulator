@@ -87,6 +87,44 @@ input {
 		flex: 1;
 	}
 
+.input-radio {
+
+}
+
+	.input-radio label {
+		margin-right: 5px;
+	}
+
+	.type-icon {
+		width: 1em;
+		height: 1em;
+		display: inline-block;
+		position: relative;
+		margin: 0 0.2em;
+	}
+
+	.type-icon::after {
+		content: '';
+		width: 100%;
+		height: 2px;
+		background: red;
+		position: absolute;
+		left: 0;
+		top: 0.6em;
+		transform: rotate(30deg);
+	}
+
+	label[for="type-double"] .type-icon::before {
+		content: '';
+		width: 100%;
+		height: 2px;
+		background: red;
+		position: absolute;
+		left: 0;
+		top: 0.6em;
+		transform: rotate(-30deg);
+	}
+
 button {
 	border: unset;
 	color: white;
@@ -274,6 +312,20 @@ button {
 
 	.apply-link.disabled:hover {
 		color: hsl(208, 100%, 55%);
+	}
+
+#add-constellation {
+	cursor: default !important;
+	opacity: 0.75;
+}
+
+	#add-constellation:hover {
+		opacity: 1;
+	}
+
+	#add-constellation .svg-inline--fa {
+		color: hsl(208, 100%, 55%);
+		margin-right: 5px;
 	}
 
 /* ---------- MAIN ---------- */

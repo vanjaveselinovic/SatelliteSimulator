@@ -33,7 +33,7 @@ $(document).ready(function () {
 		var singleChecked = element.type === TYPE_SINGLE ? 'checked' : '';
 		var doubleChecked = element.type === TYPE_DOUBLE ? 'checked' : '';
 
-		var radio = '<div class="input-radio"><input type="radio" id="type-single" name="type'+i+'" value="'+TYPE_SINGLE+'" '+singleChecked+'><label for="type-single">Single</label><input type="radio" id="type-double" name="type'+i+'" value="'+TYPE_DOUBLE+'" '+doubleChecked+'><label for="type-double">Double reverse</label></div>';
+		var radio = '<div class="input-radio"><input type="radio" id="type-single" name="type'+i+'" value="'+TYPE_SINGLE+'" '+singleChecked+'><label for="type-single"><div class="type-icon"></div>Single</label><input type="radio" id="type-double" name="type'+i+'" value="'+TYPE_DOUBLE+'" '+doubleChecked+'><label for="type-double"><div class="type-icon"></div>Double</label></div>';
 
 		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div>'+radio+'</div>';
 	}
@@ -71,6 +71,19 @@ $(document).ready(function () {
 		applyPreset(globe.constellations.telesat);
 	});
 
+	$('#add-constellation').on('click', function() {
+		customPreset.elements.push({
+				numRings: 1,
+				numSatellitesPerRing: 10,
+				inclination: 90,
+				ringAttributes: globe.ringAttributes[0],
+				orbitalPeriod: 95,
+				type: TYPE_SINGLE
+			});
+
+		applyPreset(customPreset);
+	});
+
 	/* live update */
 
 	$('#input-ts.input-numeric').on('keydown', function(e) {
@@ -93,7 +106,7 @@ $(document).ready(function () {
 			numRingsInput = $(this).val();
 
 			if (!isNaN(numRingsInput) && numRingsInput > 0) {
-				$('.input-nr').removeClass('invalid-input');
+				$(this).removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].numRings = numRingsInput;
 				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
@@ -106,7 +119,7 @@ $(document).ready(function () {
 			numSatellitesPerRingInput = $(this).val();
 
 			if (!isNaN(numSatellitesPerRingInput) && numSatellitesPerRingInput > 0) {
-				$('.input-nspr').removeClass('invalid-input');
+				$(this).removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].numSatellitesPerRing = numSatellitesPerRingInput;
 				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
@@ -119,7 +132,7 @@ $(document).ready(function () {
 			inclinationInput = $(this).val();
 
 			if (!isNaN(inclinationInput) && inclinationInput > 0 && inclinationInput < 360) {
-				$('.input-inc').removeClass('invalid-input');
+				$(this).removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].inclination = inclinationInput;
 				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
@@ -129,15 +142,15 @@ $(document).ready(function () {
 		});
 
 		$('.input-per').on('input', function() {
-			periodInput = $('.input-per').val();
+			periodInput = $(this).val();
 
 			if (!isNaN(periodInput) && periodInput >= 90 && periodInput <= 100) {
-				$('.input-per').removeClass('invalid-input');
+				$(this).removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].orbitalPeriod = periodInput;
 				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
 			} else {
-				$('.input-per').addClass('invalid-input');
+				$(this).addClass('invalid-input');
 			}
 		});
 

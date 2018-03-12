@@ -31,15 +31,15 @@ var Globe = function(params) {
 	var red = new WorldWind.Color(1, 0, 0, 0.75);
 	var blue = new WorldWind.Color(0, 0, 1, 0.75);
 
-	var ringAttributes = [];
+	this.ringAttributes = [];
 
-	ringAttributes[0] = new WorldWind.ShapeAttributes(null);
-	ringAttributes[0].outlineColor = red;
-	ringAttributes[0].interiorColor = new WorldWind.Color(0, 0, 0, 0);
-	ringAttributes[0].applyLighting = false;
+	this.ringAttributes[0] = new WorldWind.ShapeAttributes(null);
+	this.ringAttributes[0].outlineColor = red;
+	this.ringAttributes[0].interiorColor = new WorldWind.Color(0, 0, 0, 0);
+	this.ringAttributes[0].applyLighting = false;
 
-	ringAttributes[1] = new WorldWind.ShapeAttributes(ringAttributes[0]);
-	ringAttributes[1].outlineColor = blue;
+	this.ringAttributes[1] = new WorldWind.ShapeAttributes(this.ringAttributes[0]);
+	this.ringAttributes[1].outlineColor = blue;
 
 	var ringLayer = new WorldWind.RenderableLayer("Rings");
 
@@ -52,7 +52,7 @@ var Globe = function(params) {
 				numRings: 5,
 				numSatellitesPerRing: 10,
 				inclination: 90,
-				ringAttributes: ringAttributes[0],
+				ringAttributes: this.ringAttributes[0],
 				orbitalPeriod: 95,
 				type: TYPE_SINGLE
 			}]
@@ -64,7 +64,7 @@ var Globe = function(params) {
 					numRings: 10,
 					numSatellitesPerRing: 10,
 					inclination: 50,
-					ringAttributes: ringAttributes[0],
+					ringAttributes: this.ringAttributes[0],
 					orbitalPeriod: 95,
 					type: TYPE_DOUBLE
 				},
@@ -72,7 +72,7 @@ var Globe = function(params) {
 					numRings: 3,
 					numSatellitesPerRing: 10,
 					inclination: 80,
-					ringAttributes: ringAttributes[1],
+					ringAttributes: this.ringAttributes[1],
 					orbitalPeriod: 95,
 					type: TYPE_DOUBLE
 				},
