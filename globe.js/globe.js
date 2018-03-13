@@ -53,6 +53,8 @@ const COLORS = [
 var Globe = function(params) {
 	if (params === undefined) params = {};
 
+	var main = params.main;
+
 	const SECONDS_PER_DAY = (23 * 60 * 60) + (56 * 60) + 4.1;
 
 	this.wwd = new WorldWind.WorldWindow('canvas');
@@ -314,29 +316,4 @@ var Globe = function(params) {
 			//rings[i].update();
 		}
 	}
-
-	var tempGroundStations = [];
-
-	var handleClick = function(recognizer) {
-		var x = recognizer.clientX;
-		var y = recognizer.clientY;
-
-		var pickList = this.wwd.pick(this.wwd.canvasCoordinates(x, y));
-
-		if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
-			var position = pickList.objects[0].position;
-			
-			//tempGroundStations.push();
-
-			//this.configureGroundStations(tempGroundStations);
-			this.addGroundStation({
-				name: 'Custom',
-				lat: position.latitude,
-				lon: position.longitude,
-				traffic: TRAFFIC_MD
-			});
-		}
-	}.bind(this);
-
-	var clickRecognizer = new WorldWind.ClickRecognizer(this.wwd, handleClick);
 }

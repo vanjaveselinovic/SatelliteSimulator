@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 	var rotationPeriod = 23*60*60 + 56*60 + 4; //earth's rotation in seconds
 
-	var globe = new Globe();
+	var globe = new Globe({main: this});
 
 	/* load library */
 
@@ -184,6 +184,30 @@ $(document).ready(function () {
 				color: COLORS[2]
 			});
 	});
+
+	var handleClick = function(recognizer) {
+		var x = recognizer.clientX;
+		var y = recognizer.clientY;
+
+		var pickList = globe.wwd.pick(globe.wwd.canvasCoordinates(x, y));
+
+		if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
+			var position = pickList.objects[0].position;
+			
+			//tempGroundStations.push();
+
+			//this.configureGroundStations(tempGroundStations);
+			addGroundStation({
+				name: 'Custom',
+				lat: position.latitude,
+				lon: position.longitude,
+				traffic: TRAFFIC_MD,
+				color: COLORS[2]
+			});
+		}
+	};
+
+	var clickRecognizer = new WorldWind.ClickRecognizer(globe.wwd, handleClick);
 
 	/* live update */
 
