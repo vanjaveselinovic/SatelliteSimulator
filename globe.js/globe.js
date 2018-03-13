@@ -1,3 +1,55 @@
+const TYPE_SINGLE = 'single';
+const TYPE_DOUBLE = 'double';
+
+const COLORS = [
+	{ //red 0
+		r: 244,
+		g: 66,
+		b: 66,
+		traffic: TRAFFIC_HI,
+		trafficName: 'High'
+	},
+	{ //orange 1
+		r: 244,
+		g: 110,
+		b: 66
+	},
+	{ //yellow 2
+		r: 252,
+		g: 172,
+		b: 42,
+		traffic: TRAFFIC_MD,
+		trafficName: 'Medium'
+	},
+	{ //green 3
+		r: 28,
+		g: 204,
+		b: 72,
+		traffic: TRAFFIC_LO,
+		trafficName: 'Low'
+	},
+	{ //cyan 4
+		r: 30,
+		g: 209,
+		b: 219
+	},
+	{ //blue 5
+		r: 49,
+		g: 62,
+		b: 244
+	},
+	{ //purple 6
+		r: 152,
+		g: 60,
+		b: 234
+	},
+	{ //magenta 7
+		r: 216,
+		g: 32,
+		b: 121
+	}
+];
+
 var Globe = function(params) {
 	if (params === undefined) params = {};
 
@@ -12,11 +64,84 @@ var Globe = function(params) {
 	var earthLayer = new WorldWind.BMNGOneImageLayer();
 
 	this.wwd.addLayer(earthLayer);
-	//wwd.addLayer(new WorldWind.BingAerialWithLabelsLayer());
+	//this.wwd.addLayer(new WorldWind.BingAerialWithLabelsLayer());
 
 	//wwd.addLayer(new WorldWind.CompassLayer());
 	//wwd.addLayer(new WorldWind.CoordinatesDisplayLayer(wwd));
 	//wwd.addLayer(new WorldWind.ViewControlsLayer(wwd));
+
+	/* presets */
+
+	this.constellations = {
+		iridium: {
+			name: "Iridium-like",
+			elements: [{
+				numRings: 10,
+				numSatellitesPerRing: 20,
+				inclination: 90,
+				color: COLORS[0],
+				orbitalPeriod: 95,
+				type: TYPE_SINGLE
+			}]
+		},
+		telesat: {
+			name: "Telesat-like",
+			elements: [
+				{
+					numRings: 20,
+					numSatellitesPerRing: 20,
+					inclination: 50,
+					color: COLORS[0],
+					orbitalPeriod: 95,
+					type: TYPE_DOUBLE
+				},
+				{
+					numRings: 5,
+					numSatellitesPerRing: 10,
+					inclination: 80,
+					color: COLORS[5],
+					orbitalPeriod: 95,
+					type: TYPE_DOUBLE
+				},
+			]
+		}
+	};
+
+	this.groundStationPresets = {
+		ottawa: {
+			name: 'Ottawa',
+			lat: 45.4215,
+			lon: -75.6972,
+			traffic: TRAFFIC_LO,
+			color: COLORS[3]
+		},
+		toronto: {
+			name: 'Toronto',
+			lat: 43.6532,
+			lon: -79.3832,
+			traffic: TRAFFIC_MD,
+			color: COLORS[2]
+		},
+		london: {
+			name: 'London',
+			lat: 51.5074,
+			lon: 0.1278,
+			traffic: TRAFFIC_HI,
+			color: COLORS[0]
+		}
+	};
+
+	this.applyPreset = function(preset) {
+		this.configure(preset.elements);
+	};
+
+	/* ground stations */
+
+	var groundStationAttributes = new WorldWind.PlacemarkAttributes(null),
+		groundStationHighlightAttributes,
+		groundStationLayer = new WorldWind.RenderableLayer("Ground Stations");
+
+	var groundStations = [];
 
 	/* orbits */
 
@@ -25,72 +150,7 @@ var Globe = function(params) {
 	var currLon = 0;
 	var mesh = null;
 
-	var red = new WorldWind.Color(1, 0, 0, 0.75);
-	var blue = new WorldWind.Color(0, 0, 1, 0.75);
-
-	var ringAttributes = [];
-
-	ringAttributes[0] = new WorldWind.ShapeAttributes(null);
-	ringAttributes[0].outlineColor = red;
-	ringAttributes[0].interiorColor = new WorldWind.Color(0, 0, 0, 0);
-	ringAttributes[0].applyLighting = false;
-
-	ringAttributes[1] = new WorldWind.ShapeAttributes(ringAttributes[0]);
-	ringAttributes[1].outlineColor = blue;
-
 	var ringLayer = new WorldWind.RenderableLayer("Rings");
-
-	/* presets */
-
-	this.constellations = {
-		iridium: {
-			name: "Iridium-like",
-			elements: [{
-				numRings: 5,
-				numSatellitesPerRing: 10,
-				inclination: 90,
-				ringAttributes: ringAttributes[0],
-				orbitalPeriod: 92*60
-			}]
-		},
-		telesat: {
-			name: "Telesat-like",
-			elements: [
-				{
-					numRings: 10,
-					numSatellitesPerRing: 10,
-					inclination: 50,
-					ringAttributes: ringAttributes[0],
-					orbitalPeriod: 92*60
-				},
-				{
-					numRings: 10,
-					numSatellitesPerRing: 10,
-					inclination: 310,
-					ringAttributes: ringAttributes[0],
-					orbitalPeriod: 92*60
-				},
-				{
-					numRings: 3,
-					numSatellitesPerRing: 10,
-					inclination: 80,
-					ringAttributes: ringAttributes[1],
-					orbitalPeriod: 92*60
-				},
-				{
-					numRings: 3,
-					numSatellitesPerRing: 10,
-					inclination: 280,
-					ringAttributes: ringAttributes[1],
-					orbitalPeriod: 92*60
-				}
-			]
-		}
-	};
-
-	this.applyPreset = function(preset) {
-		this.configure(preset.elements);
-	};
 
 	/* satellites */
 
@@ -118,13 +178,19 @@ var Globe = function(params) {
 	placemarkAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
 	placemarkAttributes.imageSource =
-			new WorldWind.ImageSource(CanvasIcon.Satellite({size: 30, outline: true}));
+			new WorldWind.ImageSource(CanvasIcon.Circle({size: 10, r: 255, g: 0, b: 0}));
 
 	highlightAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
-	highlightAttributes.imageScale = 1.2;
+	highlightAttributes.imageSource =
+			new WorldWind.ImageSource(CanvasIcon.Satellite({size: 30, outline: true}));
 
 	var rings = [];
+	var tempPlacemarkAttributes;
+
+	var ringAttributes = new WorldWind.ShapeAttributes(null);
+	ringAttributes.interiorColor = new WorldWind.Color(0, 0, 0, 0);
+	ringAttributes.applyLighting = false;
 
 	this.configure = function(elements) {
 		ringLayer.removeAllRenderables();
@@ -133,17 +199,40 @@ var Globe = function(params) {
 		rings = [];
 
 		for (var i = 0; i < elements.length; i++) {
+			tempPlacemarkAttributes =
+					new WorldWind.PlacemarkAttributes(placemarkAttributes);
+
+			tempPlacemarkAttributes.imageSource =
+					new WorldWind.ImageSource(CanvasIcon.Circle({
+							size: 5,
+							r: elements[i].color.r,
+							g: elements[i].color.g,
+							b: elements[i].color.b
+						}));
+
+			//var doub = elements[i].type === TYPE_DOUBLE ? 2 : 1;
+
+			//for (var k = 0; k < doub; k++) {
+
+				/*var inc = k === 1 ?
+						360 - elements[i].inclination :
+						elements[i].inclination;*/
+
+			var totalDeg = elements[i].type === TYPE_DOUBLE ? 360 : 180;
+
 			for (var j = 0; j < elements[i].numRings; j++) {
 				rings.push(new Ring({
 					inclination: elements[i].inclination,
-					longitude: -180 + j*(180/elements[i].numRings),
+					longitude: (-1*totalDeg) + j*(totalDeg/elements[i].numRings),
 					numSatellites: elements[i].numSatellitesPerRing,
-					ringAttributes: elements[i].ringAttributes,
-					placemarkAttributes: placemarkAttributes,
+					color: elements[i].color,
+					ringAttributes: new WorldWind.ShapeAttributes(ringAttributes),
+					placemarkAttributes: tempPlacemarkAttributes,
 					highlightAttributes: highlightAttributes,
 					orbitalPeriod: elements[i].orbitalPeriod
 				}));
 			}
+			//}
 		}
 
 		for (var i = 0; i < rings.length; i++) {
@@ -154,6 +243,60 @@ var Globe = function(params) {
 		}
 	};
 
+	/*this.configureGroundStations = function(groundStationsInput) {
+		groundStationLayer.removeAllRenderables();
+
+		groundStations = [];
+
+		for (var i = 0; i < groundStationsInput.length; i++) {
+			groundStations.push(new GroundStation({
+				placemarkAttributes: groundStationAttributes,
+				highlightAttributes: highlightAttributes,
+				position: new WorldWind.Position(
+					groundStationsInput[i].lat,
+					groundStationsInput[i].lon,
+					0
+				)
+			}));
+		}
+
+		for (var i = 0; i < groundStations.length; i++) {
+			groundStationLayer.addRenderable(groundStations[i].placemark);
+		}
+	};*/
+
+	this.applyGroundStations = function(groundStationsInput) {
+		groundStations.length = 0;
+		groundStationLayer.removeAllRenderables();
+
+		for (var i = 0; i < groundStationsInput.length; i++) {
+			groundStationAttributes = new WorldWind.PlacemarkAttributes(placemarkAttributes);
+			groundStationAttributes.imageSource =
+				new WorldWind.ImageSource(CanvasIcon.GroundStation({
+						traffic: groundStationsInput[i].traffic,
+						color: groundStationsInput[i].color
+					}));
+
+			groundStationHighlightAttributes = new WorldWind.PlacemarkAttributes(groundStationAttributes);
+			groundStationHighlightAttributes.imageScale = 1.2;
+
+			groundStations.push(new GroundStation({
+					name: groundStationsInput[i].name,
+					placemarkAttributes: groundStationAttributes,
+					highlightAttributes: groundStationHighlightAttributes,
+					position: new WorldWind.Position(
+						groundStationsInput[i].lat,
+						groundStationsInput[i].lon,
+						0
+					),
+					traffic: groundStationsInput[i].traffic
+				}));
+
+			groundStationLayer.addRenderable(groundStations[groundStations.length - 1].placemark);
+		}
+	};
+
+	this.wwd.addLayer(groundStationLayer);
 	this.wwd.addLayer(ringLayer);
 	this.wwd.addLayer(satelliteLayer);
 
@@ -171,4 +314,29 @@ var Globe = function(params) {
 			//rings[i].update();
 		}
 	}
+
+	var tempGroundStations = [];
+
+	var handleClick = function(recognizer) {
+		var x = recognizer.clientX;
+		var y = recognizer.clientY;
+
+		var pickList = this.wwd.pick(this.wwd.canvasCoordinates(x, y));
+
+		if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
+			var position = pickList.objects[0].position;
+			
+			//tempGroundStations.push();
+
+			//this.configureGroundStations(tempGroundStations);
+			this.addGroundStation({
+				name: 'Custom',
+				lat: position.latitude,
+				lon: position.longitude,
+				traffic: TRAFFIC_MD
+			});
+		}
+	}.bind(this);
+
+	var clickRecognizer = new WorldWind.ClickRecognizer(this.wwd, handleClick);
 }

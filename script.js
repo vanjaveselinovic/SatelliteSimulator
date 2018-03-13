@@ -20,21 +20,53 @@ $(document).ready(function () {
 
 	/* ---------- GLOBE ---------- */
 
-	var numRings = $('.input-nr').val();
-	var numSatellitesPerRing = $('.input-nspr').val();
-	var altitude = $('.input-alt').val();
-	var orbitalPeriod = 92*60; //$('.input-per').val() * 60; //seconds
 	var timeScale = $('#input-ts').val();
 
 	var rotationPeriod = 23*60*60 + 56*60 + 4; //earth's rotation in seconds
 
 	var globe = new Globe();
 
-	$('.preset .name')[0].innerHTML = globe.constellations.iridium.name;
-	$('.preset .name')[1].innerHTML = globe.constellations.telesat.name;
+	/* load library */
+
+	var getPresetHTML = function(presetKey, active) {
+		var activeProp = active ? 'active' : '';
+		return '<div class="section card preset '+activeProp+'" id="'+presetKey+'"><i class="fas fa-check icon"></i><span class="name">'+globe.constellations[presetKey].name+'</span></div>';
+	};
+
+	var constellations = Object.keys(globe.constellations);
+
+	for (var i = 0; i < constellations.length; i++) {
+		$('#presets').append(getPresetHTML(constellations[i], i === 0 ? true : false));
+	}
+
+	/* load configuration */
 
 	var getElementHTML = function(element, i) {
-		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div></div>';
+		var singleChecked = element.type === TYPE_SINGLE ? 'checked' : '';
+		var doubleChecked = element.type === TYPE_DOUBLE ? 'checked' : '';
+
+		var radioSD = '<div class="input-radio"><input type="radio" id="type-single" name="type'+i+'" value="'+TYPE_SINGLE+'" '+singleChecked+'><label for="type-single"><div class="type-icon"></div>Single</label><input type="radio" id="type-double" name="type'+i+'" value="'+TYPE_DOUBLE+'" '+doubleChecked+'><label for="type-double"><div class="type-icon"></div>Double</label></div>';
+
+		var radioColor = '<div class="input-radio-color irc-c">';
+
+		var checkedTemp = '';
+		var colorTemp = '';
+
+		for (var c = 0; c < COLORS.length; c++) {
+
+			colorTemp = 'rgb('
+					+COLORS[c].r+', '
+					+COLORS[c].g+', '
+					+COLORS[c].b+')';
+
+			checkedTemp = element.color === COLORS[c] ? 'checked="checked"' : '';
+
+			radioColor += '<label style="background-color: '+colorTemp+'"><input type="radio" name="color'+i+'" value="color'+c+'" '+checkedTemp+'><i class="fas fa-check icon"></i></label>';
+		}
+
+		radioColor += '</div>'
+
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div>'+radioSD+radioColor+'</div>';
 	}
 
 	var customPreset = {};
@@ -42,7 +74,16 @@ $(document).ready(function () {
 	var applyPreset = function(preset) {
 		customPreset = preset;
 
-		$('.constellation-info').text('Preset: '+preset.name);
+		$('.constellation-info select').empty();
+
+		var constellations = Object.keys(globe.constellations);
+
+		for (var i = 0; i < constellations.length; i++) {
+			$('.constellation-info select').append($('<option>', {
+				value: constellations[i],
+				text: globe.constellations[constellations[i]].name
+			}));
+		}
 
 		globe.applyPreset(preset);
 
@@ -50,6 +91,10 @@ $(document).ready(function () {
 
 		for (var i = 0; i < preset.elements.length; i++) {
 			$('#elements').append(getElementHTML(preset.elements[i], i));
+			$('#elements .card:last-child').css('border-bottom', '8px solid rgb('
+					+preset.elements[i].color.r+', '
+					+preset.elements[i].color.g+', '
+					+preset.elements[i].color.b+')');
 		}
 
 		registerInputs();
@@ -60,15 +105,75 @@ $(document).ready(function () {
 	$('.preset').on('click', function() {
 		$('.preset.active').removeClass('active');
 		$(this).addClass('active');
+
+		applyPreset(globe.constellations[$(this).attr('id')]);
 	});
 
-	$('#iridium').on('click', function() {
-		applyPreset(globe.constellations.iridium);
+	$('#add-constellation').on('click', function() {
+		customPreset.elements.push({
+				numRings: 1,
+				numSatellitesPerRing: 10,
+				inclination: 90,
+				color: COLORS[0],
+				orbitalPeriod: 95,
+				type: TYPE_SINGLE
+			});
+
+		applyPreset(customPreset);
 	});
 
-	$('#telesat').on('click', function() {
-		applyPreset(globe.constellations.telesat);
-	});
+	/* ground stations */
+
+	var getGSHTML = function(gs, i) {
+		var radioColor = '<div class="input-radio-color irc-gs">';
+
+		var checkedTemp = '';
+		var colorTemp = '';
+
+		for (var c = COLORS.length - 1; c >= 0; c--) {
+
+			if (c === 0 || c === 2 || c === 3) {
+				colorTemp = 'rgb('
+						+COLORS[c].r+', '
+						+COLORS[c].g+', '
+						+COLORS[c].b+')';
+
+				checkedTemp = gs.color === COLORS[c] ? 'checked="checked"' : '';
+
+				radioColor += '<label style="background-color: '+colorTemp+'"><input type="radio" name="color-gs'+i+'" value="color'+c+'" '+checkedTemp+'><i class="fas fa-check icon icon-next-to-text"></i> <span>'+COLORS[c].trafficName+'</span></label>';
+			}
+		}
+
+		radioColor += '</div>'
+
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Name</div><div class="iwl-section input"><input type="text" id="" value="'+gs.name+'" autocomplete="off" class="input-name"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Latitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lat+'" autocomplete="off" class="input-numeric input-lat"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Longitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lon+'" autocomplete="off" class="input-numeric input-lon"></div><div class="iwl-section label-after">deg</div></div>'+radioColor+'</div>';
+	};
+
+	var addGroundStation = function(gs) {
+		groundStations.push(gs);
+
+		globe.applyGroundStations(groundStations);
+
+		$('#ground-stations').empty();
+
+		for (var i = 0; i < groundStations.length; i++) {
+			$('#ground-stations').append(getGSHTML(groundStations[i], i));
+			$('#ground-stations .card:last-child').css('border-bottom', '8px solid rgb('
+						+groundStations[i].color.r+', '
+						+groundStations[i].color.g+', '
+						+groundStations[i].color.b+')');
+			}
+
+		registerGSInputs();
+	};
+
+	var groundStations = [];
+
+	var gsKeys = Object.keys(globe.groundStationPresets);
+
+	for (var i = 0; i < gsKeys.length; i++) {
+		addGroundStation(globe.groundStationPresets[gsKeys[i]]);
+	}
 
 	/* live update */
 
@@ -85,13 +190,14 @@ $(document).ready(function () {
 	var numRingsInput;
 	var numSatellitesPerRingInput;
 	var inclinationInput;
+	var periodInput;
 
 	function registerInputs() {
 		$('.input-nr').on('input', function() {
 			numRingsInput = $(this).val();
 
 			if (!isNaN(numRingsInput) && numRingsInput > 0) {
-				$('.input-nr').removeClass('invalid-input');
+				$(this).removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].numRings = numRingsInput;
 				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
@@ -104,7 +210,7 @@ $(document).ready(function () {
 			numSatellitesPerRingInput = $(this).val();
 
 			if (!isNaN(numSatellitesPerRingInput) && numSatellitesPerRingInput > 0) {
-				$('.input-nspr').removeClass('invalid-input');
+				$(this).removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].numSatellitesPerRing = numSatellitesPerRingInput;
 				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
@@ -117,13 +223,46 @@ $(document).ready(function () {
 			inclinationInput = $(this).val();
 
 			if (!isNaN(inclinationInput) && inclinationInput > 0 && inclinationInput < 360) {
-				$('.input-inc').removeClass('invalid-input');
+				$(this).removeClass('invalid-input');
 				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].inclination = inclinationInput;
 				customPreset.name = 'Custom';
 				globe.applyPreset(customPreset);
 			} else {
 				$(this).addClass('invalid-input');
 			}
+		});
+
+		$('.input-per').on('input', function() {
+			periodInput = $(this).val();
+
+			if (!isNaN(periodInput) && periodInput >= 90 && periodInput <= 100) {
+				$(this).removeClass('invalid-input');
+				customPreset.elements[$(this)[0].parentElement.parentElement.parentElement.dataset.i].orbitalPeriod = periodInput;
+				customPreset.name = 'Custom';
+				globe.applyPreset(customPreset);
+			} else {
+				$(this).addClass('invalid-input');
+			}
+		});
+
+		$('.input-radio input').on('click', function() {
+			customPreset.elements[$(this)[0].parentElement.parentElement.dataset.i].type = $(this).val();
+			customPreset.name = 'Custom';
+			globe.applyPreset(customPreset);
+		});
+
+		$('.irc-c input').on('click', function() {
+			var i = $(this)[0].parentElement.parentElement.parentElement.dataset.i;
+			var color = COLORS[parseInt($(this).val().replace('color', ''))];
+			customPreset.elements[i].color = color;
+			customPreset.name = 'Custom';
+
+			$($('#elements .card')[i]).css('border-color', 'rgb('
+					+color.r+', '
+					+color.g+', '
+					+color.b+')');
+
+			globe.applyPreset(customPreset);
 		});
 
 		$('#elements .input-numeric').on('keydown', function(e) {
@@ -134,6 +273,22 @@ $(document).ready(function () {
 					$(this).val(parseInt($(this).val())-1);
 			}
 			$(this).trigger('input');
+		});
+	}
+
+	function registerGSInputs() {
+		$('.irc-gs input').on('click', function() {
+			var i = $(this)[0].parentElement.parentElement.parentElement.dataset.i;
+			var color = COLORS[parseInt($(this).val().replace('color', ''))];
+			groundStations[i].color = color;
+			groundStations[i].traffic = color.traffic;
+
+			$($('#ground-stations .card')[i]).css('border-color', 'rgb('
+					+color.r+', '
+					+color.g+', '
+					+color.b+')');
+
+			globe.applyGroundStations(groundStations);
 		});
 	}
 
@@ -152,19 +307,6 @@ $(document).ready(function () {
 			globe.wwd.redraw();
 		} else {
 			$('.input-alt').addClass('invalid-input');
-		}
-	});
-
-	var periodInput;
-
-	$('.input-per').on('input', function() {
-		periodInput = $('.input-per').val();
-
-		if (!isNaN(periodInput) && periodInput > 0) {
-			$('.input-per').removeClass('invalid-input');
-			orbitalPeriod = periodInput * 60;
-		} else {
-			$('.input-per').addClass('invalid-input');
 		}
 	});
 
@@ -208,12 +350,9 @@ $(document).ready(function () {
 	var ws = new WebService();
 
 	$('#button-run').on('click', function() {
-		ws.request(
-				'http://127.0.0.1:8080/simulator',
-				{
-					dataRate: 1000,
-					packetSize: 2000
-				}
+		ws.postWithData(
+				'http://127.0.0.1:4321/simulator',
+				customPreset
 		);
 	});
 });

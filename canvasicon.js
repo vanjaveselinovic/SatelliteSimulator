@@ -1,3 +1,7 @@
+const TRAFFIC_LO = 'l';
+const TRAFFIC_MD = 'm';
+const TRAFFIC_HI = 'h';
+
 function satelliteIcon(params) {
 	if (params === undefined) params = {};
 
@@ -69,6 +73,70 @@ function satelliteIcon(params) {
 	return canvasComposite;
 }
 
+function circle(params) {
+	if (params === undefined) params = {};
+
+	var size = params.size === undefined ? 100 : params.size;
+
+	var canvasMain = document.createElement("canvas");
+	ctx2d = canvasMain.getContext("2d");
+	canvasMain.width = size;
+	canvasMain.height = size;
+
+	var r = params.r === undefined ? 255 : params.r;
+	var g = params.g === undefined ? 255 : params.g;
+	var b = params.b === undefined ? 255 : params.b;
+
+	ctx2d.fillStyle = "rgb("+r+", "+g+", "+b+")";
+	ctx2d.arc(size/2, size/2, size/2, 0, 2*Math.PI);
+	ctx2d.fill();
+
+	return canvasMain;
+}
+
+function groundStation(params) {
+	if (params === undefined) params = {};
+
+	var size = 0;
+	var color = '';
+	var colorDark = '';
+
+	var r = params.color.r === undefined ? 255 : params.color.r;
+	var g = params.color.g === undefined ? 255 : params.color.g;
+	var b = params.color.b === undefined ? 255 : params.color.b;
+
+	color = "rgb("+r+", "+g+", "+b+")";
+	colorDark = "rgb("+r/2+", "+g/2+", "+b/2+")";
+
+	if (params.traffic === TRAFFIC_LO) {
+		size = 8;
+	}
+	else if (params.traffic === TRAFFIC_MD) {
+		size = 10;
+	}
+	else {
+		size = 12;
+	}
+
+	var canvasMain = document.createElement("canvas");
+	ctx2d = canvasMain.getContext("2d");
+	canvasMain.width = size*2;
+	canvasMain.height = size*2;
+	
+	ctx2d.rotate(Math.PI/4);
+	ctx2d.translate(size, -1*size/2);
+
+	ctx2d.fillStyle = colorDark;
+	ctx2d.fillRect(0, 0, size, size);
+
+	ctx2d.fillStyle = color;
+	ctx2d.fillRect(2, 2, size-4, size-4);
+
+	return canvasMain;
+}
+
 var CanvasIcon = {
-	Satellite: satelliteIcon
+	Satellite: satelliteIcon,
+	Circle: circle,
+	GroundStation: groundStation
 };

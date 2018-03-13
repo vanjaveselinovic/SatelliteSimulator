@@ -60,7 +60,6 @@ var Satellite = function(params) {
 
     var satrec = satellite.twoline2satrec(tleLine1, tleLine2);
     var positionAndVelocity, positionEci, gmst, positionGd, lonRad, latRad, height;
-    const EARTH_RADIUS = 6371000; //in meters
 
 	function getPosition(date) {
 	    positionAndVelocity = satellite.propagate(satrec, date);
@@ -73,7 +72,7 @@ var Satellite = function(params) {
 	    
 	    lonRad = positionGd.longitude;
 	    latRad = positionGd.latitude;
-	    height = positionGd.height;
+	    height = Math.max(positionGd.height, 500 + EARTH_RADIUS/1000);
 
 	    if (lonRad < -1*Math.PI) lonRad += 2*Math.PI;
 
