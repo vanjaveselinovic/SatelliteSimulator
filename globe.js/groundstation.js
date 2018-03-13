@@ -2,6 +2,7 @@ var GroundStation = function(params) {
 	if (params === undefined) params = {};
 
 	var name = params.name;
+	var uniqueName = params.uniqueName;
 	var placemarkAttributes = params.placemarkAttributes;
 	var highlightAttributes = params.highlightAttributes;
 	var position = params.position;

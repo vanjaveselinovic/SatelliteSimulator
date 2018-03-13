@@ -112,6 +112,7 @@ var Globe = function(params) {
 	this.groundStationPresets = {
 		ottawa: {
 			name: 'Ottawa',
+			uniqueName: 'Ottawa',
 			lat: 45.4215,
 			lon: -75.6972,
 			traffic: TRAFFIC_LO,
@@ -119,6 +120,7 @@ var Globe = function(params) {
 		},
 		toronto: {
 			name: 'Toronto',
+			uniqueName: 'Toronto',
 			lat: 43.6532,
 			lon: -79.3832,
 			traffic: TRAFFIC_MD,
@@ -126,6 +128,7 @@ var Globe = function(params) {
 		},
 		london: {
 			name: 'London',
+			uniqueName: 'London',
 			lat: 51.5074,
 			lon: 0.1278,
 			traffic: TRAFFIC_HI,
@@ -245,31 +248,10 @@ var Globe = function(params) {
 		}
 	};
 
-	/*this.configureGroundStations = function(groundStationsInput) {
-		groundStationLayer.removeAllRenderables();
-
-		groundStations = [];
-
-		for (var i = 0; i < groundStationsInput.length; i++) {
-			groundStations.push(new GroundStation({
-				placemarkAttributes: groundStationAttributes,
-				highlightAttributes: highlightAttributes,
-				position: new WorldWind.Position(
-					groundStationsInput[i].lat,
-					groundStationsInput[i].lon,
-					0
-				)
-			}));
-		}
-
-		for (var i = 0; i < groundStations.length; i++) {
-			groundStationLayer.addRenderable(groundStations[i].placemark);
-		}
-	};*/
-
 	this.applyGroundStations = function(groundStationsInput) {
 		groundStations.length = 0;
 		groundStationLayer.removeAllRenderables();
+		groundStationNames = {};
 
 		for (var i = 0; i < groundStationsInput.length; i++) {
 			groundStationAttributes = new WorldWind.PlacemarkAttributes(placemarkAttributes);
@@ -284,6 +266,7 @@ var Globe = function(params) {
 
 			groundStations.push(new GroundStation({
 					name: groundStationsInput[i].name,
+					uniqueName: groundStationsInput[i].uniqueName,
 					placemarkAttributes: groundStationAttributes,
 					highlightAttributes: groundStationHighlightAttributes,
 					position: new WorldWind.Position(

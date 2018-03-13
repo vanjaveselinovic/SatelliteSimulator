@@ -190,29 +190,50 @@ $(document).ready(function () {
 		registerGSInputs();
 	};
 
+	var groundStationNames = {};
+
+	var addGroundStation = function(gs) {
+		gs.uniqueName = gs.name;
+
+		if (!groundStationNames.hasOwnProperty(gs.name)) groundStationNames[gs.name] = 1;
+		else {
+			groundStationNames[gs.name]++;
+			gs.uniqueName += groundStationNames[gs.name];
+		}
+
+		groundStations.push(gs);
+		applyGroundStations(groundStations);
+	};
+
+	var changeGroundStationName = function(i, name) {
+		groundStations[i].name = name;
+		groundStations[i].uniqueName = name;
+
+		if (!groundStationNames.hasOwnProperty(name)) groundStationNames[name] = 1;
+		else {
+			groundStationNames[name]++;
+			groundStations[i].uniqueName += groundStationNames[name];
+		}
+	};
+
 	var gsKeys = Object.keys(globe.groundStationPresets);
 
 	for (var i = 0; i < gsKeys.length; i++) {
-		groundStations.push(globe.groundStationPresets[gsKeys[i]]);
+		addGroundStation(globe.groundStationPresets[gsKeys[i]]);
 	}
 
-	applyGroundStations(groundStations);
-
 	$('#gs-presets .preset').on('click', function() {
-		groundStations.push(globe.groundStationPresets[$(this).attr('id')]);
-		applyGroundStations(groundStations);
+		addGroundStation(globe.groundStationPresets[$(this).attr('id')]);
 	});
 
-	$('#add-ground-station').on('click', function() {
-		groundStations.push({
+	$('#add-ground-station').on('click', function() {		
+		addGroundStation({
 				name: 'Custom',
 				lat: 0,
 				lon: 0,
 				traffic: TRAFFIC_MD,
 				color: COLORS[2]
 			});
-
-		applyGroundStations(groundStations);
 	});
 
 	var handleClick = function(recognizer) {
@@ -224,18 +245,13 @@ $(document).ready(function () {
 		if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
 			var position = pickList.objects[0].position;
 			
-			//tempGroundStations.push();
-
-			//this.configureGroundStations(tempGroundStations);
-			groundStations.push({
+			addGroundStation({
 				name: 'Custom',
 				lat: position.latitude,
 				lon: position.longitude,
 				traffic: TRAFFIC_MD,
 				color: COLORS[2]
 			});
-
-			applyGroundStations(groundStations);
 		}
 	};
 
@@ -365,8 +381,8 @@ $(document).ready(function () {
 
 			if (nameInput !== '') {
 				$(this).removeClass('invalid-input');
-				groundStations[$(this)[0].parentElement.parentElement.parentElement.dataset.i].name = nameInput;
-				globe.applyGroundStations(groundStations);
+				var i = $(this)[0].parentElement.parentElement.parentElement.dataset.i;
+				changeGroundStationName(i, nameInput);
 			} else {
 				$(this).addClass('invalid-input');
 			}
