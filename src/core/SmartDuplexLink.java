@@ -30,7 +30,7 @@ public class SmartDuplexLink extends DuplexLink {
 	public Set<AutoPacketSender> usedBy = new HashSet<>();
 	
 	public SmartDuplexLink(AbsoluteDate date, Station a, Station b) {
-		this.setDate(date);
+		this.date = date;
 		
 		if(b.isGroundStation()) {
 			stationA=b;
@@ -50,6 +50,8 @@ public class SmartDuplexLink extends DuplexLink {
 
 		this.a_interface.attach(this, true);
 		this.b_interface.attach(this, true);
+		
+		this.setDate(date);
 	}
 	
 	public boolean isViable() {

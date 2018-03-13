@@ -20,6 +20,7 @@ import com.sun.net.httpserver.HttpServer;
 import core.Manager;
 import data.ConstellationData;
 import data.GroundStationData;
+import data.OutputData;
 import data.SimulationConfigurationData;
 
 import org.json.JSONArray;
@@ -78,6 +79,8 @@ public class Server {
 		}
 	}
 
+	static OutputData lastOutput = null;
+	static Object manager_lock = new Object();
 	static class SimulateHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange t) throws IOException {
@@ -161,14 +164,27 @@ public class Server {
 									);
 					
 					// Run simulation
+					new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							synchronized(manager_lock) {
+								System.out.println("ready to simulate");
+								
+								Manager manager = new Manager(simulationConfigurationData);
+								
+								System.out.println("manager set up");
+								
+								manager.run();
+								
+								lastOutput = manager.output();
+								
+								System.out.println("Done!");
+								
+							}
+						}
 					
-					System.out.println("ready to simulate");
-					
-					Manager manager = new Manager(simulationConfigurationData);
-					
-					System.out.println("manager set up");
-					
-					manager.run();
+					}).start();
 					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

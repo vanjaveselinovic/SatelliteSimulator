@@ -8,5 +8,5 @@ public class EventData {
 	public double endSimulationTime;//time in s from simulation start
 	public String endUtcTime;//utc timestamp
 	public PathData[] paths;
-	public Satellite[] satelliteData;
+	public SatelliteData[] satelliteData;
 }

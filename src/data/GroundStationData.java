@@ -9,7 +9,7 @@ public class GroundStationData {
 	
 	public int rate; // in Mb/s
 	
-	public PacketSenderData[] senders;//things being sent from this node, can be empty or null
+	public PacketSenderData[] senders = {};//things being sent from this node, can be empty or null
 	
 	//it is always running
 	//it does not move

@@ -46,7 +46,7 @@ public class Manager implements Runnable{
 	double simTime;
 	double lastSatUpdateSimTime;
 	double simTimeSinceLastSatUpdate;
-	public final double deltaT;
+	public double deltaT;
 	
 	private OutputData output = new OutputData();
 	
@@ -63,8 +63,13 @@ public class Manager implements Runnable{
 	Map<Integer, Integer> goodPackets = new HashMap<>();
 	
 	public Manager(SimulationConfigurationData inputData) {
+		if(Simulator.hasInstance()) {
+			System.err.println("A simulation is already running");
+			return;
+		}
 		try {
 			this.initialTime = new AbsoluteDate(inputData.startTime, Earth.utc);
+			this.lastSatUpdateTime = this.initialTime;
 			this.time = this.initialTime; 
 			this.deltaT = inputData.deltaT;
 
@@ -277,7 +282,7 @@ public class Manager implements Runnable{
 			sateliteData.add(sat.getData(lastSatUpdateTime));
 		}
 		
-		event.satelliteData = sateliteData.toArray(new Satellite[0]);
+		event.satelliteData = sateliteData.toArray(new SatelliteData[0]);
 		
 		events.add(event);
 		

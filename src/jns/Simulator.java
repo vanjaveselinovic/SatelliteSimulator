@@ -71,6 +71,10 @@ public class Simulator implements Runnable {
 		m_instance = null;
 	}
 	
+	public static boolean hasInstance() {
+		return m_instance != null;
+	}
+	
 	/**
 	 * Attach a new element to the simulator to be updated regularly during the
 	 * simulation.
