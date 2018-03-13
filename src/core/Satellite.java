@@ -2,6 +2,7 @@ package core;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.GeodeticPoint;
+import org.orekit.errors.OrekitException;
 import org.orekit.orbits.CartesianOrbit;
 import org.orekit.orbits.Orbit;
 import org.orekit.propagation.Propagator;
@@ -28,13 +29,20 @@ public class Satellite extends Station{
 	Orbit lastOrbit;
 	private Propagator orbitPropagator;
 	
-	public Satellite(Node node, Propagator orbitPropagator, Orbit orbit) {
-		super.node = node;
-		super.table = node.getIPHandler().getRoutingTable();
+	public Satellite(String name, Propagator orbitPropagator, Orbit orbit) {
+		super(name);
 		this.orbitPropagator = orbitPropagator;
 		this.lastOrbit = orbit;
 	}
 
+	public void updatePosition(AbsoluteDate newTime) {
+		try {
+			lastOrbit = orbitPropagator.propagate(newTime).getOrbit();
+		} catch (OrekitException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	@Override
 	public Vector3D getSpacePositionVector(AbsoluteDate date) {
 		return lastOrbit.getPVCoordinates().getPosition();

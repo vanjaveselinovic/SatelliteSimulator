@@ -47,8 +47,7 @@ public class SimplexInterface extends Interface {
 
 	public void attach(Link link, boolean inheritBandwidth) {
 		if (!(link instanceof SimplexLink)) {
-			System.err.println("SIMULATOR ERROR: You can only attach a SimplexLink" + " to a SimplexInterface!");
-			System.exit(1);
+			throw new RuntimeException("SIMULATOR ERROR: You can only attach a SimplexLink" + " to a SimplexInterface!");
 		}
 
 		SimplexLink simplexlink = (SimplexLink) link;

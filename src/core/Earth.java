@@ -14,7 +14,7 @@ import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
 
 public class Earth {
-	public static final double atmosphereHeight = 10000d;
+	public static final double atmosphereHeight = 12000d;//height of the atmosphere in m
 	public static final CelestialBody body;
 	public static final OneAxisEllipsoid shape;
 	public static final OneAxisEllipsoid atmosphere;
@@ -22,7 +22,7 @@ public class Earth {
 	public static final Frame spaceFrame;
 	public static final TimeScale utc;
 	public static final double mu = 3.986004415e+14;// Earth's mu value
-	private static AbsoluteDate initialDate;
+	//private static AbsoluteDate initialDate;
 	
 	static {
 		System.setProperty("orekit.data.path", "orekit-data.zip");
@@ -38,23 +38,7 @@ public class Earth {
 			throw new RuntimeException(t);
 		}
 	}
-	
-	public static void setStartDate(int year, int month, int day, int hour, int minute) {
-		initialDate = new AbsoluteDate(year, month, day, hour, minute, 0d, utc);
-	}
-	
-	public static void setStartDate(String utcDateString) {
-		initialDate = new AbsoluteDate(utcDateString, utc);
-	}
-	
-	public static AbsoluteDate getDate(double elapsedTime) {
-		return getInitialDate().shiftedBy(elapsedTime);
-	}
-	
-	public static AbsoluteDate getInitialDate() {
-		return initialDate;
-	}
-	
+		
 	public static Vector3D toGroundVelocity(Vector3D spaceVelocity, AbsoluteDate date) {
 		try {
 			return spaceFrame.getTransformTo(groundFrame, date).transformVector(spaceVelocity);
@@ -127,29 +111,56 @@ public class Earth {
 	public static double distance(AbsoluteDate date, Station s1, Station s2) {
 		return s1.getSpacePositionVector(date).distance(s2.getSpacePositionVector(date));
 	}
-		
+	
+	
 	public static boolean lineOfSight(Station s1, Station s2, AbsoluteDate date) {
 		try {
-			return shape.getIntersectionPoint(new Line(s1.getSpacePositionVector(date), s2.getSpacePositionVector(date), 1d), s1.getSpacePositionVector(date), spaceFrame, date) == null;
+			Vector3D pa = s1.getSpacePositionVector(date);
+			Vector3D pb = s2.getSpacePositionVector(date);
+			GeodeticPoint gp = shape.getIntersectionPoint(new Line(pa, pb, 1d), midpoint(pa, pb), spaceFrame, date);
+			
+			//if there is no intersection point, return true
+			if(gp == null) {
+				return true;
+			}
+			Vector3D pi = toSpacePosition(gp, date);
+
+			//if there is an intersection point, return true iff it is not between the two stations
+			return !((FastMath.min(pa.getX(), pb.getX()) < pi.getX()) && (pi.getX() < FastMath.max(pa.getX(), pb.getX())) &&
+			         (FastMath.min(pa.getY(), pb.getY()) < pi.getY()) && (pi.getY() < FastMath.max(pa.getY(), pb.getY())) &&
+			         (FastMath.min(pa.getZ(), pb.getZ()) < pi.getZ()) && (pi.getZ() < FastMath.max(pa.getZ(), pb.getZ())));
 		} catch (Throwable t) {
 			return false;
 		}
 	}
 	
-	public static boolean lineOfSightNoAtmosphere(Station s1, Station s2, AbsoluteDate date) {
+	public static boolean lineOfSightConsideringAtmosphere(Station s1, Station s2, AbsoluteDate date) {
 		try {
-			return atmosphere.getIntersectionPoint(new Line(s1.getSpacePositionVector(date), s2.getSpacePositionVector(date), 1d), s1.getSpacePositionVector(date), spaceFrame, date) == null;
+			Vector3D pa = s1.getSpacePositionVector(date);
+			Vector3D pb = s2.getSpacePositionVector(date);
+			GeodeticPoint gp = atmosphere.getIntersectionPoint(new Line(pa, pb, 1d), midpoint(pa, pb), spaceFrame, date);
+			
+			//if there is no intersection point, return true
+			if(gp == null) {
+				return true;
+			}
+			Vector3D pi = toSpacePosition(gp, date);
+
+			//if there is an intersection point, return true iff it is not between the two stations
+			return !((FastMath.min(pa.getX(), pb.getX()) < pi.getX()) && (pi.getX() < FastMath.max(pa.getX(), pb.getX())) &&
+			         (FastMath.min(pa.getY(), pb.getY()) < pi.getY()) && (pi.getY() < FastMath.max(pa.getY(), pb.getY())) &&
+			         (FastMath.min(pa.getZ(), pb.getZ()) < pi.getZ()) && (pi.getZ() < FastMath.max(pa.getZ(), pb.getZ())));
 		} catch (Throwable t) {
 			return false;
 		}
 	}
 	
-	public static double groundStationAngle(GroundStation gs, Satellite sat, AbsoluteDate date) {
-		Vector3D gSpace = gs.getSpacePositionVector(date);
-		Vector3D sSpace = sat.getSpacePositionVector(date);
+	public static double groundStationAngle(Station groundStation, Station sattelite, AbsoluteDate date) {
+		Vector3D gSpace = groundStation.getSpacePositionVector(date);
+		Vector3D sSpace = sattelite.getSpacePositionVector(date);
 		
 		Vector3D gToSspace = new Vector3D(sSpace.getX()-gSpace.getX(), sSpace.getY()-gSpace.getY(), sSpace.getZ()-gSpace.getZ());
-		return Vector3D.angle(Earth.toSpaceVelocity(gs.getGroundPoint(date).getZenith(), date), gToSspace);
+		return Vector3D.angle(Earth.toSpaceVelocity(groundStation.getGroundPoint(date).getZenith(), date), gToSspace);
 	}
 	
 	public static Vector3D relativeVelocity(Station observer, Station subject, AbsoluteDate date) {
@@ -183,7 +194,11 @@ public class Earth {
 		return FastMath.sqrt(FastMath.max(relativeVelocityLength*relativeVelocityLength-dopplerVelocity*dopplerVelocity, 0.d))/vectorLength(relativePosition);		
 		
 	}
-	
+	private static Vector3D midpoint(Vector3D a, Vector3D b) {
+		return new Vector3D(a.getX()+b.getX()/2d,
+				            a.getY()+b.getY()/2d,
+				            a.getZ()+b.getZ()/2d);
+	}
 	private static double vectorLength(Vector3D v) {
 		return FastMath.sqrt(v.getX()*v.getX()+v.getY()*v.getY()+v.getZ()*v.getZ());
 	}

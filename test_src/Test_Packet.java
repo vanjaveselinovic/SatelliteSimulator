@@ -15,9 +15,6 @@ import java.io.IOException;
 
 import core.VerboseTrace;
 
-
-
-
 public class Test_Packet {
 
   public static void main(String args[]) {
@@ -38,27 +35,43 @@ public class Test_Packet {
     Node router=new Node("Router");
     Node dest=new Node("Destination node");
 
-    sim.attachWithTrace(src,trace);
-    sim.attachWithTrace(router,trace);
-    sim.attachWithTrace(dest,trace);
+    Interface src_iface=new DuplexInterface(srcAdr);
+    Interface dest_iface=new DuplexInterface(desAdr);
+    Interface route_iface192=new DuplexInterface(srcAdr);
+    Interface route_iface128=new DuplexInterface(desAdr);
+
+    Link link1=new DuplexLink(10000,0.01);
+    Link link2=new DuplexLink(5000,0.03);
+    
+    
+    sim.attachWithTrace(src);
+    sim.attachWithTrace(router);
+    sim.attachWithTrace(dest);
 
     // Give source and dest node a duplex network interface
 
-    Interface src_iface=new DuplexInterface(srcAdr);
     src.attach(src_iface);
     src.addDefaultRoute(src_iface);
 
-    Interface dest_iface=new DuplexInterface(desAdr);
     dest.attach(dest_iface);
     dest.addDefaultRoute(dest_iface);
 
-    sim.attachWithTrace(src_iface,trace);
-    sim.attachWithTrace(dest_iface,trace);
+    sim.attachWithTrace(src_iface);
+    sim.attachWithTrace(dest_iface);
 
     // The router needs two duplex interfaces, for obvious reasons
 
-    Interface route_iface192=new DuplexInterface(srcAdr);
-    Interface route_iface128=new DuplexInterface(desAdr);
+
+
+    // Cunningly force the router to fragment the packet we're sending by
+    // setting a small MTU.
+    route_iface128.setMTU(600);
+
+    sim.attachWithTrace(route_iface192);
+    sim.attachWithTrace(route_iface128);
+    
+
+    // All we need now is two links
     router.attach(route_iface192);
     router.attach(route_iface128);
     router.addRoute(srcAdr,new IPAddr(255,255,255,0),
@@ -66,27 +79,14 @@ public class Test_Packet {
     router.addRoute(desAdr,new IPAddr(255,255,255,0),
 		    route_iface128);
 
-    // Cunningly force the router to fragment the packet we're sending by
-    // setting a small MTU.
-    route_iface128.setMTU(600);
-
-    sim.attachWithTrace(route_iface192,trace);
-    sim.attachWithTrace(route_iface128,trace);
-    
-
-    // All we need now is two links
-
-    Link link1=new DuplexLink(10000,0.01);
-    Link link2=new DuplexLink(5000,0.03);
-
     route_iface192.attach(link1,true);
     route_iface128.attach(link2,true);
 
     src_iface.attach(link1,true);
     dest_iface.attach(link2,true);
 
-    sim.attachWithTrace(link1,trace);
-    sim.attachWithTrace(link2,trace);
+    sim.attachWithTrace(link1);
+    sim.attachWithTrace(link2);
       
     // Stop the simulator after 4 seconds
 
@@ -107,7 +107,7 @@ public class Test_Packet {
     }
     catch (IOException e) {
       System.out.println("An I/O exception occured during the simulation!");
-      System.exit(1);
+      throw new RuntimeException(e);
     }
     
   }  

@@ -6,6 +6,9 @@ import org.orekit.time.AbsoluteDate;
 public class RoutingUtil {
 	public static final double BOLTZMANN_CONSTANT = 1.38064852e-23d;
 	public static final double dB_BOLTZMANN_CONSTANT = 10.0d*FastMath.log10(BOLTZMANN_CONSTANT);
+	public static final double MAX_ERROR_RATE = 1e-6;
+	public static final double SATTELITE_ANTENNA_MAX_ANGLE = 10.0d *FastMath.PI/180.0d;
+	public static final int MAX_SATTELITE_CONNECTIONS_PER_SATTELITE = 4;
 	//in SI units
 	public static double DISH_SIZE_GROUND = 1.0d;
 	public static double DISH_SIZE_SAT = 0.6d;

@@ -6,6 +6,12 @@ import org.orekit.time.AbsoluteDate;
 
 public class GroundStation extends Station{
 	private GeodeticPoint groundPoint;
+	String name;
+
+	public GroundStation(String name, GeodeticPoint groundPoint) {
+		super(name);
+		this.groundPoint = groundPoint;
+	}
 
 	@Override
 	public Vector3D getSpacePositionVector(AbsoluteDate date) {

@@ -36,9 +36,9 @@ public class Test_LinkDown {
     Node router=new Node("Router");
     Node dest=new Node("Destination node");
 
-    sim.attachWithTrace(src,trace);
-    sim.attachWithTrace(router,trace);
-    sim.attachWithTrace(dest,trace);
+    sim.attachWithTrace(src);
+    sim.attachWithTrace(router);
+    sim.attachWithTrace(dest);
 
 
     // Give source and dest node a duplex network interface
@@ -51,8 +51,8 @@ public class Test_LinkDown {
     dest.attach(dest_iface);
     dest.addDefaultRoute(dest_iface);
 
-    sim.attachWithTrace(src_iface,trace);
-    sim.attachWithTrace(dest_iface,trace);
+    sim.attachWithTrace(src_iface);
+    sim.attachWithTrace(dest_iface);
 
 
     // The router needs two duplex interfaces, for obvious reasons
@@ -71,8 +71,8 @@ public class Test_LinkDown {
     
     route_iface128.setMTU(600);
 
-    sim.attachWithTrace(route_iface192,trace);
-    sim.attachWithTrace(route_iface128,trace);
+    sim.attachWithTrace(route_iface192);
+    sim.attachWithTrace(route_iface128);
     
 
     // All we need now is two links
@@ -86,8 +86,8 @@ public class Test_LinkDown {
     src_iface.attach(link1,true);
     dest_iface.attach(link2,true);
 
-    sim.attachWithTrace(link1,trace);
-    sim.attachWithTrace(link2,trace);
+    sim.attachWithTrace(link1);
+    sim.attachWithTrace(link2);
 
 
     // Stop the simulator after 4 seconds

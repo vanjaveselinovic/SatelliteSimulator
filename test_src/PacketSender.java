@@ -14,6 +14,6 @@ public class PacketSender extends Command {
 
     public void execute() {
       data.m_ip.send(data.m_ip.getAddress(),new IPAddr(128,116,11,20),1000,null,
-		Protocols.TCP);
+		Protocols.UDP);
     }
 }

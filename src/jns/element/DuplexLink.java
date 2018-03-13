@@ -1,5 +1,7 @@
 package jns.element;
 
+import org.hipparchus.util.FastMath;
+
 import jns.trace.Trace;
 
 /**
@@ -9,6 +11,8 @@ public class DuplexLink extends Link {
 
 	public SimplexLink m_link1, m_link2;
 
+	public DuplexLink() {}
+	
 	public DuplexLink(int bandwidth, double delay) {
 		m_link1 = new SimplexLink(bandwidth, delay);
 		m_link2 = new SimplexLink(bandwidth, delay);
@@ -64,16 +68,16 @@ public class DuplexLink extends Link {
 		return m_link1.getStatus();
 	}
 
-	public int getBandwidth() {
-		return m_link1.getBandwidth();
+	public double getBandwidth() {
+		return FastMath.min(m_link1.getBandwidth(),m_link2.getBandwidth());
 	}
 
 	public double getDelay() {
-		return m_link1.getDelay();
+		return FastMath.max(m_link1.getDelay(),m_link2.getDelay());
 	}
 	
 	public double getError() {
-		return m_link1.getError();
+		return FastMath.max(m_link1.getError(),m_link1.getError());
 	}
 
 	public Interface getIncomingInterface() {

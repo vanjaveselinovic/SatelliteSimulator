@@ -2,6 +2,12 @@ package core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
@@ -18,6 +24,16 @@ class ScratchPad {
 
 	@Test
 	void test() throws Exception {
+		List<Integer> ld = new ArrayList<>();
+		ld.add(0);
+		ld.add(1);
+		ld.add(2);
+		ld.add(3);
+		ld.add(4);
+		ld.add(5);
+		
+		System.out.println(ld.indexOf(5));
+		/*
 		Earth.setStartDate(2018, 1, 1, 1, 1);
 		Earth.getInitialDate();
 		GeodeticPoint gp = new GeodeticPoint(45.18,-75.7,114.0);//null island
@@ -36,7 +52,7 @@ class ScratchPad {
 			//System.out.println(Earth.getPositionVector(gp)+"\t:\t"+Earth.getGeopoint(Earth.getPositionVector(gp),ad));
 			
 		}
-		
+	*/	
 	}
 
 }

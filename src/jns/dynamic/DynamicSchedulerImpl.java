@@ -161,7 +161,7 @@ public class DynamicSchedulerImpl extends UnicastRemoteObject implements Dynamic
 		// Create the node
 		Node node = new Node(IPAddress.toString());
 		// Attach to the simulator
-		m_simulator.attachWithTrace(node, m_trace);
+		m_simulator.attachWithTrace(node);
 		// Create a queue of messages destined for the external node
 		Queue incoming = new Queue();
 		// Add the queue to the hashmap of incoming quueues
@@ -207,11 +207,11 @@ public class DynamicSchedulerImpl extends UnicastRemoteObject implements Dynamic
 		// Need to create an interface on either node.
 		Interface a2b = new DuplexInterface(nodeA);
 		a.attach(a2b);
-		m_simulator.attachWithTrace(a2b, m_trace);
+		m_simulator.attachWithTrace(a2b);
 
 		Interface b2a = new DuplexInterface(nodeB);
 		b.attach(b2a);
-		m_simulator.attachWithTrace(b2a, m_trace);
+		m_simulator.attachWithTrace(b2a);
 
 		// Then create the link
 		Link link = new DuplexLink(m_bandwidth, m_delay, m_errorRate);
@@ -221,7 +221,7 @@ public class DynamicSchedulerImpl extends UnicastRemoteObject implements Dynamic
 		b2a.attach(link, true);
 
 		// attach the link to the simulator
-		m_simulator.attachWithTrace(link, m_trace);
+		m_simulator.attachWithTrace(link);
 
 		// Add the link to m_links
 		m_links.put(linkName, link);

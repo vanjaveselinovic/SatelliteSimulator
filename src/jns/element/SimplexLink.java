@@ -65,8 +65,8 @@ public class SimplexLink extends Link {
 	}
 
 	public void dump() {
-		System.out.println("SimplexLink: Bandwidth " + m_bandwidth + " bps, Delay " + m_delay + " seconds");
-		System.out.println("Error rate: " + m_error);
+		System.out.println("SimplexLink: Bandwidth " + getBandwidth() + " bps, Delay " + getDelay() + " seconds");
+		System.out.println("Error rate: " + getError());
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class SimplexLink extends Link {
 
 		
 		//(1-bitErrorRate)^messageLengthInBits
-		if (Math.pow( 1.0d-m_error, ((double)packet.length)*8.0d) < Math.random());
+		if (Math.pow( 1.0d-getError(), ((double)packet.length)*8.0d) < Math.random());
 			packet.crc = false;
 
 		// Put packet in the arrived packets queue and indicate to interface
@@ -115,7 +115,7 @@ public class SimplexLink extends Link {
 		} else {
 			System.err.println("SIMULATOR ERROR: Incoming interface on link " + "already occupied.");
 			dump();
-			System.exit(1);
+			throw new RuntimeException();
 		}
 	}
 
@@ -129,7 +129,7 @@ public class SimplexLink extends Link {
 		} else {
 			System.err.println("SIMULATOR ERROR: Outgoing interface on link " + "already occupied.");
 			dump();
-			System.exit(1);
+			throw new RuntimeException();
 		}
 	}
 
@@ -186,8 +186,8 @@ public class SimplexLink extends Link {
 		return m_status;
 	}
 
-	public int getBandwidth() {
-		return m_bandwidth;
+	public double getBandwidth() {
+		return Double.valueOf(m_bandwidth);
 	}
 
 	public double getDelay() {
@@ -234,7 +234,7 @@ public class SimplexLink extends Link {
 		// There are two things we need to do. First, schedule a command that
 		// will make the link clear to send after all the bits are on it
 
-		double transmittime = (double) (packet.length << 3) / (double) m_bandwidth;
+		double transmittime = (double) (packet.length << 3) / (double) getBandwidth();
 
 		class LinkSendDelayCommand extends Command {
 			Link m_link;
@@ -257,25 +257,8 @@ public class SimplexLink extends Link {
 
 		// Second, schedule a command for the packet arrival.
 
-		double totaltime = m_delay + transmittime;
+		double totaltime = getDelay() + transmittime;
 		Simulator.getInstance().schedule(new ElementUpdateCommand(this, Simulator.getInstance().getTime() + totaltime));
 	}
-
-	/*
-	@Override
-	public String dumpJson() {
-		
-		return 
-				"{"
-				+ "\"id\":"+this.id+","
-				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
-				+ "\"bandwidth\":\""+this.getBandwidth()+"\","
-				+ "\"delay\":\""+this.getDelay()+"\","
-				+ "\"error\":\""+this.getError()+"\","
-				+ "\"source\":\""+this.m_out.getIPAddr()+"\","
-				+ "\"destination\":\""+this.m_in.getIPAddr()+"\","
-				+ "}";
-	}*/
-	
 	
 }

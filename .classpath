@@ -25,6 +25,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/SatelliteSimulator/lib/gson-2.8.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/uncommons-maths-1.2.3.jar" sourcepath="lib/uncommons-maths-1.2.3-src.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

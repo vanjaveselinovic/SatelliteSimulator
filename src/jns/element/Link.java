@@ -22,7 +22,7 @@ public abstract class Link extends Element {
 	/**
 	 * Return the bandwidth of this link in bits per second (bps);
 	 */
-	public abstract int getBandwidth();
+	public abstract double getBandwidth();
 
 	/**
 	 * Return the delay of this link in seconds (This will normally be a fraction

@@ -6,6 +6,7 @@ import jns.Simulator;
 import jns.agent.RandomSink;
 import jns.agent.RandomSource;
 import jns.element.DuplexInterface;
+import jns.element.DuplexLink;
 import jns.element.IPHandler;
 import jns.element.Interface;
 import jns.element.Node;
@@ -53,8 +54,8 @@ public class NetTest {
 		sim.attach(route_iface192);
 		sim.attach(route_iface128);
 
-		VariableDuplexLink link_src_router = new VariableDuplexLink(trace, 1000000, 0.001);
-		VariableDuplexLink link_router_dest = new VariableDuplexLink(trace, 1000000, 0.001);
+		DuplexLink link_src_router = null;//new VariableDuplexLink(trace, 1000000, 0.001);
+		DuplexLink link_router_dest = null;//new VariableDuplexLink(trace, 1000000, 0.001);
 
 		src_iface.attach(link_src_router, true);
 		route_iface192.attach(link_src_router, true);

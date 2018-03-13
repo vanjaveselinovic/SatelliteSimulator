@@ -8,7 +8,12 @@ import jns.util.PriorityQueue;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
+
+import core.Manager;
 
 /**
  * Simulator is the main class in JNS. It contains the main loop that will
@@ -17,7 +22,7 @@ import java.util.Vector;
  */
 public class Simulator implements Runnable {
 
-	private Vector m_elements;
+	private Set<Element> m_elements;
 
 	private double m_time; // Time in seconds
 
@@ -28,6 +33,8 @@ public class Simulator implements Runnable {
 	private PriorityQueue m_commands; // Queue of Command objects
 
 	private Trace m_trace; // the trace object
+	
+	private Manager man;
 
 	/**
 	 * Default Constructor. Initialises the internal structure and resets the time
@@ -37,7 +44,7 @@ public class Simulator implements Runnable {
 	 * @see getInstance
 	 */
 	private Simulator() {
-		m_elements = new Vector();
+		m_elements = new HashSet<>();
 		m_commands = new PriorityQueue();
 		m_time = 0;
 		m_finished = false;
@@ -68,7 +75,7 @@ public class Simulator implements Runnable {
 	 *            the element to add
 	 */
 	public void attach(Element element) {
-		attachWithTrace(element, this.m_trace);
+		m_elements.add(element);
 	}
 
 	/**
@@ -76,9 +83,9 @@ public class Simulator implements Runnable {
 	 * and traced afterwards. Saves you the time of calling element.attach(trace)
 	 * separately.
 	 */
-	public void attachWithTrace(Element element, Trace trace) {
-		m_elements.addElement(element);
-		element.attach(trace);
+	public void attachWithTrace(Element element) {
+		attach(element);
+		element.attach(m_trace);
 	}
 
 	/**
@@ -105,16 +112,13 @@ public class Simulator implements Runnable {
 
 		System.out.println("----------[STATIC ELEMENTS]----------");
 
-		Enumeration e = m_elements.elements();
-		while (e.hasMoreElements()) {
-			Element curelement = (Element) e.nextElement();
-
+		for (Element curelement : m_elements) {
 			curelement.dump();
 			System.out.println("---------------");
 		}
 
 		System.out.println("------------[COMMANDS]---------------");
-		e = m_commands.elements();
+		Enumeration e = m_commands.elements();
 		while (e.hasMoreElements()) {
 			Command curcommand = (Command) e.nextElement();
 			System.out.println(curcommand.getName() + ": " + curcommand.getTime());
@@ -128,7 +132,7 @@ public class Simulator implements Runnable {
 	 * @return an Enumeration of the elements in the simulator
 	 */
 	public Enumeration enumerateElements() {
-		return m_elements.elements();
+		return java.util.Collections.enumeration(m_elements);
 	}
 
 	/**
@@ -148,26 +152,25 @@ public class Simulator implements Runnable {
 
 		while (m_commands.size() > 0 || !m_finished) {
 
-			// Needs to do a busy wait untill there is a command...
+			// Needs to do a busy wait until there is a command...
 			Command current_command = null;
 			synchronized (m_commands) {
-				try {
-					while (m_commands.size() == 0) {
+				
+				while (m_commands.size() <= 0) {
+					try {
 						m_commands.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 
 				current_command = (Command) m_commands.peek();
 				m_commands.pop();
 			}
 
-			// Display extra information if it is needed
-			if (Preferences.verbose)
-				current_command.dump();
-
 			m_time = current_command.getTime();
+			man.setTime(m_time);
+			man.recordCommand(current_command);
 			current_command.execute();
 
 		}
@@ -240,6 +243,15 @@ public class Simulator implements Runnable {
 	 */
 	public void setFinished() {
 		m_finished = true;
+	}
+
+	public void setManager(Manager manager) {
+		this.man = manager;
+	}
+
+	public Manager getManager() {
+		// TODO Auto-generated method stub
+		return man;
 	}
 
 }

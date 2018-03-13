@@ -213,7 +213,7 @@ public class IPHandler extends Element implements CL_Agent {
 
 			if (!curpacket.crc) {
 				// TODO: Generate drop packet event ?
-				
+				Simulator.getInstance().getManager().droppedPacket(curpacket);
 				// Get next packet instead
 				continue;
 			}
@@ -229,6 +229,7 @@ public class IPHandler extends Element implements CL_Agent {
 
 				if (curiface.getIPAddr().equals(curpacket.destination)) {
 					Simulator.verbose("Packet at final dest");
+					Simulator.getInstance().getManager().gotPacket(curpacket);
 					is_final_dest = true;
 					break;
 				}

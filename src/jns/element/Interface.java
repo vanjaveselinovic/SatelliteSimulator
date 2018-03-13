@@ -18,7 +18,7 @@ public abstract class Interface extends Element implements Agent {
 	public final static int SENDER = 2;
 
 	protected IPAddr m_addr; // IP address of this interface
-	protected int m_bandwidth; // Bandwidth
+	//protected int m_bandwidth; // Bandwidth
 	protected IPHandler m_handler; // The IP handler that uses this iface
 	protected int m_mtu; // Maximum Transfer Unit in bytes
 	protected Node m_node; // The node this is attached to
@@ -33,7 +33,7 @@ public abstract class Interface extends Element implements Agent {
 	 */
 	public Interface(IPAddr addr) {
 		m_addr = addr;
-		m_bandwidth = 0;
+		//m_bandwidth = 0;
 		m_mtu = Preferences.default_iface_MTU;
 		m_handler = null;
 		m_node = null;
@@ -51,7 +51,7 @@ public abstract class Interface extends Element implements Agent {
 	 */
 	public Interface(IPAddr addr, int bandwidth) {
 		m_addr = addr;
-		m_bandwidth = bandwidth;
+		//m_bandwidth = bandwidth;
 		m_mtu = Preferences.default_iface_MTU;
 		m_handler = null;
 		m_node = null;
@@ -97,9 +97,9 @@ public abstract class Interface extends Element implements Agent {
 		return m_addr;
 	}
 
-	public int getBandwidth() {
-		return m_bandwidth;
-	}
+	//public int getBandwidth() {
+	//	return m_bandwidth;
+	//}
 
 	public abstract Node getNode();
 

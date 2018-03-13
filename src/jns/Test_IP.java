@@ -44,59 +44,59 @@ public class Test_IP {
 
 		// Create the 4 nodes, and attach with tracing to the simulator
 		Node A = new Node("A");
-		sim.attachWithTrace(A, trace);
+		sim.attachWithTrace(A);
 		Node B = new Node("B");
-		sim.attachWithTrace(B, trace);
+		sim.attachWithTrace(B);
 		Node C = new Node("C");
-		sim.attachWithTrace(C, trace);
+		sim.attachWithTrace(C);
 		Node D = new Node("D");
-		sim.attachWithTrace(D, trace);
+		sim.attachWithTrace(D);
 
 		// Setup the interfaces for all the 4 nodes, attach to the corresponding
 		// nodes and attach with trace to the simulator
 		Interface ABIface = new DuplexInterface(new IPAddr(192, 168, 0, 1));
 		A.attach(ABIface);
-		sim.attachWithTrace(ABIface, trace);
+		sim.attachWithTrace(ABIface);
 		Interface ACIface = new DuplexInterface(new IPAddr(192, 168, 0, 1));
 		A.attach(ACIface);
-		sim.attachWithTrace(ACIface, trace);
+		sim.attachWithTrace(ACIface);
 		Interface ADIface = new DuplexInterface(new IPAddr(192, 168, 0, 1));
 		A.attach(ADIface);
-		sim.attachWithTrace(ADIface, trace);
+		sim.attachWithTrace(ADIface);
 
 		Interface BAIface = new DuplexInterface(new IPAddr(192, 168, 0, 2));
 		B.attach(BAIface);
-		sim.attachWithTrace(BAIface, trace);
+		sim.attachWithTrace(BAIface);
 
 		Interface BCIface = new DuplexInterface(new IPAddr(192, 168, 0, 2));
 		B.attach(BCIface);
-		sim.attachWithTrace(BCIface, trace);
+		sim.attachWithTrace(BCIface);
 
 		Interface BDIface = new DuplexInterface(new IPAddr(192, 168, 0, 2));
 		B.attach(BDIface);
-		sim.attachWithTrace(BDIface, trace);
+		sim.attachWithTrace(BDIface);
 
 		Interface CAIface = new DuplexInterface(new IPAddr(192, 168, 0, 3));
 		C.attach(CAIface);
-		sim.attachWithTrace(CAIface, trace);
+		sim.attachWithTrace(CAIface);
 
 		Interface CBIface = new DuplexInterface(new IPAddr(192, 168, 0, 3));
 		C.attach(CBIface);
-		sim.attachWithTrace(CBIface, trace);
+		sim.attachWithTrace(CBIface);
 
 		Interface CDIface = new DuplexInterface(new IPAddr(192, 168, 0, 3));
 		C.attach(CDIface);
-		sim.attachWithTrace(CDIface, trace);
+		sim.attachWithTrace(CDIface);
 
 		Interface DAIface = new DuplexInterface(new IPAddr(192, 168, 0, 4));
 		D.attach(DAIface);
-		sim.attachWithTrace(DAIface, trace);
+		sim.attachWithTrace(DAIface);
 		Interface DBIface = new DuplexInterface(new IPAddr(192, 168, 0, 4));
 		D.attach(DBIface);
-		sim.attachWithTrace(DBIface, trace);
+		sim.attachWithTrace(DBIface);
 		Interface DCIface = new DuplexInterface(new IPAddr(192, 168, 0, 4));
 		D.attach(DCIface);
-		sim.attachWithTrace(DCIface, trace);
+		sim.attachWithTrace(DCIface);
 
 		// Create the 3 links needed between the nodes, attach them to the
 		// appropriate interfaces and attach with trace to the simulator
@@ -125,12 +125,12 @@ public class Test_IP {
 		DCIface.attach(d, true);
 
 		// attach to simulator
-		sim.attachWithTrace(a, trace);
-		sim.attachWithTrace(b, trace);
-		sim.attachWithTrace(c, trace);
-		sim.attachWithTrace(d, trace);
-		sim.attachWithTrace(e, trace);
-		sim.attachWithTrace(f, trace);
+		sim.attachWithTrace(a);
+		sim.attachWithTrace(b);
+		sim.attachWithTrace(c);
+		sim.attachWithTrace(d);
+		sim.attachWithTrace(e);
+		sim.attachWithTrace(f);
 
 		// add routes
 		A.addRoute(new IPAddr(192, 168, 0, 2), new IPAddr(255, 255, 255, 0), ABIface);
