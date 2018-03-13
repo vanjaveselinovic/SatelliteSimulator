@@ -341,7 +341,7 @@ $(document).ready(function () {
 			customPreset.elements.splice(element.dataset.i, 1);
 			$(element).remove();
 
-			globe.applyPreset(customPreset);
+			applyPreset(customPreset);
 		});
 	}
 
