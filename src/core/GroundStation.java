@@ -1,11 +1,18 @@
 package core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.time.AbsoluteDate;
 
+import data.GroundStationData;
+import data.PacketSenderData;
+
 public class GroundStation extends Station{
 	private GeodeticPoint groundPoint;
+	private List<AutoPacketSender> senders = new ArrayList<>();
 	String name;
 
 	public GroundStation(String name, GeodeticPoint groundPoint) {
@@ -39,6 +46,26 @@ public class GroundStation extends Station{
 	}
 	
 	
+	public GroundStationData asData() {
+		GroundStationData data = new GroundStationData();
+		
+		data.id = this.ip.getIntegerAddress();
+		data.name = this.name;
+		data.latitude = this.groundPoint.getLatitude();
+		data.longitude = this.groundPoint.getLongitude();
+		data.altitude = this.groundPoint.getAltitude();
+		
+		List<PacketSenderData> senderData = new ArrayList<>();
+		for(AutoPacketSender s : senders) {
+			senderData.add(s.asData());
+		}
+		
+		data.senders = senderData.toArray(new PacketSenderData[0]);
+		return data;
+	}
 
+	public void add(AutoPacketSender autoPacketSender) {
+		senders.add(autoPacketSender);
+	}
 	
 }

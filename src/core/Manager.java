@@ -3,20 +3,22 @@ package core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.Stack;
 
 import org.orekit.time.AbsoluteDate;
 
+import data.EventData;
+import data.GroundStationData;
+import data.OutputData;
+import data.PathData;
+import data.RingData;
+import data.SatelliteData;
+import data.SimulationConfigurationData;
 import jns.Simulator;
-import jns.command.Command;
 import jns.element.IPPacket;
 
 public class Manager implements Runnable{
@@ -36,9 +38,23 @@ public class Manager implements Runnable{
 	double lastSatUpdateSimTime;
 	double simTimeSinceLastSatUpdate;
 	
+	private OutputData output = new OutputData();
 	
-	public Manager() {
+	List<EventData> events = new ArrayList<>();
+	
+	//used to record event data
+	Map<AutoPacketSender, List<SmartDuplexLink>> paths = new HashMap<>();
+	Map<Integer, Double> lastGoodPackets = new HashMap<>();//id to start time, also, do not clear
+	Map<Integer, Integer> latePackets = new HashMap<>();
+	Map<Integer, List<Double>> packetDelays = new HashMap<>();
+	Map<Integer, Integer> damagedPackets = new HashMap<>();
+	Map<Integer, Integer> droppedPackets = new HashMap<>();
+	Map<Integer, Integer> goodPackets = new HashMap<>();
+	
+	public Manager(SimulationConfigurationData inputData) {
 		
+		
+		//output
 	}
 	
 	@Override
@@ -54,7 +70,7 @@ public class Manager implements Runnable{
 		simTimeSinceLastSatUpdate = simTime-lastSatUpdateSimTime;
 		time = initialTime.shiftedBy(simTime);
 		
-		/*///uncomment this and satellite connection parameters is updated continuously
+		/*///uncomment this and satellite connection parameters are updated continuously
 		for(SmartDuplexLink l : links) {
 			l.setDate(time);
 		}
@@ -62,7 +78,102 @@ public class Manager implements Runnable{
 		
 	}
 
+	/*
+	 * write an event
+	 * update times
+	 * clear out old log data
+	 * routing
+	 * update routing tables
+	 */
 	public void updateSattelitePositions() {
+		//time to write the EventData for the lest deltaT
+		EventData event = new EventData();
+		event.startSimulationTime = this.lastSatUpdateSimTime;
+		event.startUtcTime = this.lastSatUpdateTime.toString();
+		event.endSimulationTime = this.simTime;
+		event.endUtcTime = this.time.toString();
+		
+		List<PathData> pathDatas = new ArrayList<>();
+		
+		for(AutoPacketSender aps: paths.keySet()) {
+			PathData pathData = new PathData();
+			pathData.packetSenderID = aps.id;////////////////////////////////////////////
+			
+			List<Integer> ids = new ArrayList<>();
+			Station tx = aps.getSource();
+			ids.add(tx.ip.getIntegerAddress()); 
+			for(SmartDuplexLink link : paths.get(aps)) {
+				tx = link.otherStation(tx);
+				ids.add(tx.ip.getIntegerAddress());
+			}
+			pathData.stationIDs = new int[ids.size()];
+			for(int i = 0; i<pathData.stationIDs.length; i++) {
+				pathData.stationIDs[i] = ids.get(i);////////////////////////////////////////////
+			}
+			
+			
+			List<Double> delays = packetDelays.get(aps.id);
+			if(delays == null) {
+				delays = new ArrayList<>();
+			}
+			pathData.delays = new double[delays.size()];
+			for(int i = 0; i<pathData.delays.length; i++) {
+				pathData.delays[i] = delays.get(i);//////////////////////////////////////////
+			}
+			
+			
+			Integer temp = goodPackets.get(aps.id);
+			if(temp == null) {
+				temp = 0;
+			}
+			pathData.sucsessfulPackets = temp;/////////////////////////////////////////
+			
+			temp = latePackets.get(aps.id);
+			if(temp == null) {
+				temp = 0;
+			}
+			pathData.outOfOrderPackets = temp;////////////////////////////////////////
+			
+			temp = droppedPackets.get(aps.id);
+			if(temp == null) {
+				temp = 0;
+			}
+			pathData.droppedPackets = temp;///////////////////////////////////////////
+			
+			temp = damagedPackets.get(aps.id);
+			if(temp == null) {
+				temp = 0;
+			}
+			pathData.damagedPackets = temp;///////////////////////////////////////////
+			
+			
+			pathDatas.add(pathData);
+		}
+		
+		event.paths = pathDatas.toArray(new PathData[0]);
+		
+		List<SatelliteData> sateliteData = new ArrayList<>();
+		for(Satellite sat : this.satellites) {
+			sateliteData.add(sat.getData(lastSatUpdateTime));
+		}
+		
+		event.satelliteData = sateliteData.toArray(new Satellite[0]);
+		
+		events.add(event);
+		
+		goodPackets = new HashMap<>();
+		latePackets = new HashMap<>();
+		packetDelays = new HashMap<>();
+		damagedPackets = new HashMap<>();
+		droppedPackets = new HashMap<>();
+		
+		
+		//update the times
+		lastSatUpdateTime = time;
+		lastSatUpdateSimTime = simTime;
+		simTimeSinceLastSatUpdate = 0d;
+		
+
 		for(Satellite sat : satellites) {
 			sat.updatePosition(time);
 		}
@@ -75,7 +186,7 @@ public class Manager implements Runnable{
 			s.updateViableLinks();
 		}
 		
-		Map<AutoPacketSender, List<SmartDuplexLink>> paths = new HashMap<>();
+		paths = new HashMap<>();
 		
 		//re-routing starts here
 		for(AutoPacketSender sender:senders) {
@@ -208,38 +319,71 @@ public class Manager implements Runnable{
 		}
 	}
 	
-	public void recordCommand(Command current_command) {
-		// TODO Auto-generated method stub
-		//"AutoPacketCreate";
-		
-	}
-
-	public void damagedPacket(IPPacket curpacket) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void gotPacket(IPPacket curpacket) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void dropPacket(IPPacket curpacket) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	
+	public void damagedPacket(IPPacket packet) {
+		String[] data = ((String)packet.data).split(":");
+		int id = Integer.valueOf(data[0]);
+		
+		if(damagedPackets.get(id) == null) {
+			damagedPackets.put(id, 0);
+		}
+		damagedPackets.put(id, damagedPackets.get(id)+1);
+	}
+
+	public void dropPacket(IPPacket packet) {
+		String[] data = ((String)packet.data).split(":");
+		int id = Integer.valueOf(data[0]);
+		
+		if(droppedPackets.get(id) == null) {
+			droppedPackets.put(id, 0);
+		}
+		droppedPackets.put(id, droppedPackets.get(id)+1);
+	}
+
+
+	public void gotPacket(IPPacket packet) {
+		String[] data = ((String)packet.data).split(":");
+		int id = Integer.valueOf(data[0]);
+		double startTime = Double.valueOf(data[1]);
+		
+		if(lastGoodPackets.get(id) == null) {
+			lastGoodPackets.put(id, -1d);
+		}
+		
+		if(lastGoodPackets.get(id) < startTime) {
+			//the packet is on time
+			lastGoodPackets.put(id, startTime);
+			
+			if(goodPackets.get(id) == null) {
+				goodPackets.put(id, 0);
+			}
+			goodPackets.put(id, goodPackets.get(id)+1);
+		}else {
+			//the packet is late
+			if(latePackets.get(id) == null) {
+				latePackets.put(id, 0);
+			}
+			latePackets.put(id, latePackets.get(id)+1);
+		}
+		
+		if(packetDelays.get(id) == null) {
+			packetDelays.put(id, new ArrayList<>());
+		}
+		packetDelays.get(id).add(simTime-startTime);
+	}
+	
+	public OutputData getOutputData() {
+		
+			//String startTime;//utc start time string
+			//double deltaT;
+			//int numberOfStations;//stations are numbered in the range [1, max] inclusive. Stations are ground stations and/or satellites
+			//GroundStationData[] groundStations;
+			//RingData[] rings;
+			//EventData[] events;//in order
+		return output;
+	}
 	
 }
 
-class Tupple<L,R>{
-	public L l;
-	public R r;
-	
-	public Tupple(L l, R r) {
-		this.l=l;
-		this.r=r;
-	}
-}
 

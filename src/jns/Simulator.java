@@ -170,7 +170,6 @@ public class Simulator implements Runnable {
 
 			m_time = current_command.getTime();
 			man.setTime(m_time);
-			man.recordCommand(current_command);
 			current_command.execute();
 
 		}

@@ -8,6 +8,7 @@ import org.orekit.orbits.Orbit;
 import org.orekit.propagation.Propagator;
 import org.orekit.time.AbsoluteDate;
 
+import data.SatelliteData;
 import jns.element.IPHandler;
 import jns.element.Node;
 import jns.trace.Trace;
@@ -66,6 +67,16 @@ public class Satellite extends Station{
 	@Override
 	public boolean isGroundStation() {
 		return false;
+	}
+	
+	public SatelliteData getData(AbsoluteDate date) {
+		SatelliteData data = new SatelliteData();
+		data.id = this.ip.getIntegerAddress();
+		Vector3D groundPos = this.getGroundPositionVector(date);
+		data.x = groundPos.getX();
+		data.y = groundPos.getY();
+		data.x = groundPos.getZ();
+		return data;
 	}
 
 }
