@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 public class Server {
 	public static void main(String[] args) throws Exception {
-		HttpServer server = HttpServer.create(new InetSocketAddress(4321), 0);
+		HttpServer server = HttpServer.create(new InetSocketAddress(1234), 0);
 		server.createContext("/simulator", new MyHandler());
 		server.setExecutor(null);
 		server.start();
@@ -82,14 +82,30 @@ public class Server {
 					
 					// Ground stations
 					
-					GroundStationData groundStations[] = new GroundStationData[1];
+					GroundStationData groundStations[] = new GroundStationData[groundStationsArr.length()];
+					
+					JSONObject currentGroundStation;
+					
+					for (int i = 0; i < groundStations.length; i++) {
+						currentGroundStation = groundStationsArr.getJSONObject(i);
+						
+						groundStations[i] = new GroundStationData(
+									currentGroundStation.getString("name"),
+									currentGroundStation.getDouble("lat"),
+									currentGroundStation.getDouble("lon"),
+									currentGroundStation.getString("traffic")
+								);
+					}
 					
 					System.out.println("Done taking in configuration data");
 					
 					SimulationConfigurationData simulationConfigurationData =
 							new SimulationConfigurationData(
 										constellations,
-										groundStations
+										groundStations,
+										simulationObj.getString("startTime"),
+										simulationObj.getString("endTime"),
+										simulationObj.getDouble("interval")
 									);
 					
 					// Run simulation

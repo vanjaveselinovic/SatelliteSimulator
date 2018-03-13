@@ -464,9 +464,9 @@ $(document).ready(function () {
 	endTime.setSeconds(endTime.getSeconds() + 60);
 
 	var simulationConfig = {
-		startTime: startTime.getTime(),
-		endTime: endTime.getTime(),
-		updateInterval: 1
+		startTime: startTime.getTime()+'',
+		endTime: endTime.getTime()+'',
+		interval: 1
 	};
 
 	/* ---------- CHOREOGRAPHING ---------- */
@@ -497,7 +497,7 @@ $(document).ready(function () {
 
 	$('#button-run').on('click', function() {
 		ws.postWithData(
-				'http://127.0.0.1:4321/simulator',
+				'http://127.0.0.1:1234/simulator',
 				{
 					constellations: customPreset,
 					groundStations: groundStations,
