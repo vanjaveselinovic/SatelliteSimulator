@@ -175,6 +175,16 @@ $(document).ready(function () {
 		addGroundStation(globe.groundStationPresets[gsKeys[i]]);
 	}
 
+	$('#add-ground-station').on('click', function() {
+		addGroundStation({
+				name: 'Custom',
+				lat: 0,
+				lon: 0,
+				traffic: TRAFFIC_MD,
+				color: COLORS[2]
+			});
+	});
+
 	/* live update */
 
 	$('#input-ts.input-numeric').on('keydown', function(e) {
@@ -276,7 +286,47 @@ $(document).ready(function () {
 		});
 	}
 
+	var nameInput;
+	var latitudeInput;
+	var longitudeInput;
+
 	function registerGSInputs() {
+		$('.input-name').on('input', function() {
+			nameInput = $(this).val();
+
+			if (nameInput !== '') {
+				$(this).removeClass('invalid-input');
+				groundStations[$(this)[0].parentElement.parentElement.parentElement.dataset.i].name = nameInput;
+				globe.applyGroundStations(groundStations);
+			} else {
+				$(this).addClass('invalid-input');
+			}
+		});
+
+		$('.input-lat').on('input', function() {
+			latitudeInput = $(this).val();
+
+			if (!isNaN(latitudeInput) && latitudeInput >= -90 && latitudeInput <= 90) {
+				$(this).removeClass('invalid-input');
+				groundStations[$(this)[0].parentElement.parentElement.parentElement.dataset.i].lat = latitudeInput;
+				globe.applyGroundStations(groundStations);
+			} else {
+				$(this).addClass('invalid-input');
+			}
+		});
+
+		$('.input-lon').on('input', function() {
+			longitudeInput = $(this).val();
+
+			if (!isNaN(longitudeInput) && longitudeInput >= -180 && latitudeInput <= 180) {
+				$(this).removeClass('invalid-input');
+				groundStations[$(this)[0].parentElement.parentElement.parentElement.dataset.i].lon = longitudeInput;
+				globe.applyGroundStations(groundStations);
+			} else {
+				$(this).addClass('invalid-input');
+			}
+		});
+
 		$('.irc-gs input').on('click', function() {
 			var i = $(this)[0].parentElement.parentElement.parentElement.dataset.i;
 			var color = COLORS[parseInt($(this).val().replace('color', ''))];
@@ -289,6 +339,16 @@ $(document).ready(function () {
 					+color.b+')');
 
 			globe.applyGroundStations(groundStations);
+		});
+
+		$('#ground-stations .input-numeric').on('keydown', function(e) {
+			if (!isNaN($(this).val())) {
+				if (e.which === 38)
+					$(this).val(parseInt($(this).val())+1);
+				else if (e.which === 40)
+					$(this).val(parseInt($(this).val())-1);
+			}
+			$(this).trigger('input');
 		});
 	}
 
