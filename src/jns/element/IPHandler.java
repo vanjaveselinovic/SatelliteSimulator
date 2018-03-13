@@ -116,7 +116,7 @@ public class IPHandler extends Element implements CL_Agent {
 		Simulator.verbose("Updating IP Handler");
 
 		// Process packets waiting to be sent
-
+		theOuterLoop:
 		while (m_packets_send.size() > 0) {
 
 			// Remove a packet from the queue
@@ -126,19 +126,10 @@ public class IPHandler extends Element implements CL_Agent {
 
 			Vector targets = new Vector();
 
-			if (curpacket.destination.isMulticastAddress()) {
-
-				// Get all the targets, as a multicast packet should be sent to all the
-				// neigbouring nodes..
-				targets = m_route.getAllRoutes();
-				// deliver the packet to myself, as that is the required behaviour of
-				// multicast
-				m_packets_recv.pushBack(new IPPacket(curpacket));
-			} else {
-				Interface t = m_route.getRoute(curpacket.destination);
-				if(t != null) {
-					targets.add(t);
-				}
+			
+			Interface t = m_route.getRoute(curpacket.destination);
+			if(t != null) {
+				targets.add(t);
 			}
 
 			boolean canSend = true;
@@ -149,7 +140,7 @@ public class IPHandler extends Element implements CL_Agent {
 					canSend = false;
 					Simulator.verbose("The interface on which to send to: " + curpacket.destination
 							+ " is busy, pushing packet onto msg queue again.");
-					break;
+					break theOuterLoop;
 				}
 			}
 			if(targets.size() == 0) {

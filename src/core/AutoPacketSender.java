@@ -12,7 +12,7 @@ import jns.util.Protocols;
 public class AutoPacketSender{
 
 	public static final int MIN_PACKET_SIZE = 1;
-	public static final int MAX_PACKET_SIZE = 500;//derived from the UDP max size
+	public static final int MAX_PACKET_SIZE = 500*1000;//derived from the UDP max size, and then multiplied by 1000
 	
 	private ExponentialGenerator InterArrivalTimeRng;
 	private ContinuousUniformGenerator packetSizeRng;
@@ -40,7 +40,9 @@ public class AutoPacketSender{
 		this.sim = Simulator.getInstance();
 		this.sender = sender;
 		sender.add(this);
+		
 		this.dest = dest;
+		
 		this.createEvent(Double.MIN_NORMAL);
 	}
 	

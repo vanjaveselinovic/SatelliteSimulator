@@ -67,9 +67,9 @@ public class IPAddr {
 	 * Added function to detect multicast addresses.
 	 */
 	public boolean isMulticastAddress() {
-		if (((m_addr >> 24) & 0xff) >= 224 && ((m_addr >> 24) & 0xff) < 240) {
-			return true;
-		}
+		//if (((m_addr >> 24) & 0xff) >= 224 && ((m_addr >> 24) & 0xff) < 240) {
+		//	return true;
+		//}
 		return false;
 	}
 

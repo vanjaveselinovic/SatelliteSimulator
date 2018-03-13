@@ -8,6 +8,7 @@ public class QuietTrace extends Trace {
 	
 	@Override
 	public void attach(Traceable t) {
+		//t.attach(this);
 	}
 	
 	@Override
@@ -16,6 +17,7 @@ public class QuietTrace extends Trace {
 
 	@Override
 	public void handleEvent(Event e) {
+		//System.out.println(e.getName());
 	}
 
 	@Override

@@ -91,12 +91,27 @@ public class Manager implements Runnable{
 			}
 			
 			for(GroundStationData data : inputData.groundStations) {
-				for(PacketSenderData senderData:data.senders) {
-					senders.add(new AutoPacketSender(
-							groundStationMap.get(data.name), 
-							groundStationMap.get(senderData.receverName),
-							senderData.rate,
-							senderData.id));
+				if(data.senders.length > 0) {
+					for(PacketSenderData senderData:data.senders) {
+						senders.add(new AutoPacketSender(
+								groundStationMap.get(data.name), 
+								groundStationMap.get(senderData.receverName),
+								senderData.rate,
+								senderData.id));
+					}
+				}else {
+					int rollingSenderId = 1;
+					for(GroundStation tx : groundStationMap.values()) {
+						for(GroundStation rx : groundStationMap.values()) {
+							if(tx!=rx) {
+								senders.add(new AutoPacketSender(
+										tx, 
+										rx,
+										tx.rate,
+										rollingSenderId++));
+							}
+						}
+					}
 				}
 			}
 			
@@ -123,7 +138,7 @@ public class Manager implements Runnable{
 			    
 				for(int r = 0; r<constelation.numberOfRings; r++) {
 
-			    	double raan = Math.PI * (constelation.doubled?2d:1d) * ((double) r) / ((double) constelation.numberOfRings);
+			    	double raan = Math.PI * (constelation.doubled?2d:1d) * ((double) r) / ((double) constelation.numberOfRings) + longitudeOfAscendingNode;
 			    	
 					RingData ringData = new RingData();
 					ringData.ringNumber = ringIdNumber++;
@@ -211,6 +226,7 @@ public class Manager implements Runnable{
 	 * update routing tables
 	 */
 	public void updateSattelitePositions() {
+		System.out.println("Update sat positions");
 		//time to write the EventData for the lest deltaT
 		EventData event = new EventData();
 		event.startSimulationTime = this.lastSatUpdateSimTime;
@@ -413,7 +429,7 @@ public class Manager implements Runnable{
 		
 		while(!queue.isEmpty() && !(dest==queue.get(0))) {
 			Station point = queue.remove(0);
-			if(!point.isGroundStation()) {
+			if(point == source || !point.isGroundStation()) {
 				for(SmartDuplexLink link: point.getViableLinks()) {
 					List<SmartDuplexLink> l = new ArrayList<>(point.path);
 					l.add(link);

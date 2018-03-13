@@ -52,6 +52,9 @@ public class SmartDuplexLink extends DuplexLink {
 		this.b_interface.attach(this, true);
 		
 		this.setDate(date);
+		
+		a.addLink(this);
+		b.addLink(this);
 	}
 	
 	public boolean isViable() {

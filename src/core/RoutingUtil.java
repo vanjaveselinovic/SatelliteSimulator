@@ -7,7 +7,7 @@ public class RoutingUtil {
 	public static final double BOLTZMANN_CONSTANT = 1.38064852e-23d;
 	public static final double dB_BOLTZMANN_CONSTANT = 10.0d*FastMath.log10(BOLTZMANN_CONSTANT);
 	public static final double MAX_ERROR_RATE = 1e-6;
-	public static final double SATTELITE_ANTENNA_MAX_ANGLE = 10.0d *FastMath.PI/180.0d;
+	public static final double SATTELITE_ANTENNA_MAX_ANGLE = 90.0d *FastMath.PI/180.0d;
 	public static final int MAX_SATTELITE_CONNECTIONS_PER_SATTELITE = 4;
 	//in SI units
 	public static double DISH_SIZE_GROUND = 1.0d;
@@ -44,7 +44,17 @@ public class RoutingUtil {
 	}
 		
 	public static double error(AbsoluteDate date, Station tx, Station rx) {
-		return org.apache.commons.math3.special.Erf.erfc(FastMath.sqrt(signal_to_noise(date, tx, rx)));
+		//double stn = signal_to_noise(date, tx, rx);
+		//double rootStn = FastMath.sqrt(stn);
+		//return org.apache.commons.math3.special.Erf.erfc(rootStn);
+		
+		double distance = Earth.distance(date, tx, rx);
+		//double dBpower = (tx.isGroundStation()?(POWER_TRANSMIT_FROM_GROUND):(POWER_TRANSMIT_FROM_SAT));
+		//double E = FastMath.PI
+		
+		
+		return 9e-7;//FastMath.pow(10d, (6.02*bandwidth(date, tx, rx)+1.761)/10);//Math.min(1/distance, 9e-7);
+		
 	}
 	
 	private static double signal_to_noise(AbsoluteDate date, Station tx, Station rx) {

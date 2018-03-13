@@ -154,11 +154,13 @@ public class Simulator implements Runnable {
 	 * simulation has started. NOTE: The events still need to be in the right
 	 * temporal order though!
 	 */
+	private double lastPrintedTime = 0d;
+	private long events = 0;
 	public void run() {
 
 		m_trace.writePreamble();
 
-		while (m_commands.size() > 0 || !m_finished) {
+		while (m_commands.size() > 0 && !m_finished) {
 
 			// Needs to do a busy wait until there is a command...
 			Command current_command = null;
@@ -177,9 +179,17 @@ public class Simulator implements Runnable {
 			}
 
 			m_time = current_command.getTime();
+
+			if(m_time - lastPrintedTime>0.05d) {
+				System.out.println("Time:"+m_time+"s");
+				lastPrintedTime=m_time;
+			}
 			man.setTime(m_time);
 			current_command.execute();
-
+			events++;
+			if((events&2047L) == 0) {
+				System.out.println("Event# "+events+" at time "+m_time+"s");
+			}
 		}
 		m_trace.writePostamble();
 		Simulator.verbose("The simulator has stopped, and has successfully written a JVS file");

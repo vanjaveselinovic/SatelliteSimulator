@@ -25,14 +25,8 @@ class ScratchPad {
 	@Test
 	void test() throws Exception {
 		List<Integer> ld = new ArrayList<>();
-		ld.add(0);
-		ld.add(1);
-		ld.add(2);
-		ld.add(3);
-		ld.add(4);
-		ld.add(5);
 		
-		System.out.println(ld.indexOf(5));
+		System.out.println(ld.remove(0));
 		/*
 		Earth.setStartDate(2018, 1, 1, 1, 1);
 		Earth.getInitialDate();
