@@ -7,7 +7,7 @@ const COLORS = [
 		g: 66,
 		b: 66,
 		traffic: TRAFFIC_HI,
-		trafficName: 'High'
+		trafficName: '100 Mb/s'
 	},
 	{ //orange 1
 		r: 244,
@@ -19,14 +19,14 @@ const COLORS = [
 		g: 172,
 		b: 42,
 		traffic: TRAFFIC_MD,
-		trafficName: 'Medium'
+		trafficName: '10 Mb/s'
 	},
 	{ //green 3
 		r: 28,
 		g: 204,
 		b: 72,
 		traffic: TRAFFIC_LO,
-		trafficName: 'Low'
+		trafficName: '1 Mb/s'
 	},
 	{ //cyan 4
 		r: 30,
