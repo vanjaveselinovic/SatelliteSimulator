@@ -457,6 +457,18 @@ $(document).ready(function () {
 		}
 	});
 
+	/* simulation config */
+
+	var startTime = new Date();
+	var endTime = startTime;
+	endTime.setSeconds(endTime.getSeconds() + 60);
+
+	var simulationConfig = {
+		startTime: startTime.getTime(),
+		endTime: endTime.getTime(),
+		updateInterval: 1
+	};
+
 	/* ---------- CHOREOGRAPHING ---------- */
 
 	var deltaTimeMillis = 0, prevTimeMillis = performance.now();
@@ -486,7 +498,11 @@ $(document).ready(function () {
 	$('#button-run').on('click', function() {
 		ws.postWithData(
 				'http://127.0.0.1:4321/simulator',
-				customPreset
+				{
+					constellations: customPreset,
+					groundStations: groundStations,
+					simulation: simulationConfig
+				}
 		);
 	});
 });

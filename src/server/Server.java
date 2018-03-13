@@ -56,9 +56,13 @@ public class Server {
 				try {
 					JSONObject jsonObject = new JSONObject(jsonString);
 					
+					JSONObject constellationsObj = jsonObject.getJSONObject("constellations");
+					JSONArray groundStationsArr = jsonObject.getJSONArray("groundStations");
+					JSONObject simulationObj = jsonObject.getJSONObject("simulation");
+					
 					// Constellations
 					
-					JSONArray elements = jsonObject.getJSONArray("elements");
+					JSONArray elements = constellationsObj.getJSONArray("elements");
 					
 					ConstellationData constellations[] = new ConstellationData[elements.length()];
 					
@@ -80,7 +84,7 @@ public class Server {
 					
 					GroundStationData groundStations[] = new GroundStationData[1];
 					
-					System.out.println("Done taking in configuation data");
+					System.out.println("Done taking in configuration data");
 					
 					SimulationConfigurationData simulationConfigurationData =
 							new SimulationConfigurationData(
