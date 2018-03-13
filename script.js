@@ -28,7 +28,7 @@ $(document).ready(function () {
 
 	/* load library */
 
-	var getPresetHTML = function(presetKey, active) {
+	var getCPresetHTML = function(presetKey, active) {
 		var activeProp = active ? 'active' : '';
 		return '<div class="section card preset '+activeProp+'" id="'+presetKey+'"><i class="fas fa-check icon"></i><span class="name">'+globe.constellations[presetKey].name+'</span></div>';
 	};
@@ -36,7 +36,17 @@ $(document).ready(function () {
 	var constellations = Object.keys(globe.constellations);
 
 	for (var i = 0; i < constellations.length; i++) {
-		$('#presets').append(getPresetHTML(constellations[i], i === 0 ? true : false));
+		$('#c-presets').append(getCPresetHTML(constellations[i], i === 0 ? true : false));
+	}
+
+	var getGSPresetHTML = function(presetKey) {
+		return '<div class="section card preset" id="'+presetKey+'"><i class="fas fa-plus-circle icon"></i><span class="name">'+globe.groundStationPresets[presetKey].name+'</span></div>';
+	};
+
+	var groundStationKeys = Object.keys(globe.groundStationPresets);
+
+	for (var i = 0; i < groundStationKeys.length; i++) {
+		$('#gs-presets').append(getGSPresetHTML(groundStationKeys[i]));
 	}
 
 	/* load configuration */
@@ -106,8 +116,8 @@ $(document).ready(function () {
 
 	applyPreset(globe.constellations.iridium);
 
-	$('.preset').on('click', function() {
-		$('.preset.active').removeClass('active');
+	$('#c-presets .preset').on('click', function() {
+		$('#c-presets .preset.active').removeClass('active');
 		$(this).addClass('active');
 
 		applyPreset(globe.constellations[$(this).attr('id')]);
@@ -181,6 +191,11 @@ $(document).ready(function () {
 	}
 
 	applyGroundStations(groundStations);
+
+	$('#gs-presets .preset').on('click', function() {
+		groundStations.push(globe.groundStationPresets[$(this).attr('id')]);
+		applyGroundStations(groundStations);
+	});
 
 	$('#add-ground-station').on('click', function() {
 		groundStations.push({

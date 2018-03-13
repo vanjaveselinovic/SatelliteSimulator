@@ -366,6 +366,15 @@ button {
 		visibility: visible;
 	}
 
+#gs-presets .preset:hover {
+	opacity: 1;
+	color: hsl(208, 100%, 55%);
+}
+
+	#gs-presets .preset:hover .icon {
+		visibility: visible;
+	}
+
 .apply-link {
 	text-align: right;
 	color: hsl(208, 100%, 55%);
