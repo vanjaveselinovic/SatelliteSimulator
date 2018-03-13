@@ -28,4 +28,8 @@ public class GroundStationData {
 		else if (traffic.equals("m")) this.rate = 10;
 		else this.rate = 100;
 	}
+
+	public GroundStationData() {
+		// TODO Auto-generated constructor stub
+	}
 }
