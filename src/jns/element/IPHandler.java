@@ -135,7 +135,10 @@ public class IPHandler extends Element implements CL_Agent {
 				// multicast
 				m_packets_recv.pushBack(new IPPacket(curpacket));
 			} else {
-				targets.add(m_route.getRoute(curpacket.destination));
+				Interface t = m_route.getRoute(curpacket.destination);
+				if(t != null) {
+					targets.add(t);
+				}
 			}
 
 			boolean canSend = true;
@@ -149,53 +152,48 @@ public class IPHandler extends Element implements CL_Agent {
 					break;
 				}
 			}
-
-			if (canSend) {
+			if(targets.size() == 0) {
+				Simulator.getInstance().getManager().dropPacket(curpacket);
+			}else if (canSend) {
 				for (int j = 0; j < targets.size(); j++) {
+					// Check if we have to fragment...
 
-					if (targets.size() == 0)
-						Simulator.warning("No route to address " + curpacket.destination + " from " + curpacket.source);
-					else {
+					if (((Interface) targets.get(j)).getMTU() >= curpacket.length) {
+						// Copy the packet, to use if we send more than one..
+						IPPacket sendPacket = new IPPacket(curpacket);
+						((Interface) targets.get(j)).send(sendPacket);
+					} else {
+						// Maximum packet length (must be a multiple of 8 with IP)
+						int maximum_length = ((Interface) targets.get(j)).getMTU() & (~7);
 
-						// Check if we have to fragment...
+						// Number of fragments to generate
+						int num_packets = (curpacket.length / maximum_length) + 1;
+						int offset = 0;
 
-						if (((Interface) targets.get(j)).getMTU() >= curpacket.length) {
-							// Copy the packet, to use if we send more than one..
-							IPPacket sendPacket = new IPPacket(curpacket);
-							((Interface) targets.get(j)).send(sendPacket);
-						} else {
-							// Maximum packet length (must be a multiple of 8 with IP)
-							int maximum_length = ((Interface) targets.get(j)).getMTU() & (~7);
+						Simulator.verbose("Fragmenting big packet into " + num_packets + " fragments.");
 
-							// Number of fragments to generate
-							int num_packets = (curpacket.length / maximum_length) + 1;
-							int offset = 0;
+						for (int i = 0; i < num_packets; i++) {
+							// Copy the original packet
+							IPPacket new_fragment = new IPPacket(curpacket);
 
-							Simulator.verbose("Fragmenting big packet into " + num_packets + " fragments.");
+							// Last fragment
 
-							for (int i = 0; i < num_packets; i++) {
-								// Copy the original packet
-								IPPacket new_fragment = new IPPacket(curpacket);
+							if (i == (num_packets - 1)) {
+								// Note that we do not handle the more_fragments bit here. If
+								// we are refragmenting a fragmented packet, it's set already
+								// otherwise it's unset, which is fine.. last packet..
 
-								// Last fragment
-
-								if (i == (num_packets - 1)) {
-									// Note that we do not handle the more_fragments bit here. If
-									// we are refragmenting a fragmented packet, it's set already
-									// otherwise it's unset, which is fine.. last packet..
-
-									new_fragment.length = curpacket.length % maximum_length;
-								} else {
-									new_fragment.flags |= IPPacket.FLAG_MORE_FRAGMENTS;
-									new_fragment.length = maximum_length;
-								}
-
-								new_fragment.fragment_offset = (offset >> 3);
-								offset += new_fragment.length;
-
-								// Off it goes..
-								((Interface) targets.get(j)).send(new_fragment);
+								new_fragment.length = curpacket.length % maximum_length;
+							} else {
+								new_fragment.flags |= IPPacket.FLAG_MORE_FRAGMENTS;
+								new_fragment.length = maximum_length;
 							}
+
+							new_fragment.fragment_offset = (offset >> 3);
+							offset += new_fragment.length;
+
+							// Off it goes..
+							((Interface) targets.get(j)).send(new_fragment);
 						}
 					}
 				}
@@ -213,7 +211,7 @@ public class IPHandler extends Element implements CL_Agent {
 
 			if (!curpacket.crc) {
 				// TODO: Generate drop packet event ?
-				Simulator.getInstance().getManager().droppedPacket(curpacket);
+				Simulator.getInstance().getManager().damagedPacket(curpacket);
 				// Get next packet instead
 				continue;
 			}

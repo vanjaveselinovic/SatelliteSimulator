@@ -9,6 +9,7 @@ import jns.Simulator;
 import jns.element.DuplexInterface;
 import jns.element.DuplexLink;
 import jns.element.SimplexLink;
+import jns.util.IPAddr;
 
 public class SmartDuplexLink extends DuplexLink {
 
@@ -41,7 +42,7 @@ public class SmartDuplexLink extends DuplexLink {
 		a_b = new SmartLink(date, stationA, stationB);
 		b_a = new SmartLink(date, stationB, stationA);
 
-		a_interface = new DuplexInterface(stationB.ip);
+		a_interface = new DuplexInterface(stationA.ip);
 		b_interface = new DuplexInterface(stationB.ip);
 		
 		stationA.node.attach(a_interface);
@@ -101,6 +102,10 @@ public class SmartDuplexLink extends DuplexLink {
 			this.a_b.setDate(date);
 			this.a_b.setDate(date);
 		}
+	}
+	
+	public void addRoute(Station tx, Station destination) {
+		tx.node.addRoute(destination.ip, new IPAddr(255,255,255,0), (tx==stationA)?(b_interface):(a_interface));
 	}
 	
 	@Override

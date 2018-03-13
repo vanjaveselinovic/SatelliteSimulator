@@ -137,9 +137,16 @@ public class Manager implements Runnable{
 			}
 		}
 		//routing done!
+		//populate routing tables
 		
-		
-		
+		for(AutoPacketSender aps:paths.keySet()) {
+			List<SmartDuplexLink> links = paths.get(aps);
+			Station tx = aps.getSource();
+			for(int i = 0; i<links.size()-1; i++) {
+				links.get(i).addRoute(tx, aps.getDestination());
+				tx = links.get(i).otherStation(tx);
+			}
+		}
 	}
 	
 	private Satellite getBadSatellites(){
@@ -207,12 +214,17 @@ public class Manager implements Runnable{
 		
 	}
 
-	public void droppedPacket(IPPacket curpacket) {
+	public void damagedPacket(IPPacket curpacket) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	public void gotPacket(IPPacket curpacket) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void dropPacket(IPPacket curpacket) {
 		// TODO Auto-generated method stub
 		
 	}

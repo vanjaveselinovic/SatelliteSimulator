@@ -72,4 +72,18 @@ public class Route {
 		return (m_ttl == 0);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if(o == null || !(o instanceof Route)) {
+			return false;
+		}else {
+			Route r = (Route)o;
+			return this.m_dest.equals(r.m_dest);
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.m_dest.getIntegerAddress();
+	}
 }

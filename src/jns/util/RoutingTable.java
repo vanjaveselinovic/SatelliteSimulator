@@ -2,7 +2,10 @@ package jns.util;
 
 import jns.element.Interface;
 
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -14,33 +17,21 @@ import java.util.Vector;
 public class RoutingTable {
 
 	private Route m_default; // Default route
-	private Vector m_routes; // List of 'Route' objects
+	private Set<Route> m_routes; // List of 'Route' objects
 
 	public RoutingTable() {
 		m_default = null;
-		m_routes = new Vector();
+		m_routes = new HashSet<Route>();
 	}
 
 	public Interface getRoute(IPAddr dest) {
-		Enumeration e = m_routes.elements();
 
 		// Search through routes
-		while (e.hasMoreElements()) {
-			Route curroute = (Route) e.nextElement();
-
+		for(Route curroute:m_routes) {
 			if (curroute.match(dest)) {
 				return curroute.getInterface();
 			}
 		}
-
-		// TODO: Have now changed the above to only check for a direct route, should I
-		// maybe
-		// look for someone in the same subnetwork as the destination if no direct
-		// route is available.
-
-		// Nothing found, return default route interface
-		if (m_default != null)
-			return m_default.getInterface();
 
 		// No default route, give up
 		return null;
@@ -59,7 +50,8 @@ public class RoutingTable {
 	public void addRoute(IPAddr dest, IPAddr netmask, Interface iface) {
 		Route route = new Route(dest, netmask, iface);
 		// TODO: Check for duplicate routes and give a warning
-		m_routes.addElement(route);
+		m_routes.remove(route);
+		m_routes.add(route);
 	}
 
 	/**
@@ -82,7 +74,7 @@ public class RoutingTable {
 	}
 
 	public Enumeration enumerateEntries() {
-		return m_routes.elements();
+		return Collections.enumeration(m_routes);
 	}
 
 	/**
@@ -93,9 +85,7 @@ public class RoutingTable {
 	}
 
 	public void dump() {
-		Enumeration e = m_routes.elements();
-		while (e.hasMoreElements()) {
-			Route curroute = (Route) e.nextElement();
+		for (Route curroute : m_routes) {
 			System.out.println(curroute.getDestination() + "      " + curroute.getNetmask());
 		}
 	}
@@ -105,8 +95,8 @@ public class RoutingTable {
 	 */
 	public Vector getAllRoutes() {
 		Vector interfaces = new Vector();
-		for (int i = 0; i < m_routes.size(); i++) {
-			interfaces.add(((Route) m_routes.get(i)).getInterface());
+		for (Route curroute : m_routes) {
+			interfaces.add(curroute.getInterface());
 		}
 		return interfaces;
 	}
