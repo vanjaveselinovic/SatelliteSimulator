@@ -8,10 +8,11 @@ import org.orekit.time.AbsoluteDate;
 import jns.Simulator;
 import jns.element.DuplexInterface;
 import jns.element.DuplexLink;
+import jns.element.SimplexLink;
 
 public class SmartDuplexLink extends DuplexLink {
 
-	private final Object dateLock = new Boolean(true);//just some object 
+	private final Object dateLock = new Object();//just some object 
 	private AbsoluteDate date;
 
 	private final Station stationA;
@@ -100,5 +101,15 @@ public class SmartDuplexLink extends DuplexLink {
 			this.a_b.setDate(date);
 			this.a_b.setDate(date);
 		}
+	}
+	
+	@Override
+	protected SimplexLink getM_link1() {
+		return a_b;
+	}
+
+	@Override
+	protected SimplexLink getM_link2() {
+		return b_a;
 	}
 }

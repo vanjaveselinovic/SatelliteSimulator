@@ -8,7 +8,7 @@ public class SmartLink extends SimplexLink {
 	private Station tx; 
 	private Station rx;
 	
-	final private Object dateLock = new Boolean(true);//just some object 
+	final private Object dateLock = new Object();//just some object 
 	private AbsoluteDate date;
 	
 	public SmartLink(AbsoluteDate date, Station tx, Station rx) {

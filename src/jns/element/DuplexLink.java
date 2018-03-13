@@ -9,29 +9,29 @@ import jns.trace.Trace;
  */
 public class DuplexLink extends Link {
 
-	public SimplexLink m_link1, m_link2;
+	private SimplexLink m_link1, m_link2;
 
 	public DuplexLink() {}
 	
 	public DuplexLink(int bandwidth, double delay) {
-		m_link1 = new SimplexLink(bandwidth, delay);
-		m_link2 = new SimplexLink(bandwidth, delay);
+		m_link1=new SimplexLink(bandwidth, delay);
+		m_link2=new SimplexLink(bandwidth, delay);
 	}
 
 	public DuplexLink(int bandwidth, double delay, double error) {
-		m_link1 = new SimplexLink(bandwidth, delay, error);
-		m_link2 = new SimplexLink(bandwidth, delay, error);
+		m_link1=new SimplexLink(bandwidth, delay, error);
+		m_link2=new SimplexLink(bandwidth, delay, error);
 	}
 
 	public void dump() {
 		System.out.println("DuplexLink: ");
-		m_link1.dump();
-		m_link2.dump();
+		getM_link1().dump();
+		getM_link2().dump();
 	}
 
 	public void attach(Trace trace) {
-		m_link1.attach(trace);
-		m_link2.attach(trace);
+		getM_link1().attach(trace);
+		getM_link2().attach(trace);
 	}
 
 	public void update() {
@@ -39,11 +39,11 @@ public class DuplexLink extends Link {
 	}
 
 	public SimplexLink getSimplexLink1() {
-		return m_link1;
+		return getM_link1();
 	}
 
 	public SimplexLink getSimplexLink2() {
-		return m_link2;
+		return getM_link2();
 	}
 
 	/**
@@ -54,8 +54,8 @@ public class DuplexLink extends Link {
 	 *            the new status of the link
 	 */
 	public void setStatus(int status) {
-		m_link1.setStatus(status);
-		m_link2.setStatus(status);
+		getM_link1().setStatus(status);
+		getM_link2().setStatus(status);
 	}
 
 	/**
@@ -65,42 +65,35 @@ public class DuplexLink extends Link {
 	 * @return Status.UP or Status.DOWN.
 	 */
 	public int getStatus() {
-		return m_link1.getStatus();
+		return getM_link1().getStatus();
 	}
 
 	public double getBandwidth() {
-		return FastMath.min(m_link1.getBandwidth(),m_link2.getBandwidth());
+		return FastMath.min(getM_link1().getBandwidth(),getM_link2().getBandwidth());
 	}
 
 	public double getDelay() {
-		return FastMath.max(m_link1.getDelay(),m_link2.getDelay());
+		return FastMath.max(getM_link1().getDelay(),getM_link2().getDelay());
 	}
 	
 	public double getError() {
-		return FastMath.max(m_link1.getError(),m_link1.getError());
+		return FastMath.max(getM_link1().getError(),getM_link2().getError());
 	}
 
 	public Interface getIncomingInterface() {
-		return m_link1.getIncomingInterface();
+		return getM_link1().getIncomingInterface();
 	}
 
 	public Interface getOutgoingInterface() {
-		return m_link1.getOutgoingInterface();
+		return getM_link1().getOutgoingInterface();
+	}
+
+	protected SimplexLink getM_link1() {
+		return m_link1;
+	}
+
+	protected SimplexLink getM_link2() {
+		return m_link2;
 	}
 	
-	/*
-	@Override
-	public String dumpJson() {
-		
-		return 
-				"{"
-				+ "\"id\":"+this.id+","
-				+ "\"type\":\""+this.getClass().getSimpleName()+"\","
-				+ "\"bandwidth\":\""+this.getBandwidth()+"\","
-				+ "\"delay\":\""+this.getDelay()+"\","
-				+ "\"error\":\""+this.getError()+"\","
-				+ "\"addresses\":\"["+this.getSimplexLink1().m_in.getIPAddr()+","+this.getSimplexLink1().m_out.getIPAddr()+"]\","
-				+ "\"link_ids\":\"["+this.getSimplexLink1().id+","+this.getSimplexLink1().id+"]\","
-				+ "}";
-	}*/
 }
