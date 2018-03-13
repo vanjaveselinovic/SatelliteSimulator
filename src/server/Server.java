@@ -143,6 +143,7 @@ public class Server {
 						currentGroundStation = groundStationsArr.getJSONObject(i);
 						
 						groundStations[i] = new GroundStationData(
+									currentGroundStation.getString("uniqueName"),
 									currentGroundStation.getString("name"),
 									currentGroundStation.getDouble("lat"),
 									currentGroundStation.getDouble("lon"),
