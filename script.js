@@ -99,32 +99,34 @@ $(document).ready(function () {
 		}
 		*/
 
-		globe.applyPreset(preset);
+		globe.applyPreset(customPreset);
 
 		$('#elements').empty();
 
-		for (var i = 0; i < preset.elements.length; i++) {
-			$('#elements').append(getElementHTML(preset.elements[i], i));
+		for (var i = 0; i < customPreset.elements.length; i++) {
+			$('#elements').append(getElementHTML(customPreset.elements[i], i));
 			$('#elements .card:last-child').css('border-bottom', '8px solid rgb('
-					+preset.elements[i].color.r+', '
-					+preset.elements[i].color.g+', '
-					+preset.elements[i].color.b+')');
+					+customPreset.elements[i].color.r+', '
+					+customPreset.elements[i].color.g+', '
+					+customPreset.elements[i].color.b+')');
 		}
 
 		registerInputs();
 	};
 
-	applyPreset(globe.constellations.iridium);
+	applyPreset(JSON.parse(JSON.stringify(globe.constellations.iridium)));
 
 	$('#c-presets .preset').on('click', function() {
 		$('#c-presets .preset.active').removeClass('active');
 		$(this).addClass('active');
 
-		applyPreset(globe.constellations[$(this).attr('id')]);
+		applyPreset(JSON.parse(JSON.stringify(globe.constellations[$(this).attr('id')])));
 	});
 
 	$('#add-constellation').on('click', function() {
 		customPreset.name = 'Custom';
+		$('#c-presets .preset.active').removeClass('active');
+
 		customPreset.elements.push({
 				numRings: 1,
 				numSatellitesPerRing: 10,
@@ -308,6 +310,7 @@ $(document).ready(function () {
 		$('.input-radio input').on('click', function() {
 			customPreset.elements[$(this)[0].parentElement.parentElement.dataset.i].type = $(this).val();
 			customPreset.name = 'Custom';
+			$('#c-presets .preset.active').removeClass('active');
 			globe.applyPreset(customPreset);
 		});
 
@@ -337,6 +340,9 @@ $(document).ready(function () {
 
 		$('#elements .close-button').on('click', function() {
 			var element = $(this)[0].parentElement;
+
+			customPreset.name = 'Custom';
+			$('#c-presets .preset.active').removeClass('active');
 
 			customPreset.elements.splice(element.dataset.i, 1);
 			$(element).remove();
