@@ -66,7 +66,7 @@ $(document).ready(function () {
 
 		radioColor += '</div>'
 
-		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div>'+radioSD+radioColor+'</div>';
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Num. rings</div><div class="iwl-section input"><input type="text" id="" value="'+element.numRings+'" autocomplete="off" class="input-numeric input-nr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Num. sat per ring</div><div class="iwl-section input"><input type="text" id="" value="'+element.numSatellitesPerRing+'" autocomplete="off" class="input-numeric input-nspr"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Inclination</div><div class="iwl-section input"><input type="text" id="" value="'+element.inclination+'" autocomplete="off" class="input-numeric input-inc"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Period</div><div class="iwl-section input"><input type="text" id="" value="'+element.orbitalPeriod+'" autocomplete="off" class="input-numeric input-per"></div><div class="iwl-section label-after">min</div></div>'+radioSD+radioColor+'<div class="close-button"><i class="fas fa-times"></i></div></div>';
 	}
 
 	var customPreset = {};
@@ -151,11 +151,13 @@ $(document).ready(function () {
 
 		radioColor += '</div>'
 
-		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Name</div><div class="iwl-section input"><input type="text" id="" value="'+gs.name+'" autocomplete="off" class="input-name"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Latitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lat+'" autocomplete="off" class="input-numeric input-lat"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Longitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lon+'" autocomplete="off" class="input-numeric input-lon"></div><div class="iwl-section label-after">deg</div></div>'+radioColor+'</div>';
+		return '<div class="section card" data-i='+i+'><div class="input-with-labels"><div class="iwl-section label-before">Name</div><div class="iwl-section input"><input type="text" id="" value="'+gs.name+'" autocomplete="off" class="input-name"></div></div><div class="input-with-labels"><div class="iwl-section label-before">Latitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lat+'" autocomplete="off" class="input-numeric input-lat"></div><div class="iwl-section label-after">deg</div></div><div class="input-with-labels"><div class="iwl-section label-before">Longitude</div><div class="iwl-section input"><input type="text" id="" value="'+gs.lon+'" autocomplete="off" class="input-numeric input-lon"></div><div class="iwl-section label-after">deg</div></div>'+radioColor+'<div class="close-button"><i class="fas fa-times"></i></div></div>';
 	};
 
-	var addGroundStation = function(gs) {
-		groundStations.push(gs);
+	var groundStations = [];
+
+	var applyGroundStations = function(groundStationsInput) {
+		groundStations = groundStationsInput;
 
 		globe.applyGroundStations(groundStations);
 
@@ -172,22 +174,24 @@ $(document).ready(function () {
 		registerGSInputs();
 	};
 
-	var groundStations = [];
-
 	var gsKeys = Object.keys(globe.groundStationPresets);
 
 	for (var i = 0; i < gsKeys.length; i++) {
-		addGroundStation(globe.groundStationPresets[gsKeys[i]]);
+		groundStations.push(globe.groundStationPresets[gsKeys[i]]);
 	}
 
+	applyGroundStations(groundStations);
+
 	$('#add-ground-station').on('click', function() {
-		addGroundStation({
+		groundStations.push({
 				name: 'Custom',
 				lat: 0,
 				lon: 0,
 				traffic: TRAFFIC_MD,
 				color: COLORS[2]
 			});
+
+		applyGroundStations(groundStations);
 	});
 
 	var handleClick = function(recognizer) {
@@ -202,13 +206,15 @@ $(document).ready(function () {
 			//tempGroundStations.push();
 
 			//this.configureGroundStations(tempGroundStations);
-			addGroundStation({
+			groundStations.push({
 				name: 'Custom',
 				lat: position.latitude,
 				lon: position.longitude,
 				traffic: TRAFFIC_MD,
 				color: COLORS[2]
 			});
+
+			applyGroundStations(groundStations);
 		}
 	};
 
@@ -313,6 +319,15 @@ $(document).ready(function () {
 			}
 			$(this).trigger('input');
 		});
+
+		$('#elements .close-button').on('click', function() {
+			var element = $(this)[0].parentElement;
+
+			customPreset.elements.splice(element.dataset.i, 1);
+			$(element).remove();
+
+			globe.applyPreset(customPreset);
+		});
 	}
 
 	var nameInput;
@@ -378,6 +393,15 @@ $(document).ready(function () {
 					$(this).val(parseInt($(this).val())-1);
 			}
 			$(this).trigger('input');
+		});
+
+		$('#ground-stations .close-button').on('click', function() {
+			var element = $(this)[0].parentElement;
+
+			groundStations.splice(element.dataset.i, 1);
+			$(element).remove();
+
+			applyGroundStations(groundStations);
 		});
 	}
 
