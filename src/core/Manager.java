@@ -14,6 +14,7 @@ import org.orekit.time.AbsoluteDate;
 import data.EventData;
 import data.GroundStationData;
 import data.OutputData;
+import data.PacketSenderData;
 import data.PathData;
 import data.RingData;
 import data.SatelliteData;
@@ -37,8 +38,10 @@ public class Manager implements Runnable{
 	double simTime;
 	double lastSatUpdateSimTime;
 	double simTimeSinceLastSatUpdate;
+	private double deltaT;
 	
 	private OutputData output = new OutputData();
+	
 	
 	List<EventData> events = new ArrayList<>();
 	
@@ -52,6 +55,27 @@ public class Manager implements Runnable{
 	Map<Integer, Integer> goodPackets = new HashMap<>();
 	
 	public Manager(SimulationConfigurationData inputData) {
+		this.initialTime = new AbsoluteDate(inputData.startTime, Earth.utc);
+		this.deltaT = inputData.deltaT;
+		Map<String, GroundStation> groundStationMap = new HashMap<>();
+		for(GroundStationData data : inputData.groundStations) {
+			groundStationMap.put(data.name, new GroundStation(data));
+		}
+		
+		for(GroundStationData data : inputData.groundStations) {
+			for(PacketSenderData senderData:data.senders) {
+				senders.add(new AutoPacketSender(
+						groundStationMap.get(data.name), 
+						groundStationMap.get(senderData.receverName),
+						senderData.rate,
+						senderData.id));
+			}
+		}
+		
+		groundStations.addAll(groundStationMap.values());
+		
+		List<RingData> rings = new ArrayList<>();
+		
 		
 		
 		//output

@@ -15,9 +15,9 @@ public class GroundStation extends Station{
 	private List<AutoPacketSender> senders = new ArrayList<>();
 	String name;
 
-	public GroundStation(String name, GeodeticPoint groundPoint) {
-		super(name);
-		this.groundPoint = groundPoint;
+	public GroundStation(GroundStationData data) {
+		super(data.name);
+		this.groundPoint = new GeodeticPoint(data.latitude, data.longitude, data.altitude);
 	}
 
 	@Override

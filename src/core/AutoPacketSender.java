@@ -16,7 +16,7 @@ public class AutoPacketSender{
 	
 	private ExponentialGenerator InterArrivalTimeRng;
 	private ContinuousUniformGenerator packetSizeRng;
-	private Station sender;
+	private GroundStation sender;
 	private Station dest;
 	public final int id;
 	private Simulator sim;
@@ -30,13 +30,14 @@ public class AutoPacketSender{
 		return dest;
 	}
 	
-	public AutoPacketSender(Simulator sim, GroundStation sender, GroundStation dest, double rate, int id) {
+	
+	public AutoPacketSender(GroundStation sender, Station dest, double rate, int id) {
 		this.id = id;
 		this.rate = rate;
-		InterArrivalTimeRng = new ExponentialGenerator(1.d/rate, new MersenneTwisterRNG());
+		InterArrivalTimeRng = new ExponentialGenerator(rate, new MersenneTwisterRNG());
 		packetSizeRng = new ContinuousUniformGenerator(MIN_PACKET_SIZE, MAX_PACKET_SIZE+1, new MersenneTwisterRNG());
 		
-		this.sim = sim;
+		this.sim = Simulator.getInstance();
 		this.sender = sender;
 		sender.add(this);
 		this.dest = dest;
@@ -57,7 +58,7 @@ public class AutoPacketSender{
 		PacketSenderData data = new PacketSenderData();
 		data.id = this.id;
 		data.receverName = this.dest.name;
-		data.meanInterArivalTime = rate;
+		data.rate = rate;
 		return data;
 	}
 
