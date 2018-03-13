@@ -144,13 +144,17 @@ input {
 		color: white;
 		font-size: 0.7em;
 		font-weight: bold;
-		color: rgba(255, 255, 255, 0.5);
+		color: rgba(255, 255, 255, 1);
+	}
+
+	.input-radio-color span {
+		opacity: 0.5;
 	}
 
 	.input-radio-color .icon,
 	.input-radio-color input:checked ~ span
 	{
-		color: white !important;
+		opacity: 1 !important;
 	}
 
 	.input-radio-color label:hover .icon {
@@ -160,6 +164,10 @@ input {
 
 	.input-radio-color label:hover .icon-next-to-text {
 		display: none;
+	}
+
+	.input-radio-color label:hover .icon-next-to-text ~ span {
+		opacity: 0.75;
 	}
 
 	.input-radio-color input {

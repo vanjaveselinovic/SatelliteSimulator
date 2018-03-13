@@ -61,6 +61,10 @@ $(document).ready(function () {
 
 		var checkedTemp = '';
 		var colorTemp = '';
+		var colorTest = 'rgb('
+					+element.color.r+', '
+					+element.color.g+', '
+					+element.color.b+')';
 
 		for (var c = 0; c < COLORS.length; c++) {
 
@@ -69,7 +73,7 @@ $(document).ready(function () {
 					+COLORS[c].g+', '
 					+COLORS[c].b+')';
 
-			checkedTemp = element.color === COLORS[c] ? 'checked="checked"' : '';
+			checkedTemp = colorTest === colorTemp ? 'checked="checked"' : '';
 
 			radioColor += '<label style="background-color: '+colorTemp+'"><input type="radio" name="color'+i+'" value="color'+c+'" '+checkedTemp+'><i class="fas fa-check icon"></i></label>';
 		}
