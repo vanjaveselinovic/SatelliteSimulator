@@ -7,7 +7,6 @@ public class SimulationConfigurationData {
 	
 	//use one option
 	public String startTime;//utc dateTime string, see org.orekit.time.DateTimeComponents.parseDateTime(String)
-	public String endTime; //same
 	
 	public double deltaT;//how far apart are the satellite movement time steps?
 	public double endTimeInMinutes;
@@ -16,12 +15,12 @@ public class SimulationConfigurationData {
 			ConstellationData[] constellations,
 			GroundStationData[] groundStations,
 			String startTime,
-			String endTime,
+			int duration,
 			double interval) {
 		this.constellations = constellations;
 		this.groundStations = groundStations;
 		this.startTime = startTime;
-		this.endTime = endTime;
+		this.endTimeInMinutes = duration;
 		this.deltaT = interval;
 	}
 	

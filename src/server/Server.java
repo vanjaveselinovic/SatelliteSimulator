@@ -12,6 +12,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import core.Manager;
 import data.ConstellationData;
 import data.GroundStationData;
 import data.SimulationConfigurationData;
@@ -99,19 +100,21 @@ public class Server {
 					
 					System.out.println("Done taking in configuration data");
 					
+					// Simulation configuration
+					
 					SimulationConfigurationData simulationConfigurationData =
 							new SimulationConfigurationData(
 										constellations,
 										groundStations,
 										simulationObj.getString("startTime"),
-										simulationObj.getString("endTime"),
+										simulationObj.getInt("duration"),
 										simulationObj.getDouble("interval")
 									);
 					
 					// Run simulation
 					
-					// Manager manager = new Manager(simulationConfigurationData);
-					// manager.run();
+					//Manager manager = new Manager(simulationConfigurationData);
+					//manager.run();
 	
 					
 				} catch (JSONException e) {

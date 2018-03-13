@@ -460,13 +460,11 @@ $(document).ready(function () {
 	/* simulation config */
 
 	var startTime = new Date();
-	var endTime = startTime;
-	endTime.setSeconds(endTime.getSeconds() + 60);
 
 	var simulationConfig = {
 		startTime: startTime.getTime()+'',
-		endTime: endTime.getTime()+'',
-		interval: 1
+		duration: 1, //minutes
+		interval: 1 //seconds
 	};
 
 	/* ---------- CHOREOGRAPHING ---------- */
