@@ -250,7 +250,9 @@ button {
 	margin-bottom: 20px;
 }
 
-	.section:last-child {
+	.section:last-child,
+	.section:empty
+	{
 		margin-bottom: unset;
 	}
 

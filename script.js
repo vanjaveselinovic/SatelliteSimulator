@@ -377,7 +377,7 @@ $(document).ready(function () {
 		$('.input-lon').on('input', function() {
 			longitudeInput = $(this).val();
 
-			if (!isNaN(longitudeInput) && longitudeInput >= -180 && latitudeInput <= 180) {
+			if (!isNaN(longitudeInput) && longitudeInput >= -180 && longitudeInput <= 180) {
 				$(this).removeClass('invalid-input');
 				groundStations[$(this)[0].parentElement.parentElement.parentElement.dataset.i].lon = longitudeInput;
 				globe.applyGroundStations(groundStations);
