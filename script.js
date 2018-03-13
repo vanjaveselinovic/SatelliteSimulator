@@ -462,7 +462,7 @@ $(document).ready(function () {
 	var startTime = new Date();
 
 	var simulationConfig = {
-		startTime: startTime.getTime()+'',
+		startTime: startTime.toISOString(),
 		duration: 1, //minutes
 		interval: 1 //seconds
 	};

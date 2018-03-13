@@ -24,8 +24,8 @@ public class GroundStationData {
 		this.name = name;
 		this.latitude = lat;
 		this.longitude = lon;
-		if (traffic.equals('l')) this.rate = 1;
-		else if (traffic.equals('m')) this.rate = 10;
+		if (traffic.equals("l")) this.rate = 1;
+		else if (traffic.equals("m")) this.rate = 10;
 		else this.rate = 100;
 	}
 }

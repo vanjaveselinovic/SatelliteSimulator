@@ -77,7 +77,8 @@ public class Server {
 									currentElement.getDouble("inclination"),
 									currentElement.getInt("numSatellitesPerRing"),
 									currentElement.getInt("numRings"),
-									0.5
+									0.5,
+									"double".equals(currentElement.getString("type"))
 								);
 					}
 					
@@ -113,9 +114,13 @@ public class Server {
 					
 					// Run simulation
 					
-					//Manager manager = new Manager(simulationConfigurationData);
-					//manager.run();
-	
+					System.out.println("ready to simulate");
+					
+					Manager manager = new Manager(simulationConfigurationData);
+					
+					System.out.println("manager set up");
+					
+					manager.run();
 					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

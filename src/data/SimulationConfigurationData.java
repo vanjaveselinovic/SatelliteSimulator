@@ -7,7 +7,6 @@ public class SimulationConfigurationData {
 	
 	//use one option
 	public String startTime;//utc dateTime string, see org.orekit.time.DateTimeComponents.parseDateTime(String)
-	
 	public double deltaT;//how far apart are the satellite movement time steps?
 	public double endTimeInMinutes;
 	

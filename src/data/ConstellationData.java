@@ -23,11 +23,19 @@ public class ConstellationData {
 	    		double inclination,
 	    		int satellitesPerRing,
 	    		int numberOfRings,
-	    		double offsetBetweenRings
+	    		double offsetBetweenRings,
+	    		boolean doubled
 	    	) {
+    	this.eccentricity = 0;
+    	
     	this.period = periodInMinutes * 60;
     	this.inclination = inclination;
     	
+    	this.longitudeOfAscendingNode = 0;
+    	this.argumentOfPeriapsis = 0;
+    	this.trueAnomaly = 0;
+    	
+    	this.doubled = doubled;    	
     	this.satellitesPerRing = satellitesPerRing;
     	this.numberOfRings = numberOfRings;
     	this.offsetBetweenRings = offsetBetweenRings;
