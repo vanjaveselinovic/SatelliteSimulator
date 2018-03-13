@@ -495,7 +495,7 @@ $(document).ready(function () {
 
 	$('#button-run').on('click', function() {
 		ws.postWithData(
-				'http://127.0.0.1:1234/simulator',
+				'http://localhost:1234/simulator',
 				{
 					constellations: customPreset,
 					groundStations: groundStations,
