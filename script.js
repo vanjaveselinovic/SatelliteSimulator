@@ -74,6 +74,9 @@ $(document).ready(function () {
 	var applyPreset = function(preset) {
 		customPreset = preset;
 
+		$('.constellation-info').text('Preset: '+preset.name);
+
+		/*
 		$('.constellation-info select').empty();
 
 		var constellations = Object.keys(globe.constellations);
@@ -84,6 +87,7 @@ $(document).ready(function () {
 				text: globe.constellations[constellations[i]].name
 			}));
 		}
+		*/
 
 		globe.applyPreset(preset);
 
@@ -110,6 +114,7 @@ $(document).ready(function () {
 	});
 
 	$('#add-constellation').on('click', function() {
+		customPreset.name = 'Custom';
 		customPreset.elements.push({
 				numRings: 1,
 				numSatellitesPerRing: 10,
