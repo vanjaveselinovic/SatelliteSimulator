@@ -41,6 +41,7 @@ public class AutoPacketSender{
 		this.sender = sender;
 		sender.add(this);
 		this.dest = dest;
+		this.createEvent(Double.MIN_NORMAL);
 	}
 	
 	public void createEvent(double time) {

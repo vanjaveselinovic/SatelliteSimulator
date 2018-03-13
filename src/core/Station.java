@@ -23,8 +23,8 @@ import jns.util.IPAddr;
 import jns.util.RoutingTable;
 
 public abstract class Station {
-	public static int IPcounter = 1;
-	public final IPAddr ip = new IPAddr(IPcounter++);
+	public static int IPcounter = 0;
+	public final IPAddr ip = new IPAddr(++IPcounter);
 	
 	public final Node node;
 	public final String name;

@@ -9,8 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hipparchus.util.FastMath;
+import org.orekit.orbits.KeplerianOrbit;
+import org.orekit.orbits.Orbit;
+import org.orekit.orbits.PositionAngle;
+import org.orekit.propagation.analytical.KeplerianPropagator;
 import org.orekit.time.AbsoluteDate;
 
+import data.ConstellationData;
 import data.EventData;
 import data.GroundStationData;
 import data.OutputData;
@@ -20,6 +26,8 @@ import data.RingData;
 import data.SatelliteData;
 import data.SimulationConfigurationData;
 import jns.Simulator;
+import jns.command.Command;
+import jns.command.StopCommand;
 import jns.element.IPPacket;
 
 public class Manager implements Runnable{
@@ -38,7 +46,7 @@ public class Manager implements Runnable{
 	double simTime;
 	double lastSatUpdateSimTime;
 	double simTimeSinceLastSatUpdate;
-	private double deltaT;
+	public final double deltaT;
 	
 	private OutputData output = new OutputData();
 	
@@ -55,51 +63,139 @@ public class Manager implements Runnable{
 	Map<Integer, Integer> goodPackets = new HashMap<>();
 	
 	public Manager(SimulationConfigurationData inputData) {
-		this.initialTime = new AbsoluteDate(inputData.startTime, Earth.utc);
-		this.deltaT = inputData.deltaT;
-		Map<String, GroundStation> groundStationMap = new HashMap<>();
-		for(GroundStationData data : inputData.groundStations) {
-			groundStationMap.put(data.name, new GroundStation(data));
-		}
-		
-		for(GroundStationData data : inputData.groundStations) {
-			for(PacketSenderData senderData:data.senders) {
-				senders.add(new AutoPacketSender(
-						groundStationMap.get(data.name), 
-						groundStationMap.get(senderData.receverName),
-						senderData.rate,
-						senderData.id));
+		try {
+			this.initialTime = new AbsoluteDate(inputData.startTime, Earth.utc);
+			this.time = this.initialTime; 
+			this.deltaT = inputData.deltaT;
+
+			sim = Simulator.getInstance();
+			sim.setManager(this);
+			sim.setTrace(new QuietTrace());
+			sim.schedule(new UpdateSatellitePosition(this, 0));
+			sim.schedule(new StopCommand(inputData.endTimeInMinutes*60d));
+			
+			output.startTime = inputData.startTime;
+			output.deltaT = deltaT;
+			
+			
+			Map<String, GroundStation> groundStationMap = new HashMap<>();
+			for(GroundStationData data : inputData.groundStations) {
+				GroundStation g = new GroundStation(data);
+				data.id=g.ip.getIntegerAddress();
+				groundStationMap.put(data.name, g);
 			}
+			
+			for(GroundStationData data : inputData.groundStations) {
+				for(PacketSenderData senderData:data.senders) {
+					senders.add(new AutoPacketSender(
+							groundStationMap.get(data.name), 
+							groundStationMap.get(senderData.receverName),
+							senderData.rate,
+							senderData.id));
+				}
+			}
+			
+			groundStations.addAll(groundStationMap.values());
+			
+			List<RingData> rings = new ArrayList<>();
+			int ringIdNumber = 1;
+			ConstellationData constelation;
+			for(int c = 0; c<inputData.constellations.length; c++) {
+				constelation = inputData.constellations[c];
+				double eccentricity = constelation.eccentricity+0.005d;//it is plus some small amount to cause orbits to pass one another
+			    double inclination = constelation.inclination*(Math.PI/180d);					//{in rad} vertical tilt of the ellipse with respect to the reference plane, measured at the ascending node (where the orbit passes upward through the reference plane, the green angle i in the diagram). Tilt angle is measured perpendicular to line of intersection between orbital plane and reference plane. Any three points on an ellipse will define the ellipse orbital plane. The plane and the ellipse are both two-dimensional objects defined in three-dimensional space.
+			    double longitudeOfAscendingNode = constelation.longitudeOfAscendingNode*(Math.PI/180d);	//{in rad} horizontally orients the ascending node of the ellipse (where the orbit passes upward through the reference plane) with respect to the reference frame's vernal point
+			    double trueAnomaly = constelation.trueAnomaly*(Math.PI/180d);					//{in rad} defines the position of the orbiting body along the ellipse at simulation time 0
+			    double argumentOfPeriapsis = constelation.argumentOfPeriapsis;
+			    if( -5d < argumentOfPeriapsis && argumentOfPeriapsis < 5d ) {
+			    	argumentOfPeriapsis+=45d;
+			    }
+			    argumentOfPeriapsis *= (Math.PI/180d);
+				
+			    double semimajorAxis = FastMath.pow(
+			    		constelation.period*constelation.period*Earth.body.getGM()/(4d*Math.PI*Math.PI)
+			    		,1d/3d);
+			    
+				for(int r = 0; r<constelation.numberOfRings; r++) {
+
+			    	double raan = Math.PI * (constelation.doubled?2d:1d) * ((double) r) / ((double) constelation.numberOfRings);
+			    	
+					RingData ringData = new RingData();
+					ringData.ringNumber = ringIdNumber++;
+					
+					ringData.eccentricity = eccentricity;
+					ringData.inclination = inclination/(Math.PI/180d);
+				    ringData.longitudeOfAscendingNode = raan/(Math.PI/180d);
+				    ringData.argumentOfPeriapsis = argumentOfPeriapsis/(Math.PI/180d);
+				    ringData.semimajorAxis = semimajorAxis;
+					
+				    List<Integer> satteliteIds = new ArrayList<>();
+				    
+				    for(int s = 0; s<constelation.satellitesPerRing; s++) {
+				    	
+						double a = (Math.PI * 2d * ((double) s) / ((double) constelation.satellitesPerRing))+trueAnomaly+(2d*Math.PI*constelation.offsetBetweenRings*r/constelation.satellitesPerRing);
+						
+				    	Orbit initialOrbit = new KeplerianOrbit(semimajorAxis, eccentricity, inclination, argumentOfPeriapsis, raan, a, PositionAngle.TRUE,	Earth.spaceFrame, this.initialTime, Earth.mu);
+						KeplerianPropagator kepler = new KeplerianPropagator(initialOrbit);
+						kepler.setSlaveMode();
+						
+						Satellite sat = new Satellite("["+c+","+r+","+s+"]", kepler, initialOrbit);
+						satellites.add(sat);
+						satteliteIds.add(sat.ip.getIntegerAddress());
+						
+				    }
+				    
+				    ringData.stationIds = new int[satteliteIds.size()];
+				    for(int i = 0; i<ringData.stationIds.length; i++) {
+				    	ringData.stationIds[i]=satteliteIds.get(i);
+				    }
+					rings.add(ringData);
+				}
+			}
+			this.output.rings = rings.toArray(new RingData[0]);
+			
+			//making the links now
+			for(GroundStation gs : groundStations) {
+				for(Satellite sat:satellites) {
+					links.add(new SmartDuplexLink(this.time, gs, sat));
+				}
+			}
+			for(int i=0; i<satellites.size(); i++) {
+				for(int j=i+1; j<satellites.size(); j++) {
+					links.add(new SmartDuplexLink(this.time, satellites.get(i), satellites.get(j)));
+				}
+			}
+			stations.addAll(groundStations);
+			stations.addAll(satellites);
+			
+			output.startTime = inputData.startTime;
+			output.deltaT = deltaT;
+			output.numberOfStations = Station.IPcounter;
+			output.groundStations=inputData.groundStations;
+			
+		}catch(Exception e) {
+			throw new RuntimeException(e);
 		}
-		
-		groundStations.addAll(groundStationMap.values());
-		
-		List<RingData> rings = new ArrayList<>();
-		
-		
-		
-		//output
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		sim = Simulator.getInstance();
-		sim.setManager(this);
+		this.sim.run();
+		this.updateSattelitePositions();
+		
+		this.output.events = events.toArray(new EventData[0]);
+		
+		Simulator.clearInstance();
 	}
 
+	public OutputData output() {
+		return output;
+	}
 
 	public void setTime(double m_time) {
 		simTime = m_time;
 		simTimeSinceLastSatUpdate = simTime-lastSatUpdateSimTime;
 		time = initialTime.shiftedBy(simTime);
-		
-		/*///uncomment this and satellite connection parameters are updated continuously
-		for(SmartDuplexLink l : links) {
-			l.setDate(time);
-		}
-		//*///this is not cheap
-		
 	}
 
 	/*

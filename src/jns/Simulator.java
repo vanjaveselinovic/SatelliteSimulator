@@ -66,7 +66,11 @@ public class Simulator implements Runnable {
 			m_instance = new Simulator();
 		return m_instance;
 	}
-
+	
+	public static void clearInstance() {
+		m_instance = null;
+	}
+	
 	/**
 	 * Attach a new element to the simulator to be updated regularly during the
 	 * simulation.
