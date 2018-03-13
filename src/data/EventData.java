@@ -1,5 +1,7 @@
 package data;
 
 public class EventData {
-	//Map<Integer, List<>>
+	double simulationTime;//time in s from simulation start
+	String utcTime;//utc timestamp
+	PathData[] paths;
 }

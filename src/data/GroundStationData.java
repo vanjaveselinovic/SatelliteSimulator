@@ -1,7 +1,7 @@
 package data;
 
 public class GroundStationData {
-	
+	int id;//only used on output, in the same counting as the satellites
 	String name;
 	double latitude;
 	double longitude;
