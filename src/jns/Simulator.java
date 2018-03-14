@@ -191,6 +191,7 @@ public class Simulator implements Runnable {
 			if(events % 1000000 == 0) {
 				System.out.println("Event# "+events/1000000+"m at time "+m_time+"s");
 			}
+			/*
 			if(m_time > 16) {
 				System.out.println("We're doing this");
 				LinkedList<String> l = new LinkedList<String>();
