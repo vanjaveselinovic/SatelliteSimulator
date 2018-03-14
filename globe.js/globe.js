@@ -296,7 +296,7 @@ var Globe = function(params) {
 			for (j = 0; j < rings[i].satellites.length; j++) {
 				rings[i].satellites[j].update(deltaTimeSeconds);
 			}
-			rings[i].update();
+			//rings[i].update();
 		}
 	}
 
