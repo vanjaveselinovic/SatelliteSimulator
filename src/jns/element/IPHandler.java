@@ -118,17 +118,19 @@ public class IPHandler extends Element implements CL_Agent {
 		Simulator.verbose("Updating IP Handler");
 
 		// Process packets waiting to be sent
-		LinkedList<IPPacket> failedToSend = new LinkedList<>();
-		for(IPPacket curpacket : m_packets_send) {
-
+		outerLoop:
+		while(!m_packets_send.isEmpty()) {
+			IPPacket curpacket = m_packets_send.remove(0);
+			
 			Interface target = m_route.getRoute(curpacket.destination);
 			
 
 			if(target == null) {
 				Simulator.getInstance().getManager().dropPacket(curpacket);
 			}else if (!target.canSend(curpacket.destination, curpacket.length)) {
-				if(failedToSend.size()<MAX_QUEUE_LENGTH) {
-					failedToSend.add(curpacket);
+				if(m_packets_send.size()<MAX_QUEUE_LENGTH) {
+					m_packets_send.add(curpacket);
+					break outerLoop;
 				}else {
 					Simulator.getInstance().getManager().dropPacket(curpacket);
 				}
@@ -171,7 +173,6 @@ public class IPHandler extends Element implements CL_Agent {
 				}
 			}
 		}
-		m_packets_send = failedToSend;
 
 		// Received packets waiting to be sent on or given to higher level
 		// protocols
