@@ -33,6 +33,7 @@ public class Server {
 		HttpServer server = HttpServer.create(new InetSocketAddress(1234), 0);
 		server.createContext("/", new MainHandler());
 		server.createContext("/simulator", new SimulateHandler());
+		server.createContext("/check", new CheckHandler());
 		server.setExecutor(null);
 		server.start();
 	}
@@ -207,6 +208,19 @@ public class Server {
 		static String convertStreamToString(java.io.InputStream is) {
 			java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 			return s.hasNext() ? s.next() : "";
+		}
+	}
+	
+	static class CheckHandler implements HttpHandler {
+		@Override
+		public void handle(HttpExchange t) throws IOException {
+			System.out.println("Web app checking if simulation is done...");
+			String response = "{\"done\": "+(lastOutput != null)+"}";
+			System.out.println("Response: " + response);
+			t.sendResponseHeaders(200, response.length());
+			OutputStream os = t.getResponseBody();
+			os.write(response.getBytes());
+			os.close();
 		}
 	}
 }

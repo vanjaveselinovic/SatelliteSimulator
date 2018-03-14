@@ -419,7 +419,6 @@ button {
 /* ---------- MAIN ---------- */
 
 #sim-menu {
-	height: 75px;
 	position: absolute;
 	bottom: 50px;
 	right: 50px;
@@ -427,13 +426,26 @@ button {
 	background: unset;
 }
 
+	#sim-menu .section {
+		margin-bottom: 7px;
+	}
+
+	#sim-menu .subtitle {
+		font-weight: bold;
+	}
+
+	#sim-menu input {
+		margin-bottom: 4px;
+		padding-bottom: 2px;
+	}
+
 	.sm-section {
 		background: white;
 		position: relative;
 	}
 
 		.sm-section.wide {
-			width: 150px;
+			width: 200px;
 			padding: 10px;
 		}
 
@@ -458,7 +470,6 @@ button {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				justify-content: center;
 			}
 
 			#button-run {
@@ -472,12 +483,16 @@ button {
 			.button-icon {
 				top: 0;
 				padding-top: 15px;
+				justify-content: flex-end;
+				padding-bottom: 3px;
 			}
 
 			.button-label {
 				bottom: 0;
 				font-size: 0.7em;
 				padding-bottom: 15px;
+				justify-content: flex-start;
+				padding-top: 3px;
 			}
 
 #main {
