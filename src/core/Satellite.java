@@ -72,10 +72,10 @@ public class Satellite extends Station{
 	public SatelliteData getData(AbsoluteDate date) {
 		SatelliteData data = new SatelliteData();
 		data.id = this.ip.getIntegerAddress();
-		Vector3D groundPos = this.getGroundPositionVector(date);
-		data.x = groundPos.getX();
-		data.y = groundPos.getY();
-		data.x = groundPos.getZ();
+		GeodeticPoint groundPos = this.getGroundPoint(date);
+		data.x = groundPos.getLatitude()/(Math.PI/180d);
+		data.y = groundPos.getLongitude()/(Math.PI/180d);
+		data.z = groundPos.getAltitude();
 		return data;
 	}
 

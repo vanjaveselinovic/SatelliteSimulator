@@ -19,16 +19,14 @@ import jns.util.RoutingTable;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Vector;
 
 public class IPHandler extends Element implements CL_Agent {
-	public static int MAX_QUEUE_LENGTH = 128;
+
 	private Vector m_interfaces;
 
-	private LinkedList<IPPacket> m_packets_send;//jns.util.Queue m_packets_send; // Packets waiting to be sent
-	private LinkedList<IPPacket> m_packets_recv;//jns.util.Queue m_packets_recv; // Received packets to be processed
+	private jns.util.Queue m_packets_send; // Packets waiting to be sent
+	private jns.util.Queue m_packets_recv; // Received packets to be processed
 
 	private Vector m_fragments; // A vector of Fragment objects (See below)
 
@@ -42,8 +40,8 @@ public class IPHandler extends Element implements CL_Agent {
 	public IPHandler() {
 		m_interfaces = new Vector();
 
-		m_packets_send = new LinkedList<>();//new jns.util.Queue();
-		m_packets_recv = new LinkedList<>();//new jns.util.Queue();
+		m_packets_send = new jns.util.Queue();
+		m_packets_recv = new jns.util.Queue();
 
 		m_route = new RoutingTable();
 
@@ -118,66 +116,88 @@ public class IPHandler extends Element implements CL_Agent {
 		Simulator.verbose("Updating IP Handler");
 
 		// Process packets waiting to be sent
-		LinkedList<IPPacket> failedToSend = new LinkedList<>();
-		for(IPPacket curpacket : m_packets_send) {
+		theOuterLoop:
+		while (m_packets_send.size() > 0) {
 
-			Interface target = m_route.getRoute(curpacket.destination);
+			// Remove a packet from the queue
+
+			IPPacket curpacket = (IPPacket) m_packets_send.peekBack();
+			m_packets_send.popBack();
+
+			Vector targets = new Vector();
+
 			
+			Interface t = m_route.getRoute(curpacket.destination);
+			if(t != null) {
+				targets.add(t);
+			}
 
-			if(target == null) {
-				Simulator.getInstance().getManager().dropPacket(curpacket);
-			}else if (!target.canSend(curpacket.destination, curpacket.length)) {
-				if(failedToSend.size()<MAX_QUEUE_LENGTH) {
-					failedToSend.add(curpacket);
-				}else {
-					Simulator.getInstance().getManager().dropPacket(curpacket);
+			boolean canSend = true;
+			for (Interface target : (Vector<Interface>) targets) {
+				// check that we canSend() on all the interfaces..
+				if (!target.canSend(curpacket.destination, curpacket.length)) {
+					m_packets_send.pushFront(curpacket);
+					canSend = false;
+					Simulator.verbose("The interface on which to send to: " + curpacket.destination
+							+ " is busy, pushing packet onto msg queue again.");
+					break theOuterLoop;
 				}
-			}else if (target.getMTU() >= curpacket.length) {
-				// Copy the packet, to use if we send more than one..
-				IPPacket sendPacket = new IPPacket(curpacket);
-				target.send(sendPacket);
-			} else {
-				// Maximum packet length (must be a multiple of 8 with IP)
-				int maximum_length = target.getMTU() & (~7);
+			}
+			if(targets.size() == 0) {
+				Simulator.getInstance().getManager().dropPacket(curpacket);
+			}else if (canSend) {
+				for (int j = 0; j < targets.size(); j++) {
+					// Check if we have to fragment...
 
-				// Number of fragments to generate
-				int num_packets = (curpacket.length / maximum_length) + 1;
-				int offset = 0;
-
-				Simulator.verbose("Fragmenting big packet into " + num_packets + " fragments.");
-
-				for (int i = 0; i < num_packets; i++) {
-					// Copy the original packet
-					IPPacket new_fragment = new IPPacket(curpacket);
-
-					// Last fragment
-
-					if (i == (num_packets - 1)) {
-						// Note that we do not handle the more_fragments bit here. If
-						// we are refragmenting a fragmented packet, it's set already
-						// otherwise it's unset, which is fine.. last packet..
-
-						new_fragment.length = curpacket.length % maximum_length;
+					if (((Interface) targets.get(j)).getMTU() >= curpacket.length) {
+						// Copy the packet, to use if we send more than one..
+						IPPacket sendPacket = new IPPacket(curpacket);
+						((Interface) targets.get(j)).send(sendPacket);
 					} else {
-						new_fragment.flags |= IPPacket.FLAG_MORE_FRAGMENTS;
-						new_fragment.length = maximum_length;
+						// Maximum packet length (must be a multiple of 8 with IP)
+						int maximum_length = ((Interface) targets.get(j)).getMTU() & (~7);
+
+						// Number of fragments to generate
+						int num_packets = (curpacket.length / maximum_length) + 1;
+						int offset = 0;
+
+						Simulator.verbose("Fragmenting big packet into " + num_packets + " fragments.");
+
+						for (int i = 0; i < num_packets; i++) {
+							// Copy the original packet
+							IPPacket new_fragment = new IPPacket(curpacket);
+
+							// Last fragment
+
+							if (i == (num_packets - 1)) {
+								// Note that we do not handle the more_fragments bit here. If
+								// we are refragmenting a fragmented packet, it's set already
+								// otherwise it's unset, which is fine.. last packet..
+
+								new_fragment.length = curpacket.length % maximum_length;
+							} else {
+								new_fragment.flags |= IPPacket.FLAG_MORE_FRAGMENTS;
+								new_fragment.length = maximum_length;
+							}
+
+							new_fragment.fragment_offset = (offset >> 3);
+							offset += new_fragment.length;
+
+							// Off it goes..
+							((Interface) targets.get(j)).send(new_fragment);
+						}
 					}
-
-					new_fragment.fragment_offset = (offset >> 3);
-					offset += new_fragment.length;
-
-					// Off it goes..
-					target.send(new_fragment);
 				}
 			}
 		}
-		m_packets_send = failedToSend;
 
 		// Received packets waiting to be sent on or given to higher level
 		// protocols
-		
-		while(!m_packets_recv.isEmpty()) {
-			IPPacket curpacket = m_packets_recv.remove(0);
+
+		while (m_packets_recv.size() > 0) {
+			IPPacket curpacket = (IPPacket) m_packets_recv.peekBack();
+			m_packets_recv.popBack();
+
 			// Check the packet's integrity
 
 			if (!curpacket.crc) {
@@ -209,10 +229,10 @@ public class IPHandler extends Element implements CL_Agent {
 			// statement
 			// breaks the standard, fixed line IP handling of multicast addresses, but it's
 			// the desired behaviour for 802.11b in ad hoc mode!
-			if (!is_final_dest) {
+			if (!is_final_dest && !curpacket.destination.isMulticastAddress()) {
 				Simulator.verbose("Sending on packet");
 
-				m_packets_send.add(curpacket);
+				m_packets_send.pushFront(curpacket);
 
 				Simulator.getInstance().schedule(new ElementUpdateCommand(this,
 						Simulator.getInstance().getTime() + Preferences.delay_ip_to_ifacequeue));
@@ -339,7 +359,7 @@ public class IPHandler extends Element implements CL_Agent {
 		packet.protocol = unique_id;
 
 		// Put packet in the send queue
-		m_packets_send.add(packet);
+		m_packets_send.pushFront(packet);
 
 		// Schedule a call to the update function
 		Simulator.getInstance().schedule(
@@ -396,7 +416,7 @@ public class IPHandler extends Element implements CL_Agent {
 			IPPacket packet = (IPPacket) ((Interface) indicator).read(0);
 
 			// Stick the packet in the receive queue
-			m_packets_recv.add(packet);
+			m_packets_recv.pushFront(packet);
 
 			// Schedule a call to the update function
 			Simulator.getInstance().schedule(new ElementUpdateCommand(this,

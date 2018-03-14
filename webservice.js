@@ -29,7 +29,7 @@ function formatQuery(queryInJSON) {
 var WebService = function(params) {
 	if (params === undefined) params = {};
 
-	this.postWithData = function(url, dataIn, success) {
+	this.postWithData = function(url, dataIn, success, failure) {
 		if (!loading) {
 			load();
 
@@ -43,25 +43,30 @@ var WebService = function(params) {
 				.done(function(data, textStatus, jqXHR) {
 					endLoad();
 					console.log(data);
+					load();
 					success();
 				})
 				.fail(function() {
 					endLoad();
 					console.log('error');
+					failure();
 					$('#sim-menu .subtitle').append('<span style="color: red"> failed</span>');
 				});
 		}
 	}
 
 	this.request = function(url, successByDone, failByDone) {
-		if (!loading) {
+		//if (!loading) {
 			load();
 
 			$.getJSON(url)
 				.done(function(data, textStatus, jqXHR) {
 					endLoad();
 					console.log(data);
-					if (data.done === true) successByDone();
+					if (data.done === true) {
+						successByDone(data.output);
+						load();
+					}
 					else failByDone();
 					$('.loader').css('display','none');
 				})
@@ -70,7 +75,7 @@ var WebService = function(params) {
 					console.log('error');
 					$('.loader').css('display','none');
 				});
-		}
+		//}
 	}
 
 	this.requestWithQuery = function(url, queryParams, success, fail) {

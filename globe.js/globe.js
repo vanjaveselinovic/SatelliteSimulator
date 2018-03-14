@@ -296,7 +296,64 @@ var Globe = function(params) {
 			for (j = 0; j < rings[i].satellites.length; j++) {
 				rings[i].satellites[j].update(deltaTimeSeconds);
 			}
-			//rings[i].update();
+			rings[i].update();
 		}
 	}
+
+	/* output */
+
+	//var outputSatellites = {};
+
+	this.applyOutput = function(satellites, startTime) {
+		ringLayer.removeAllRenderables();
+		satelliteLayer.removeAllRenderables();
+
+		for (var i = 0; i < satellites.length; i++) {
+			/*var positionXYZ = {
+				x: satellites[i].x,
+				y: satellites[i].y,
+				z: satellites[i].z
+			}
+
+			var gmst = satellite.gstime(Date.parse(startTime));
+			var positionLLH = satellite.eciToGeodetic(positionXYZ, gmst);
+
+			var lonRad = positionLLH.longitude;
+		    var latRad = positionLLH.latitude;
+		    var height = positionLLH.height;
+
+	    	if (lonRad < -1*Math.PI) lonRad += 2*Math.PI;
+
+	    	var newPlacemark = new WorldWind.Placemark(
+					new WorldWind.Position(
+							satellite.degreesLat(latRad),
+							satellite.degreesLong(lonRad),
+		    				height - EARTH_RADIUS,
+							false,
+							null));
+			*/
+
+			var position = {
+				latitude: satellites[i].x,
+				longitude: satellites[i].y,
+				altitude: satellites[i].z
+			}
+
+			var newPlacemark = new WorldWind.Placemark(
+					new WorldWind.Position(
+							position.latitude,
+							position.longitude,
+		    				position.altitude,
+							false,
+							null));
+
+			newPlacemark.altitudeMode = WorldWind.ABSOLUTE;
+			newPlacemark.attributes = placemarkAttributes;
+			newPlacemark.highlightAttributes = highlightAttributes;
+
+			//outputSatellites['s'+satellites[i].id] = newPlacemark;
+
+			satelliteLayer.addRenderable(newPlacemark);
+		}
+	};
 }

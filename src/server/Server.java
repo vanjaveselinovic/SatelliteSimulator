@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -215,7 +216,14 @@ public class Server {
 		@Override
 		public void handle(HttpExchange t) throws IOException {
 			System.out.println("Web app checking if simulation is done...");
-			String response = "{\"done\": "+(lastOutput != null)+"}";
+			
+			String response = "{\"done\": false}";
+			if (lastOutput != null) {
+				Gson gson = new Gson();
+				String jsonOutput = gson.toJson(lastOutput);
+				response = "{\"done\": true, \"output\": "+jsonOutput+"}";
+			}
+			
 			System.out.println("Response: " + response);
 			t.sendResponseHeaders(200, response.length());
 			OutputStream os = t.getResponseBody();
