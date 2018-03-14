@@ -11,4 +11,5 @@ public class PathData {
 	public int outOfOrderPackets;
 	public int droppedPackets;
 	public int damagedPackets;
+	public int createdPackets;//new field for you!
 }

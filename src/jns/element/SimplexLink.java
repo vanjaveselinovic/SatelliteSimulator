@@ -1,5 +1,10 @@
 package jns.element;
 
+import java.util.Random;
+
+import org.hipparchus.util.FastMath;
+import org.uncommons.maths.random.MersenneTwisterRNG;
+
 import jns.Simulator;
 import jns.agent.Agent;
 import jns.command.Command;
@@ -10,6 +15,7 @@ import jns.util.Status;
 
 public class SimplexLink extends Link {
 
+	private static final Random bitFlipRng = new MersenneTwisterRNG();
 	// Incoming and outgoing interface. That is m_in is a RECEIVER and m_out
 	// is a SENDER interface, i.e. outgoint means 'out of the node' not
 	// 'out of the link'
@@ -87,10 +93,38 @@ public class SimplexLink extends Link {
 		m_packets.popBack();
 
 		
-		//(1-bitErrorRate)^messageLengthInBits
-		if (Math.pow( 1.0d-getError(), ((double)packet.length)*8.0d) < Math.random());
-			packet.crc = false;
+		/*
+		 * p = odds that a specific bit has been fliped
+		 * 
+		 * k = 0, we accept only 0 flips
+		 * 
+		 * n = the length of the packet in bits
+		 * 
+		 * (n choose k) (p^k) ((1-p)^(n-k))
+		 * 
+		 * (n!/(k!(n-k)!)) (p^k) ((1-p)^(n-k))
+		 * 
+		 * (n!/(0!(n-0)!)) (p^0) ((1-p)^(n-0))
+		 * 
+		 * (n!/n!) (1) ((1-p)^(n))
+		 * 
+		 * (1) (1) (1-p)^(n)
+		 * 
+		 * (1-p)^(n)
+		 * 
+		 * the odds that a given bit survives the trip ^ #of bits
+		 */
+		double p = getError();//odds of a given bit flipping
+		
+		double finalOdds = FastMath.pow((1-p),(packet.length<<3));//odds of the packet living
+		
+		if (finalOdds < bitFlipRng.nextDouble()) {
+			packet.crc_is_corrupt = true;
+		}
+		
 
+		//because we don't want anything being broken
+		packet.crc_is_corrupt = false;
 		// Put packet in the arrived packets queue and indicate to interface
 
 		m_arrived.pushFront(packet);

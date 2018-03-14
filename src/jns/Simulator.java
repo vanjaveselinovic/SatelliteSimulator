@@ -179,21 +179,20 @@ public class Simulator implements Runnable {
 			}
 
 			m_time = current_command.getTime();
-
-			if(m_time - lastPrintedTime>0.05d) {
+			man.setTime(m_time);
+			current_command.execute();
+			
+			if(m_time - lastPrintedTime>1d) {
 				System.out.println("Time:"+m_time+"s");
 				lastPrintedTime=m_time;
 			}
-			man.setTime(m_time);
-			current_command.execute();
+			
 			events++;
-			if((events&2047L) == 0) {
-				System.out.println("Event# "+events+" at time "+m_time+"s");
+			if(events%1000000 == 0) {
+				System.out.println("Event# "+events/1000000+"m at time "+m_time+"s");
 			}
 		}
 		m_trace.writePostamble();
-		Simulator.verbose("The simulator has stopped, and has successfully written a JVS file");
-		// System.exit(0); //I want to be able to run more than one of these
 	}
 
 	/**

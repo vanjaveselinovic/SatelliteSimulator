@@ -59,8 +59,9 @@ public class IPPacket {
 	public int protocol;
 
 	// crc stands for 'crc is corrupt'
-	public boolean crc;
+	public boolean crc_is_corrupt;
 
+	public final int hops;
 	// The next three are IP option flags
 
 	// copy_options specifies whether the options should be copied into all
@@ -93,7 +94,7 @@ public class IPPacket {
 		precedence = 0;
 		requested_service = 0;
 		length = 0;
-		crc = true;
+		crc_is_corrupt = false;
 		id = 0;
 		flags = 0;
 		fragment_offset = 0;
@@ -104,6 +105,7 @@ public class IPPacket {
 		data = null;
 		source_hop = new IPAddr(0, 0, 0, 0);
 		destination_hop = new IPAddr(0, 0, 0, 0);
+		hops = 0;
 	}
 
 	public IPPacket(IPPacket other) {
@@ -115,7 +117,7 @@ public class IPPacket {
 		precedence = other.precedence;
 		requested_service = other.requested_service;
 		length = other.length;
-		crc = other.crc;
+		crc_is_corrupt = other.crc_is_corrupt;
 		id = other.id;
 		flags = other.flags;
 		fragment_offset = other.fragment_offset;
@@ -124,5 +126,6 @@ public class IPPacket {
 		copy_options = other.copy_options;
 		option = other.option;
 		data = other.data;
+		hops = other.hops+1;
 	}
 }

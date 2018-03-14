@@ -58,6 +58,7 @@ public class Manager implements Runnable{
 	Map<Integer, Double> lastGoodPackets = new HashMap<>();//id to start time, also, do not clear
 	Map<Integer, Integer> latePackets = new HashMap<>();
 	Map<Integer, List<Double>> packetDelays = new HashMap<>();
+	Map<Integer, Integer> createdPackets = new HashMap<>();
 	Map<Integer, Integer> damagedPackets = new HashMap<>();
 	Map<Integer, Integer> droppedPackets = new HashMap<>();
 	Map<Integer, Integer> goodPackets = new HashMap<>();
@@ -262,8 +263,14 @@ public class Manager implements Runnable{
 				pathData.delays[i] = delays.get(i);//////////////////////////////////////////
 			}
 			
+			Integer temp = createdPackets.get(aps.id);
+			if(temp == null) {
+				temp = 0;
+			}
+			pathData.createdPackets = temp;/////////////////////////////////////////
 			
-			Integer temp = goodPackets.get(aps.id);
+			
+			temp = goodPackets.get(aps.id);
 			if(temp == null) {
 				temp = 0;
 			}
@@ -301,7 +308,8 @@ public class Manager implements Runnable{
 		event.satelliteData = sateliteData.toArray(new SatelliteData[0]);
 		
 		events.add(event);
-		
+
+		createdPackets = new HashMap<>();
 		goodPackets = new HashMap<>();
 		latePackets = new HashMap<>();
 		packetDelays = new HashMap<>();
@@ -461,6 +469,12 @@ public class Manager implements Runnable{
 	}
 	
 	
+	public void createPacket(int id) {
+		if(createdPackets.get(id) == null) {
+			createdPackets.put(id, 0);
+		}
+		createdPackets.put(id, createdPackets.get(id)+1);
+	}
 	
 	public void damagedPacket(IPPacket packet) {
 		String[] data = ((String)packet.data).split(":");
@@ -524,6 +538,8 @@ public class Manager implements Runnable{
 			//EventData[] events;//in order
 		return output;
 	}
+
+	
 	
 }
 

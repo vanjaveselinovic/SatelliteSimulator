@@ -19,7 +19,7 @@ public class GroundStation extends Station{
 	public GroundStation(GroundStationData data) {
 		super(data.name);
 		this.groundPoint = new GeodeticPoint(data.latitude, data.longitude, data.altitude);
-		this.rate = data.rate*1000000d/((AutoPacketSender.MAX_PACKET_SIZE+AutoPacketSender.MIN_PACKET_SIZE)/2);
+		this.rate = data.rate*1000000d/(AutoPacketSender.meanPacketSize());
 		
 		
 	}

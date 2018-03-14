@@ -24,8 +24,8 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 public class IPHandler extends Element implements CL_Agent {
-	public static int MAX_QUEUE_LENGTH = 128;
-	private Vector m_interfaces;
+	public static int MAX_BUFFER_LENGTH = 128;
+	private Vector<Interface> m_interfaces;
 
 	private LinkedList<IPPacket> m_packets_send;//jns.util.Queue m_packets_send; // Packets waiting to be sent
 	private LinkedList<IPPacket> m_packets_recv;//jns.util.Queue m_packets_recv; // Received packets to be processed
@@ -34,7 +34,7 @@ public class IPHandler extends Element implements CL_Agent {
 
 	private RoutingTable m_route;
 
-	private int m_packetid; // Unique packet id
+	private static int m_packetid = 1; // Unique packet id
 
 	private Hashtable m_protocols; // Higher level protocols, stores instances
 	// of 'HigherAgent'
@@ -47,13 +47,7 @@ public class IPHandler extends Element implements CL_Agent {
 
 		m_route = new RoutingTable();
 
-		// Get a new unique packet id start from the current time in millisecs
-		// and a random number between 0-10000.
-
-		// m_packetid=(int)((new Date()).getTime())+(int)(Math.random()*10000.0);
-		m_packetid = 0;
-
-		m_fragments = new Vector();
+		//m_fragments = new Vector();
 
 		m_protocols = new Hashtable();
 	}
@@ -128,49 +122,16 @@ public class IPHandler extends Element implements CL_Agent {
 			if(target == null) {
 				Simulator.getInstance().getManager().dropPacket(curpacket);
 			}else if (!target.canSend(curpacket.destination, curpacket.length)) {
-				if(m_packets_send.size()<MAX_QUEUE_LENGTH) {
-					m_packets_send.add(curpacket);
+				if(m_packets_send.size()<MAX_BUFFER_LENGTH) {
+					m_packets_send.add(0, curpacket);
 					break outerLoop;
 				}else {
 					Simulator.getInstance().getManager().dropPacket(curpacket);
 				}
-			}else if (target.getMTU() >= curpacket.length) {
+			}else{
 				// Copy the packet, to use if we send more than one..
 				IPPacket sendPacket = new IPPacket(curpacket);
 				target.send(sendPacket);
-			} else {
-				// Maximum packet length (must be a multiple of 8 with IP)
-				int maximum_length = target.getMTU() & (~7);
-
-				// Number of fragments to generate
-				int num_packets = (curpacket.length / maximum_length) + 1;
-				int offset = 0;
-
-				Simulator.verbose("Fragmenting big packet into " + num_packets + " fragments.");
-
-				for (int i = 0; i < num_packets; i++) {
-					// Copy the original packet
-					IPPacket new_fragment = new IPPacket(curpacket);
-
-					// Last fragment
-
-					if (i == (num_packets - 1)) {
-						// Note that we do not handle the more_fragments bit here. If
-						// we are refragmenting a fragmented packet, it's set already
-						// otherwise it's unset, which is fine.. last packet..
-
-						new_fragment.length = curpacket.length % maximum_length;
-					} else {
-						new_fragment.flags |= IPPacket.FLAG_MORE_FRAGMENTS;
-						new_fragment.length = maximum_length;
-					}
-
-					new_fragment.fragment_offset = (offset >> 3);
-					offset += new_fragment.length;
-
-					// Off it goes..
-					target.send(new_fragment);
-				}
 			}
 		}
 
@@ -181,10 +142,8 @@ public class IPHandler extends Element implements CL_Agent {
 			IPPacket curpacket = m_packets_recv.remove(0);
 			// Check the packet's integrity
 
-			if (!curpacket.crc) {
-				// TODO: Generate drop packet event ?
+			if (curpacket.crc_is_corrupt) {
 				Simulator.getInstance().getManager().damagedPacket(curpacket);
-				// Get next packet instead
 				continue;
 			}
 
@@ -192,10 +151,9 @@ public class IPHandler extends Element implements CL_Agent {
 			// interfaces addresses..
 
 			boolean is_final_dest = false;
-
-			Enumeration e = m_interfaces.elements();
-			while (e.hasMoreElements()) {
-				Interface curiface = (Interface) e.nextElement();
+			
+			for(Interface curiface : m_interfaces) {
+				//Interface curiface = (Interface) e.nextElement();
 
 				if (curiface.getIPAddr().equals(curpacket.destination)) {
 					Simulator.verbose("Packet at final dest");
@@ -218,106 +176,20 @@ public class IPHandler extends Element implements CL_Agent {
 				Simulator.getInstance().schedule(new ElementUpdateCommand(this,
 						Simulator.getInstance().getTime() + Preferences.delay_ip_to_ifacequeue));
 			} else {
-				// Not a fragment because offset=0 and no 'more fragments' flags set
+				// Not a fragment because we do not use fragments
 
-				if (curpacket.fragment_offset == 0 && (curpacket.flags & IPPacket.FLAG_MORE_FRAGMENTS) == 0) {
-
-					// Pass on to higher level protocol
-					HigherAgent destagent = (HigherAgent) m_protocols.get(new Integer(curpacket.protocol));
-					if (destagent != null) {
-						destagent.queue.pushFront(curpacket);
-						destagent.agent.indicate(Agent.PACKET_AVAILABLE, this);
-					} else {
-						// TODO: No destination protocol.. Generate a custom event ?
-					}
+				// Pass on to higher level protocol
+				HigherAgent destagent = (HigherAgent) m_protocols.get(new Integer(curpacket.protocol));
+				if (destagent != null) {
+					destagent.queue.pushFront(curpacket);
+					destagent.agent.indicate(Agent.PACKET_AVAILABLE, this);
 				} else {
-
-					// There's a fragment lurking around, perform reassembly.
-
-					Fragment frag_entry = null;
-
-					// Find if there is an entry in the fragment list
-
-					e = m_fragments.elements();
-					while (e.hasMoreElements()) {
-						Fragment curfragment = (Fragment) e.nextElement();
-
-						if (curfragment.getId() == curpacket.id) {
-							frag_entry = curfragment;
-							break;
-						}
-					}
-
-					// No entry, create a new one, start timeout that will invalidate
-					// this fragment list after a while
-
-					if (frag_entry == null) {
-						frag_entry = new Fragment(curpacket.id);
-						m_fragments.addElement(frag_entry);
-
-						// Schedule a timeout that will delete this id's fragments if
-						// they aren't complete yet by then
-
-						class FragmentTimeoutCommand extends Command {
-							int m_id;
-
-							FragmentTimeoutCommand(int id, double time) {
-								super("FragmentTimeout", time);
-								m_id = id;
-							}
-
-							public void execute() {
-								// Look through fragments, they might not exist anymore
-								// because they are complete..
-								for (int i = 0; i < m_fragments.size(); i++) {
-									Fragment curfragment = (Fragment) m_fragments.elementAt(i);
-									if (curfragment.getId() == m_id) {
-										m_fragments.removeElementAt(i);
-										return;
-									}
-								}
-							}
-						}
-
-						Simulator.getInstance().schedule(new FragmentTimeoutCommand(curpacket.id,
-								Simulator.getInstance().getTime() + Preferences.ip_fragmentation_timeout));
-					}
-
-					// Add this packet to the list of fragments
-
-					frag_entry.addFragment(curpacket);
-
-					// If we are complete, reassemble
-
-					if (frag_entry.complete()) {
-						Simulator.verbose("Packet complete!!");
-
-						IPPacket packet = frag_entry.reassemble();
-
-						// Remove from fragment list
-
-						for (int i = 0; i < m_fragments.size(); i++) {
-							Fragment curfragment = (Fragment) m_fragments.elementAt(i);
-							if (curfragment.getId() == packet.id) {
-								m_fragments.removeElementAt(i);
-								return;
-							}
-						}
-
-						// Pass on to higher level protocol
-
-						HigherAgent destagent = (HigherAgent) m_protocols.get(new Integer(curpacket.protocol));
-						if (destagent != null) {
-							destagent.queue.pushFront(curpacket);
-							destagent.agent.indicate(Agent.PACKET_AVAILABLE, this);
-						} else {
-							// TODO: No destination protocol.. Generate a custom event ?
-						}
-
-					}
+					// TODO: No destination protocol.. Generate a custom event ?
+					throw new RuntimeException();
 				}
-
 			}
+
+			
 		}
 	}
 
