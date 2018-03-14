@@ -7,9 +7,13 @@ import jns.util.Preferences;
 import jns.util.PriorityQueue;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -154,7 +158,7 @@ public class Simulator implements Runnable {
 	 * simulation has started. NOTE: The events still need to be in the right
 	 * temporal order though!
 	 */
-	private double lastPrintedTime = 0d;
+	//private double lastPrintedTime = 0d;
 	private long events = 0;
 	public void run() {
 
@@ -180,16 +184,27 @@ public class Simulator implements Runnable {
 
 			m_time = current_command.getTime();
 
-			if(m_time - lastPrintedTime>0.05d) {
-				System.out.println("Time:"+m_time+"s");
-				lastPrintedTime=m_time;
-			}
+			
 			man.setTime(m_time);
 			current_command.execute();
 			events++;
-			if((events&2047L) == 0) {
-				System.out.println("Event# "+events+" at time "+m_time+"s");
+			if(events % 1000000 == 0) {
+				System.out.println("Event# "+events/1000000+"m at time "+m_time+"s");
 			}
+			if(m_time > 16) {
+				System.out.println("We're doing this");
+				LinkedList<String> l = new LinkedList<String>();
+				l.push(".");
+				while(true) {
+					l.push(l.peek()+".");
+				}
+			}
+			/*
+			if(m_time - lastPrintedTime>0.1d) {
+				System.out.println("Time:"+m_time+"s");
+				lastPrintedTime=m_time;
+			}*/
+			
 		}
 		m_trace.writePostamble();
 		Simulator.verbose("The simulator has stopped, and has successfully written a JVS file");
