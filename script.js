@@ -259,7 +259,7 @@ $(document).ready(function () {
 
 	/* live update */
 
-	$('#input-ts.input-numeric').on('keydown', function(e) {
+	$('.input-numeric.in-static').on('keydown', function(e) {
 		if (!isNaN($(this).val())) {
 			if (e.which === 38)
 				$(this).val(parseInt($(this).val())+1);
@@ -483,9 +483,31 @@ $(document).ready(function () {
 
 	var simulationConfig = {
 		startTime: startTime.toISOString(),
-		duration: 1, //minutes
-		interval: 1 //seconds
+		duration: parseInt($('.input-dur').val()), //minutes
+		interval: parseInt($('.input-int').val()) //seconds
 	};
+
+	$('.input-dur').on('input', function() {
+		var durationInput = $('.input-dur').val();
+
+		if (!isNaN(durationInput) && durationInput > 0) {
+			$('.input-dur').removeClass('invalid-input');
+			simulationConfig.duration = parseInt(durationInput);
+		} else {
+			$('.input-dur').addClass('invalid-input');
+		}
+	});
+
+	$('.input-int').on('input', function() {
+		var intervalInput = $('.input-int').val();
+
+		if (!isNaN(intervalInput) && intervalInput > 0) {
+			$('.input-int').removeClass('invalid-input');
+			simulationConfig.interval = parseInt(intervalInput);
+		} else {
+			$('.input-int').addClass('invalid-input');
+		}
+	});
 
 	/* ---------- CHOREOGRAPHING ---------- */
 
@@ -520,7 +542,31 @@ $(document).ready(function () {
 					constellations: customPreset,
 					groundStations: groundStations,
 					simulation: simulationConfig
-				}
+				},
+				waitForSimulationToFinish
 		);
 	});
+
+	/* waiting */
+
+	var timeBetweenChecksInSeconds = 10;
+	var totalTimeWaitingInSeconds = -1 * timeBetweenChecksInSeconds;
+
+	var waitForSimulationToFinish = function() {
+		console.log('waiting...');
+
+		totalTimeWaitingInSeconds += timeBetweenChecksInSeconds;
+		if (totalTimeWaitingInSeconds > 120) timeBetweenChecksInSeconds = 60;
+
+		ws.request(
+				'http://localhost:1234/check',
+				function(){
+					console.log('done!');
+				},
+				function(){
+					console.log('back to waiting...');
+					setTimeout(waitForSimulationToFinish, timeBetweenChecksInSeconds * 1000);
+				}
+			);
+	};
 });

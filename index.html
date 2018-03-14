@@ -159,7 +159,7 @@
 						Time scale
 					</div>
 					<div class="iwl-section input">
-						<input type="text" id="input-ts" value="100" autocomplete="off" class="input-numeric">
+						<input type="text" id="input-ts" value="100" autocomplete="off" class="input-numeric in-static">
 					</div>
 					<div class="iwl-section label-after">
 						x
@@ -191,9 +191,32 @@
 			<div id="sim-menu" class="card">
 				<div class="sm-section wide">
 					<div class="section subtitle">
-						Simulate
+						<i class="fas fa-stopwatch"></i>&nbsp;&nbsp;Simulation
+					</div>
+					<div class="input-with-labels">
+						<div class="iwl-section label-before">
+							Duration
+						</div>
+						<div class="iwl-section input">
+							<input type="text" id="" value="1" autocomplete="off" class="input-numeric input-dur in-static">
+						</div>
+						<div class="iwl-section label-after">
+							min
+						</div>
+					</div>
+					<div class="input-with-labels">
+						<div class="iwl-section label-before">
+							Step interval
+						</div>
+						<div class="iwl-section input">
+							<input type="text" id="" value="1" autocomplete="off" class="input-numeric input-int in-static">
+						</div>
+						<div class="iwl-section label-after">
+							s
+						</div>
 					</div>
 				</div>
+				<!--
 				<button id="button-schedule" class="sm-section">
 					<div class="button-icon">
 						<i class="far fa-clock"></i>
@@ -202,12 +225,13 @@
 						Schedule
 					</div>
 				</button>
+				-->
 				<button id="button-run" class="sm-section">
 					<div class="button-icon">
 						<i class="fas fa-play"></i>
 					</div>
 					<div class="button-label">
-						Run now
+						Run
 					</div>
 				</button>
 			</div>
