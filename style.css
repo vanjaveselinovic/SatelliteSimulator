@@ -52,6 +52,10 @@ input {
 			border-color: red !important;
 		}
 
+		input[type="text"]:disabled {
+			border-color: transparent !important;
+		}
+
 ::-webkit-input-placeholder{ /* Chrome/Opera/Safari */
   color: rgba(255,255,255,0.2);
 }
@@ -179,9 +183,18 @@ input {
 		display: none;
 	}
 
-	.input-radio-color input:checked + .icon {
+	.input-radio-color input:checked ~ .icon {
 		display: unset;
 		opacity: 1 !important;
+	}
+
+	.input-radio-color input:disabled:not(:checked) ~ .icon {
+		display: none !important;
+		opacity: 0 !important;
+	}
+
+	.input-radio-color label:hover input:disabled:not(:checked) ~ span {
+		opacity: 0.5 !important;
 	}
 
 button {
@@ -242,6 +255,16 @@ button {
 		opacity: 1 !important;
 		color: red;
 	}
+
+	.close-button.disabled {
+		opacity: 0 !important;
+		display: 0 !important;
+	}
+
+.disabled {
+	pointer-events: none !important;
+	opacity: 0.5 !important;
+}
 
 /* ---------- SIDEBAR ---------- */
 

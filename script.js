@@ -236,22 +236,26 @@ $(document).ready(function () {
 			});
 	});
 
+	var disabled = false;
+
 	var handleClick = function(recognizer) {
-		var x = recognizer.clientX;
-		var y = recognizer.clientY;
+		if (!disabled) {
+			var x = recognizer.clientX;
+			var y = recognizer.clientY;
 
-		var pickList = globe.wwd.pick(globe.wwd.canvasCoordinates(x, y));
+			var pickList = globe.wwd.pick(globe.wwd.canvasCoordinates(x, y));
 
-		if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
-			var position = pickList.objects[0].position;
-			
-			addGroundStation({
-				name: 'Custom',
-				lat: position.latitude,
-				lon: position.longitude,
-				traffic: TRAFFIC_MD,
-				color: COLORS[2]
-			});
+			if (pickList.objects.length === 1 && pickList.objects[0].isTerrain) {
+				var position = pickList.objects[0].position;
+				
+				addGroundStation({
+					name: 'Custom',
+					lat: position.latitude,
+					lon: position.longitude,
+					traffic: TRAFFIC_MD,
+					color: COLORS[2]
+				});
+			}
 		}
 	};
 
@@ -538,6 +542,7 @@ $(document).ready(function () {
 	var ws = new WebService();
 
 	$('#button-run').on('click', function() {
+		disableInputs();
 		ws.postWithData(
 				'http://localhost:1234/simulator',
 				{
@@ -580,6 +585,18 @@ $(document).ready(function () {
 					setTimeout(waitForSimulationToFinish, timeBetweenChecksInSeconds * 1000);
 				}
 			);
+	};
+
+	/* disable inputs */
+
+	var disableInputs = function() {
+		$('input[type="text"]').prop('disabled', true);
+		$('input[type="radio"]').prop('disabled', true);
+		$('#add-constellation').addClass('disabled');
+		$('#add-ground-station').addClass('disabled');
+		$('.close-button').addClass('disabled');
+		$('.preset').addClass('disabled');
+		disabled = true;
 	};
 
 	/* output */
