@@ -12,6 +12,8 @@
 
     <script src="satellite.js/dist/satellite.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+
     <script src="canvasicon.js"></script>
     <script src="webservice.js"></script>
 
@@ -225,11 +227,14 @@
 							<div class="section">
 								<small>Current step:</small><br>
 								<span id="step-num">1</span>
-								/
+								<span>/</span>
 								<span id="step-total">100</span>
 								@
 								<span id="step-time">30</span>
-								s
+								<span>s</span>
+							</div>
+							<div id="view-stats">
+								Stats
 							</div>
 						</div>
 					</div>
@@ -277,6 +282,16 @@
 						Run
 					</div>
 				</button>
+			</div>
+		</div>
+		<div id="stats">
+			<div class="section title">
+				Stats
+				<div id="close-stats">
+					<i class="fas fa-times"></i>
+				</div>
+			</div>
+			<div class="stats-inner">
 			</div>
 		</div>
 	</div>

@@ -653,6 +653,7 @@ $(document).ready(function () {
 	}
 
 	var stopPlaying = function() {
+		closeStats();
 		$('.play-button-play-icon').show();
 		$('.play-button-pause-icon').hide();
 		$('#button-play .button-label').text('Play');
@@ -670,6 +671,7 @@ $(document).ready(function () {
 	var intervalID = null;
 
 	$('#button-play').on('click', function() {
+		closeStats();
 		if (!playing) {
 			playing = true;
 			$('.play-button-play-icon').hide();
@@ -700,7 +702,7 @@ $(document).ready(function () {
 
 		for (var i = 0; i < allPathDataKeys.length; i++) {
 			if (output.events[1].paths[0][allPathDataKeys[i]].constructor !== Array) {
-				stats[allPathDataKeys[i]] = [];
+				stats[allPathDataKeys[i]] = {x: [], y: []};
 				pathDataKeys.push(allPathDataKeys[i]);
 			}
 		}
@@ -709,14 +711,70 @@ $(document).ready(function () {
 			var key = pathDataKeys[k];
 
 			for (var e = 1; e < output.events.length; e++) {
-				stats[key].push(0);
+				stats[key].x.push(output.events[e].startSimulationTime);
+				stats[key].y.push(0);
 
 				for (var p = 0; p < output.events[e].paths.length; p++) {
-					stats[key][stats[key].length-1] += output.events[e].paths[p][key];
+					stats[key].y[stats[key].y.length-1] += output.events[e].paths[p][key];
 				}
 			}
 		}
 
 		console.log(stats);
+
+		makeCharts();
 	};
+
+	var makeCharts = function() {
+		var statKeys = Object.keys(stats);
+		var charts = [];
+
+		for (var i = 0; i < statKeys.length; i++ ){
+			var min = Math.min.apply(this, stats[statKeys[i]].y);
+			var max = Math.max.apply(this, stats[statKeys[i]].y);
+
+			var adjustment = Math.round((max - min) / 10);
+
+			min -= adjustment;
+			max += adjustment;
+
+			$('#stats .stats-inner').append('<div class="chart-container section"><canvas id="chart'+i+'" width="500px" height="300px"></canvas></div>');
+
+			var ctx = "chart"+i;
+			charts.push(new Chart(ctx, {
+			    type: 'bar',
+			    data: {
+			        labels: stats[statKeys[i]].x,
+			        xAxisID: 'Time (s)',
+			        datasets: [{
+			            label: statKeys[i],
+			            data: stats[statKeys[i]].y,
+			            backgroundColor: 'rgba(244, 66, 66, 1)'
+			        }]
+			    },
+			    options: {
+			        scales: {
+			            yAxes: [{
+			                ticks: {
+			                    suggestedMin: min,
+			                    suggestedMax: max
+			                }
+			            }]
+			        }
+			    }
+			}));
+		}
+	};
+
+	$('#view-stats').on('click', function() {
+		$('body').addClass('stats-open');
+	});
+
+	var closeStats = function() {
+		$('body').removeClass('stats-open');
+	};
+
+	$('#close-stats').on('click', function() {
+		closeStats();
+	});
 });
