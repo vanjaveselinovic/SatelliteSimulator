@@ -1,13 +1,18 @@
 package core;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Random;
 import java.util.Set;
 
 import org.orekit.time.AbsoluteDate;
+import org.uncommons.maths.random.MersenneTwisterRNG;
 
 import jns.Simulator;
+import jns.command.Command;
 import jns.element.DuplexInterface;
 import jns.element.DuplexLink;
+import jns.element.IPPacket;
 import jns.element.SimplexLink;
 import jns.util.IPAddr;
 
@@ -24,6 +29,10 @@ public class SmartDuplexLink extends DuplexLink {
 
 	private final DuplexInterface a_interface;
 	private final DuplexInterface b_interface;
+	
+
+	private final LinkedList<IPPacket> toA = new LinkedList<>();
+	private final LinkedList<IPPacket> toB = new LinkedList<>();
 	
 	private boolean viable = true;
 	
@@ -45,8 +54,8 @@ public class SmartDuplexLink extends DuplexLink {
 		a_interface = new DuplexInterface(stationA.ip);
 		b_interface = new DuplexInterface(stationB.ip);
 		
-		stationA.node.attach(a_interface);
-		stationB.node.attach(b_interface);
+		//stationA.node.attach(a_interface);
+		//stationB.node.attach(b_interface);
 
 		this.a_interface.attach(this, true);
 		this.b_interface.attach(this, true);
@@ -109,10 +118,25 @@ public class SmartDuplexLink extends DuplexLink {
 		}
 	}
 	
+	public void sendTo(Station rx, IPPacket p) {
+		LinkedList<IPPacket> q = null;
+		if(this.stationA.equals(rx)) {
+			q = toA;
+		}else {
+			q = toB;
+		}
+		
+		q.add(p);
+		
+		if(q.size() == 1) {
+			new PacketSendEvent(Simulator.getInstance().getTime()+this.getDelay(rx, p.length), this, q, rx);
+		}
+	}
+	/*
 	public void addRoute(Station tx, Station destination) {
 		tx.node.addRoute(destination.ip, new IPAddr(255,255,255,0), (tx==stationA)?(b_interface):(a_interface));
 	}
-	
+	*/
 	@Override
 	protected SimplexLink getM_link1() {
 		return a_b;
@@ -122,4 +146,47 @@ public class SmartDuplexLink extends DuplexLink {
 	protected SimplexLink getM_link2() {
 		return b_a;
 	}
+
+	public double getDelay(Station rx, int length) {
+		return (rx == this.stationA)?(b_a.getDelay(length)):(a_b.getDelay(length));
+	}
+
+	public double getError(Station rx) {
+		return (rx==this.stationA)?(this.b_a.getError()):(this.a_b.getError());
+	}
 }
+
+class PacketSendEvent extends Command{
+	private static final Random bitFlipRng = new MersenneTwisterRNG();
+	private SmartDuplexLink link;
+	private LinkedList<IPPacket> q;
+	private Station rx;
+	
+	public PacketSendEvent(double time, SmartDuplexLink link, LinkedList<IPPacket> q, Station rx) {
+		super("PacketSendEvent", time);
+		this.link = link;
+		this.q = q;
+		this.rx = rx;
+		Simulator.getInstance().schedule(this);
+	}
+
+	@Override
+	public void execute() {
+		IPPacket p = q.remove(0);
+		
+		if (RoutingUtil.errorChance(link.getError(rx), p.length) < bitFlipRng.nextDouble()) {
+			p.crc_is_corrupt = true;
+			Simulator.getInstance().getManager().damagedPacket(p, link);
+		}else {
+			rx.send(p);
+		}
+		if(!q.isEmpty()) {
+			new PacketSendEvent(this.getTime()+link.getDelay(rx, p.length), this.link, this.q, this.rx);
+		}
+	}
+}
+
+
+
+
+

@@ -2,6 +2,8 @@ package jns.util;
 
 import java.net.InetAddress;
 
+import jns.element.IPPacket;
+
 /**
  * A simple representation of an IP address (that is IPv4).
  */
@@ -47,10 +49,20 @@ public class IPAddr {
 	/**
 	 * Compare for equality.
 	 */
-	public boolean equals(IPAddr other) {
-		return m_addr == other.m_addr;
+	@Override
+	public boolean equals(Object o) {
+		if(o == null || !(o instanceof IPPacket)) {
+			return false;
+		}else {
+			IPAddr a = (IPAddr)o;
+			return this.m_addr==a.m_addr;
+		}
 	}
-
+	
+	@Override
+	public int hashCode() {
+		return this.m_addr;
+	}
 	/**
 	 * Return the raw representation of this IP address.
 	 */

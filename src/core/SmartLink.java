@@ -54,4 +54,8 @@ public class SmartLink extends SimplexLink {
 			return RoutingUtil.error(date, tx, rx);
 		}
 	}
+
+	public double getDelay(int length) {
+		return this.getDelay()+(length<<3)/this.getBandwidth();
+	}
 }

@@ -119,13 +119,13 @@ public class IPHandler extends Element implements CL_Agent {
 			Interface target = m_route.getRoute(curpacket.destination);
 
 			if(target == null) {
-				Simulator.getInstance().getManager().dropPacket(curpacket);
+				//Simulator.getInstance().getManager().dropPacket(curpacket);
 			}else if (!target.canSend(curpacket.destination, curpacket.length)) {
 				if(m_packets_send.size()<MAX_BUFFER_LENGTH) {
 					m_packets_send.add(0, curpacket);
 					break outerLoop;
 				}else {
-					Simulator.getInstance().getManager().dropPacket(curpacket);
+					//Simulator.getInstance().getManager().dropPacket(curpacket);
 				}
 			}else{
 				// Copy the packet, to use if we send more than one..
@@ -142,7 +142,7 @@ public class IPHandler extends Element implements CL_Agent {
 			// Check the packet's integrity
 
 			if (curpacket.crc_is_corrupt) {
-				Simulator.getInstance().getManager().damagedPacket(curpacket);
+				//Simulator.getInstance().getManager().damagedPacket(curpacket);
 				continue;
 			}
 
@@ -156,7 +156,7 @@ public class IPHandler extends Element implements CL_Agent {
 
 				if (curiface.getIPAddr().equals(curpacket.destination)) {
 					Simulator.verbose("Packet at final dest");
-					Simulator.getInstance().getManager().gotPacket(curpacket);
+					//Simulator.getInstance().getManager().gotPacket(curpacket);
 					is_final_dest = true;
 					break;
 				}

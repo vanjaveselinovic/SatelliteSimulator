@@ -9,12 +9,16 @@ import org.orekit.time.AbsoluteDate;
 
 import data.GroundStationData;
 import data.PacketSenderData;
+import jns.util.IPAddr;
 
 public class GroundStation extends Station{
 	private GeodeticPoint groundPoint;
 	private List<AutoPacketSender> senders = new ArrayList<>();
 	String name;
 	public double rate;
+	
+	private SmartDuplexLink satLink = null;
+	private Satellite connectedSat = null;
 	
 	public GroundStation(GroundStationData data) {
 		super(data.name);
@@ -71,5 +75,24 @@ public class GroundStation extends Station{
 	public void add(AutoPacketSender autoPacketSender) {
 		senders.add(autoPacketSender);
 	}
+
+	public void setSatLink(SmartDuplexLink bestLink) {
+		// TODO Auto-generated method stub
+		satLink = bestLink;
+		connectedSat = (Satellite) bestLink.otherStation(this);
+		connectedSat.addRoute(this.ip, satLink);
+	}
+
+	public SmartDuplexLink getSatLink() {
+		return this.satLink;
+	}
 	
+	public Satellite getBestSat() {
+		return this.connectedSat;
+	}
+	
+	@Override
+	public SmartDuplexLink getRout(IPAddr dest) {
+		return getSatLink();
+	}
 }

@@ -22,21 +22,21 @@ public class AutoPacketSender{
 	private ExponentialGenerator InterArrivalTimeRng;
 	private ContinuousUniformGenerator packetSizeRng;
 	private GroundStation sender;
-	private Station dest;
+	private GroundStation dest;
 	public final int id;
 	private Simulator sim;
 	private double rate;
 	
-	public Station getSource() {
+	public GroundStation getSource() {
 		return sender;
 	}
 	
-	public Station getDestination() {
+	public GroundStation getDestination() {
 		return dest;
 	}
 	
 	
-	public AutoPacketSender(GroundStation sender, Station dest, double rate, int id) {
+	public AutoPacketSender(GroundStation sender, GroundStation dest, double rate, int id) {
 		this.id = id;
 		this.rate = rate;
 		InterArrivalTimeRng = new ExponentialGenerator(rate, new MersenneTwisterRNG());
@@ -64,7 +64,7 @@ public class AutoPacketSender{
 				new Command("AutoPacketCreate", time+InterArrivalTimeRng.nextValue()) {
 					public void execute() {
 						Simulator.getInstance().getManager().createPacket(id);
-						sender.node.getIPHandler().send(sender.ip, dest.ip, nextPacketSize(), id+":"+getTime(), Protocols.UDP);
+						sender.send(new IPPacket(sender.ip, dest.ip, nextPacketSize(), id+":"+getTime()));
 						createEvent(getTime());
 					}
 				}

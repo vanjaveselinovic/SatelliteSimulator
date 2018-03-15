@@ -26,7 +26,6 @@ import data.RingData;
 import data.SatelliteData;
 import data.SimulationConfigurationData;
 import jns.Simulator;
-import jns.command.Command;
 import jns.command.StopCommand;
 import jns.element.IPPacket;
 
@@ -337,9 +336,11 @@ public class Manager implements Runnable{
 		
 		paths = new HashMap<>();
 		
+		setupGroundStationUplinks();
+		
 		//re-routing starts here
 		for(AutoPacketSender sender:senders) {
-			List<SmartDuplexLink> path = route(sender, sender.getSource(), sender.getDestination());
+			List<SmartDuplexLink> path = route(sender, sender.getSource().getBestSat(), sender.getDestination().getBestSat());
 			if(path == null) {
 				System.out.println(sender.getSource().name+" cannot reach "+sender.getDestination().name+" at time:"+this.simTime);
 				paths.put(sender, new ArrayList<>());
@@ -348,58 +349,6 @@ public class Manager implements Runnable{
 			}
 		}
 		
-		//first pass done
-		
-		Satellite badSat;
-		while((badSat = getBadSatellites()) != null) {
-			List<SmartDuplexLink> badSatLinks = new ArrayList<>(badSat.getLinks());
-			Collections.sort(badSatLinks, new Comparator<SmartDuplexLink>() {
-
-				@Override
-				public int compare(SmartDuplexLink arg0, SmartDuplexLink arg1) {
-					return Integer.compare(arg0.usedBy.size(), arg1.usedBy.size());
-				}
-			});
-			
-			while(badSatLinks.get(0).usedBy.isEmpty()) {
-				//it might be a bad idea to run this
-				//badSatLinks.get(0).isNotViable();
-				badSatLinks.remove(0);
-			}
-			boolean stillBad = true;
-			SmartDuplexLink badLink = badSatLinks.get(0);
-			while(stillBad && !badSatLinks.isEmpty()) {
-				badLink = badSatLinks.remove(0);
-				badLink.isNotViable();
-				Station s1 = badLink.otherStation(null);
-				Station s2 = badLink.otherStation(s1);
-				if(route(null, s1, s2) == null) {
-					//if cutting this link stops us from being able to get from one end to the other, we turn it back in
-					badLink.testViable();
-				}else {
-					stillBad = false;
-				}
-			}
-			if(stillBad) {
-				System.err.println("failed to route paths without using too many antenas");
-			}else {
-				Set<AutoPacketSender> badSenders = new HashSet<>(badLink.usedBy); 
-				for(AutoPacketSender aps: badSenders) {
-					for(SmartDuplexLink affectedLink : paths.remove(aps)) {
-						affectedLink.usedBy.remove(aps);
-					}
-				}
-				for(AutoPacketSender aps: badSenders) {
-					List<SmartDuplexLink> path = route(aps, aps.getSource(), aps.getDestination());
-					if(path == null) {
-						System.out.println(aps.getSource().name+" cannot reach "+aps.getDestination().name+" at time:"+this.simTime);
-						paths.put(aps, new ArrayList<>());
-					}else {
-						paths.put(aps, path);
-					}
-				}
-			}
-		}
 		//routing done!
 		//populate routing tables
 		
@@ -407,12 +356,13 @@ public class Manager implements Runnable{
 			List<SmartDuplexLink> links = paths.get(aps);
 			Station tx = aps.getSource();
 			for(int i = 0; i<links.size()-1; i++) {
-				links.get(i).addRoute(tx, aps.getDestination());
+				tx.addRoute(aps.getDestination().ip, links.get(i));
 				tx = links.get(i).otherStation(tx);
 			}
 		}
 	}
 	
+	/*
 	private Satellite getBadSatellites(){
 		for(Satellite sat : satellites) {
 			int count = 0;
@@ -426,13 +376,35 @@ public class Manager implements Runnable{
 			}
 		}
 		return null;	
+	}*/
+	
+	private void setupGroundStationUplinks() {
+		for(GroundStation gs : groundStations) {
+			SmartDuplexLink bestLink = null;
+			double error = 0d;
+			double newError= 0d;
+			for(SmartDuplexLink link : gs.getLinks()) {
+				if(bestLink == null) {
+					bestLink = link;
+					error = link.getError(link.otherStation(gs));
+				}else {
+					newError = link.getError(link.otherStation(gs));
+					if(newError < error) {
+						bestLink = link;
+						error = newError;
+					}
+				}
+			}
+			gs.setSatLink(bestLink);
+		}
 	}
 	
-	private List<SmartDuplexLink> route(AutoPacketSender sender, Station source, Station dest){
+	private List<SmartDuplexLink> route(AutoPacketSender sender, Satellite source, Satellite dest){
 		for(Station s : stations) {
-			s.distance = null;
+			s.cError = null;
 			s.path = null;
 		}
+		
 		List<Station> queue = new ArrayList<>();
 		source.updateLength(new ArrayList<>());
 		queue.add(source);
@@ -442,19 +414,19 @@ public class Manager implements Runnable{
 		while(!queue.isEmpty() && !(dest==queue.get(0))) {
 			Station point = queue.remove(0);
 			if(point == source || !point.isGroundStation()) {
-				for(SmartDuplexLink link: point.getViableLinks()) {
+				for(SmartDuplexLink link: point.getLinks()) {
 					List<SmartDuplexLink> l = new ArrayList<>(point.path);
 					l.add(link);
 					Station s = link.otherStation(point);
-					if(s.distance == null) {
+					if(s.updateLength(l)) {
+						queue.remove(s);
 						queue.add(s);
 					}
-					s.updateLength(l);
 				}
 				Collections.sort(queue, new Comparator<Station>() {
 					@Override
 					public int compare(Station s1, Station s2) {
-						return Double.valueOf(s1.distance).compareTo(s2.distance);
+						return Double.valueOf(s2.cError).compareTo(s1.cError);
 					}
 				});
 			}
@@ -480,7 +452,7 @@ public class Manager implements Runnable{
 		createdPackets.put(id, createdPackets.get(id)+1);
 	}
 	
-	public void damagedPacket(IPPacket packet) {
+	public void damagedPacket(IPPacket packet, SmartDuplexLink link) {
 		String[] data = ((String)packet.data).split(":");
 		int id = Integer.valueOf(data[0]);
 		
@@ -490,7 +462,7 @@ public class Manager implements Runnable{
 		damagedPackets.put(id, damagedPackets.get(id)+1);
 	}
 
-	public void dropPacket(IPPacket packet) {
+	public void dropPacket(IPPacket packet, Station station) {
 		String[] data = ((String)packet.data).split(":");
 		int id = Integer.valueOf(data[0]);
 		
@@ -501,7 +473,7 @@ public class Manager implements Runnable{
 	}
 
 
-	public void gotPacket(IPPacket packet) {
+	public void gotPacket(IPPacket packet, Station station) {
 		String[] data = ((String)packet.data).split(":");
 		int id = Integer.valueOf(data[0]);
 		double startTime = Double.valueOf(data[1]);

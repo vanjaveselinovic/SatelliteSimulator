@@ -92,7 +92,7 @@ public class QueueDropTail extends Queue {
 
 		// Send packet drop event
 
-		Simulator.getInstance().getManager().dropPacket(packet);
+		//Simulator.getInstance().getManager().dropPacket(packet);
 		Event event = EventGenerator.makePacketEvent("QueueDropEvent", packet);
 		event.addParameter(new EventParameter("Queue Length", new Integer(m_curlength)));
 		sendEvent(event);

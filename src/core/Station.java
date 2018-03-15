@@ -1,24 +1,16 @@
 package core;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
-import org.orekit.bodies.BodyShape;
-import org.orekit.bodies.CelestialBody;
-import org.orekit.bodies.CelestialBodyFactory;
 import org.orekit.bodies.GeodeticPoint;
-import org.orekit.bodies.OneAxisEllipsoid;
-import org.orekit.frames.Frame;
-import org.orekit.frames.FramesFactory;
 import org.orekit.time.AbsoluteDate;
-import org.orekit.time.TimeScale;
-import org.orekit.time.TimeScalesFactory;
-import org.orekit.utils.Constants;
 
-import jns.element.Node;
+import jns.Simulator;
+import jns.element.IPPacket;
 import jns.util.IPAddr;
 import jns.util.RoutingTable;
 
@@ -26,23 +18,24 @@ public abstract class Station {
 	public static int IPcounter = 0;
 	public final IPAddr ip = new IPAddr(++IPcounter);
 	
-	public final Node node;
+	private Map<Integer, SmartDuplexLink> routingTable = new HashMap<>();
+	
 	public final String name;
 
 	private List<SmartDuplexLink> links = new ArrayList<>();
 	private List<SmartDuplexLink> viableLinks = new ArrayList<>();
 	
-	public Double distance = null;
+	public Double cError = null;
 	public List<SmartDuplexLink> path = null;
 	
 	
 	public boolean updateLength(List<SmartDuplexLink> path) {
-		double delay = 0;
+		double success = 1;
 		for(SmartDuplexLink link:path) {
-			delay += (link.getDelay() + AutoPacketSender.meanPacketSize()/link.getBandwidth())/RoutingUtil.errorChange(link.getError());
+			success *= RoutingUtil.errorChange(link.getError(link.otherStation(this)));
 		}
-		if(distance == null || distance > delay) {
-			distance = delay;
+		if(cError == null || cError < success) {
+			cError = success;
 			this.path = path;
 			return true;
 		}
@@ -53,11 +46,13 @@ public abstract class Station {
 	
 	public Station(String name) {
 		this.name = name;
-		this.node = new Node(name);
+		//this.node = new Node(name);
 	}
 
+	
 	public RoutingTable getRoutingTable() {
-		return node.getIPHandler().getRoutingTable();
+		//return node.getIPHandler().getRoutingTable();
+		return null;
 	}
 	
 	public void addLink(SmartDuplexLink link) {
@@ -83,11 +78,33 @@ public abstract class Station {
 		return viableLinks;
 	}
 	
+	public void send(IPPacket packet) {
+		SmartDuplexLink link;
+		if(this.ip.equals(packet.destination)) {
+			Simulator.getInstance().getManager().gotPacket(packet, this);
+		}else if((link = getRout(packet.destination)) == null) {
+			Simulator.getInstance().getManager().dropPacket(packet, this);
+		}else {
+			link.sendTo(link.otherStation(this), packet);
+		}
+	}
+	
+	public void addRoute(IPAddr dest, SmartDuplexLink link) {
+		routingTable.put(dest.getIntegerAddress(), link);
+	}
+	
+	public SmartDuplexLink getRout(IPAddr dest) {
+		return routingTable.get(dest.getIntegerAddress());
+	}
+	
 	public abstract Vector3D getSpacePositionVector(AbsoluteDate date);
 	public abstract Vector3D getSpaceVelocityVector(AbsoluteDate date);
 	public abstract Vector3D getGroundPositionVector(AbsoluteDate date);
 	public abstract GeodeticPoint getGroundPoint(AbsoluteDate date);
 	public abstract boolean isGroundStation();
+
+
+
 
 	
 

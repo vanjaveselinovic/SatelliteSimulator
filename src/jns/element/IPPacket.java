@@ -128,4 +128,15 @@ public class IPPacket {
 		data = other.data;
 		hops = other.hops+1;
 	}
+
+	public IPPacket(IPAddr src, IPAddr dest, int dataLength, String data) {
+		this();
+		this.source = new IPAddr(src);
+		this.destination = new IPAddr(dest);
+		this.length = dataLength+HEADER_SIZE;
+		this.data = data;
+		
+	}
+	
+
 }
