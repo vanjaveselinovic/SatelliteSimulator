@@ -21,11 +21,6 @@ body {
 	font-family: "Barlow Semi Condensed", sans-serif;
 }
 
-small {
-	font-size: 0.7em;
-	padding-left: 24px;
-}
-
 input {
 	font-size: 1em;
 	font-family: "Barlow Semi Condensed", sans-serif;
@@ -50,6 +45,10 @@ input {
 		input[type="text"].invalid-input {
 			color: red;
 			border-color: red !important;
+		}
+
+		input[type="text"]:disabled {
+			border-color: transparent !important;
 		}
 
 ::-webkit-input-placeholder{ /* Chrome/Opera/Safari */
@@ -179,9 +178,18 @@ input {
 		display: none;
 	}
 
-	.input-radio-color input:checked + .icon {
+	.input-radio-color input:checked ~ .icon {
 		display: unset;
 		opacity: 1 !important;
+	}
+
+	.input-radio-color input:disabled:not(:checked) ~ .icon {
+		display: none !important;
+		opacity: 0 !important;
+	}
+
+	.input-radio-color label:hover input:disabled:not(:checked) ~ span {
+		opacity: 0.5 !important;
 	}
 
 button {
@@ -242,6 +250,16 @@ button {
 		opacity: 1 !important;
 		color: red;
 	}
+
+	.close-button.disabled {
+		opacity: 0 !important;
+		display: 0 !important;
+	}
+
+.disabled {
+	pointer-events: none !important;
+	opacity: 0.5 !important;
+}
 
 /* ---------- SIDEBAR ---------- */
 
@@ -416,6 +434,11 @@ button {
 		margin-right: 5px;
 	}
 
+	.add-item small {
+		font-size: 0.7em;
+		padding-left: 24px;
+	}
+
 /* ---------- MAIN ---------- */
 
 #sim-menu {
@@ -439,6 +462,11 @@ button {
 		padding-bottom: 2px;
 	}
 
+	.menu-container {
+		position: relative;
+		display: flex;
+	}
+
 	.sm-section {
 		background: white;
 		position: relative;
@@ -448,6 +476,28 @@ button {
 			width: 200px;
 			padding: 10px;
 		}
+
+		.sm-section.results {
+			width: 0;
+			transition: width 0.5s;
+			height: 100%;
+			overflow: hidden;
+			border-radius: 0 0 0 0 !important;
+		}
+
+			.results-inner {
+				position: absolute;
+				width: 300px;
+				height: 100%;
+				padding: 10px;
+				border-left: 1px solid rgba(0,0,0,0.15);
+			}
+
+			.results small {
+				font-size: 0.7em;
+				text-transform: uppercase;
+				font-weight: bold;
+			}
 
 		.sm-section:first-child {
 			border-radius: 5px 0 0 5px;
@@ -472,12 +522,36 @@ button {
 				align-items: center;
 			}
 
+			#button-schedule {
+				background-color: hsl(35, 100%, 40%);
+			}
+
 			#button-run {
 				background-color: hsl(208, 100%, 45%);
 			}
 
-			#button-schedule {
+			.result-button {
+				display: none;
+			}
+
+			#button-prev {
 				background-color: hsl(35, 100%, 40%);
+			}
+
+			#button-play {
+				background-color: green;
+			}
+
+				.play-button-play-icon {
+					display: block;
+				}
+
+				.play-button-pause-icon {
+					display: none;
+				}
+
+			#button-next {
+				background-color: hsl(208, 100%, 45%);
 			}
 
 			.button-icon {
@@ -494,6 +568,14 @@ button {
 				justify-content: flex-start;
 				padding-top: 3px;
 			}
+
+	#sim-menu.expanded {
+		z-index: 2;
+	}
+
+		.expanded .sm-section.results {
+			width: 300px;
+		}
 
 #main {
 	flex: 1;

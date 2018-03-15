@@ -50,6 +50,9 @@ const COLORS = [
 	}
 ];
 
+var translucentRed = new WorldWind.Color(1,0,0,0.75);
+var white = new WorldWind.Color(1,1,1,1);
+
 var Globe = function(params) {
 	if (params === undefined) params = {};
 
@@ -183,7 +186,7 @@ var Globe = function(params) {
 	placemarkAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
 	placemarkAttributes.imageSource =
-			new WorldWind.ImageSource(CanvasIcon.Circle({size: 10, r: 255, g: 0, b: 0}));
+			new WorldWind.ImageSource(CanvasIcon.Circle({size: 5, r: 255, g: 0, b: 0}));
 
 	highlightAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
@@ -194,8 +197,12 @@ var Globe = function(params) {
 	var tempPlacemarkAttributes;
 
 	var ringAttributes = new WorldWind.ShapeAttributes(null);
+	ringAttributes.outlineColor = translucentRed;
 	ringAttributes.interiorColor = new WorldWind.Color(0, 0, 0, 0);
 	ringAttributes.applyLighting = false;
+
+	var linkAttributes = new WorldWind.ShapeAttributes(ringAttributes);
+	linkAttributes.outlineColor = white;
 
 	this.configure = function(elements) {
 		ringLayer.removeAllRenderables();
@@ -304,9 +311,22 @@ var Globe = function(params) {
 
 	//var outputSatellites = {};
 
-	this.applyOutput = function(satellites, startTime) {
+	this.applyOutput = function(satellites, rings, paths, groundStations, startTime) {
 		ringLayer.removeAllRenderables();
 		satelliteLayer.removeAllRenderables();
+
+		var satelliteIds = {};
+
+		for (var i = 0; i < groundStations.length; i++) {
+			satelliteIds['s'+groundStations[i].id] = {
+				position: new WorldWind.Position(
+						groundStations[i].latitude,
+						groundStations[i].longitude,
+						0,
+						false,
+						null)
+			}
+		}
 
 		for (var i = 0; i < satellites.length; i++) {
 			/*var positionXYZ = {
@@ -333,19 +353,18 @@ var Globe = function(params) {
 							null));
 			*/
 
-			var position = {
-				latitude: satellites[i].x,
-				longitude: satellites[i].y,
-				altitude: satellites[i].z
-			}
-
-			var newPlacemark = new WorldWind.Placemark(
-					new WorldWind.Position(
-							position.latitude,
-							position.longitude,
-		    				position.altitude,
+			var position = new WorldWind.Position(
+							satellites[i].x,
+							satellites[i].y,
+		    				satellites[i].z,
 							false,
-							null));
+							null)
+
+			satelliteIds['s'+satellites[i].id] = {
+				position: position
+			};
+
+			var newPlacemark = new WorldWind.Placemark(position);
 
 			newPlacemark.altitudeMode = WorldWind.ABSOLUTE;
 			newPlacemark.attributes = placemarkAttributes;
@@ -355,5 +374,28 @@ var Globe = function(params) {
 
 			satelliteLayer.addRenderable(newPlacemark);
 		}
+
+		for (var i = 0; i < rings.length; i++) {
+			var pathPositions = [];
+
+			for (var j = 0; j < rings[i].stationIds.length; j++) {
+				pathPositions.push(satelliteIds['s'+rings[i].stationIds[j]].position);
+			}
+			pathPositions.push(satelliteIds['s'+rings[i].stationIds[0]].position);
+
+			ringLayer.addRenderable(new WorldWind.Path(pathPositions, ringAttributes));
+		}
+
+		for (var i = 0; i < paths.length; i++) {
+			var pathPositions = [];
+
+			for (var j = 0; j < paths[i].stationIDs.length; j++) {
+				pathPositions.push(satelliteIds['s'+paths[i].stationIDs[j]].position);
+			}
+
+			ringLayer.addRenderable(new WorldWind.Path(pathPositions, linkAttributes));
+		}
+
+		this.wwd.redraw();
 	};
 }
