@@ -578,7 +578,7 @@ $(document).ready(function () {
 					console.log('done!');
 					$('#button-run').remove();
 					$('.result-button').show();
-					outputResults(output);
+					outputResults(outputIn);
 				},
 				function(){
 					console.log('back to waiting...');
@@ -618,6 +618,8 @@ $(document).ready(function () {
 
 		$('#step-total').text(output.events.length);
 		outputStep(1);
+
+		getData();
 
 		expandSimulationMenu();
 	};
@@ -687,4 +689,34 @@ $(document).ready(function () {
 		stopPlaying();
 		outputStep(1);
 	});
+
+	/* data */
+
+	var stats = {};
+
+	var getData = function() {
+		var allPathDataKeys = Object.keys(output.events[1].paths[0]);
+		var pathDataKeys = [];
+
+		for (var i = 0; i < allPathDataKeys.length; i++) {
+			if (output.events[1].paths[0][allPathDataKeys[i]].constructor !== Array) {
+				stats[allPathDataKeys[i]] = [];
+				pathDataKeys.push(allPathDataKeys[i]);
+			}
+		}
+
+		for (var k = 0; k < pathDataKeys.length; k++) {
+			var key = pathDataKeys[k];
+
+			for (var e = 1; e < output.events.length; e++) {
+				stats[key].push(0);
+
+				for (var p = 0; p < output.events[e].paths.length; p++) {
+					stats[key][stats[key].length-1] += output.events[e].paths[p][key];
+				}
+			}
+		}
+
+		console.log(stats);
+	};
 });
