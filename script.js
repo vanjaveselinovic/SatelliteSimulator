@@ -616,7 +616,7 @@ $(document).ready(function () {
 		go = false;
 		output = outputIn;
 
-		$('#step-total').text(output.events.length);
+		$('#step-total').text(output.events.length - 1);
 		outputStep(1);
 
 		getData();
@@ -624,16 +624,16 @@ $(document).ready(function () {
 		expandSimulationMenu();
 	};
 
-	var stepNumber = -1;
+	var stepNumber = 0;
 
 	var outputStep = function(increment) {
 		stepNumber += increment;
-		if (stepNumber >= output.events.length) stepNumber = 0;
-		if (stepNumber < 0) stepNumber = output.events.length - 1;
+		if (stepNumber >= output.events.length) stepNumber = 1;
+		if (stepNumber < 1) stepNumber = output.events.length - 1;
 
 		console.log('output step '+stepNumber);
 
-		$('#step-num').text(stepNumber+1);
+		$('#step-num').text(stepNumber);
 		$('#step-time').text(output.events[stepNumber].startSimulationTime);
 
 		globe.applyOutput(
