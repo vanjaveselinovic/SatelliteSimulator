@@ -21,11 +21,6 @@ body {
 	font-family: "Barlow Semi Condensed", sans-serif;
 }
 
-small {
-	font-size: 0.7em;
-	padding-left: 24px;
-}
-
 input {
 	font-size: 1em;
 	font-family: "Barlow Semi Condensed", sans-serif;
@@ -439,6 +434,11 @@ button {
 		margin-right: 5px;
 	}
 
+	.add-item small {
+		font-size: 0.7em;
+		padding-left: 24px;
+	}
+
 /* ---------- MAIN ---------- */
 
 #sim-menu {
@@ -462,6 +462,11 @@ button {
 		padding-bottom: 2px;
 	}
 
+	.menu-container {
+		position: relative;
+		display: flex;
+	}
+
 	.sm-section {
 		background: white;
 		position: relative;
@@ -471,6 +476,28 @@ button {
 			width: 200px;
 			padding: 10px;
 		}
+
+		.sm-section.results {
+			width: 0;
+			transition: width 0.5s;
+			height: 100%;
+			overflow: hidden;
+			border-radius: 0 0 0 0 !important;
+		}
+
+			.results-inner {
+				position: absolute;
+				width: 300px;
+				height: 100%;
+				padding: 10px;
+				border-left: 1px solid rgba(0,0,0,0.15);
+			}
+
+			.results small {
+				font-size: 0.7em;
+				text-transform: uppercase;
+				font-weight: bold;
+			}
 
 		.sm-section:first-child {
 			border-radius: 5px 0 0 5px;
@@ -522,6 +549,14 @@ button {
 				justify-content: flex-start;
 				padding-top: 3px;
 			}
+
+	#sim-menu.expanded {
+		z-index: 2;
+	}
+
+		.expanded .sm-section.results {
+			width: 300px;
+		}
 
 #main {
 	flex: 1;

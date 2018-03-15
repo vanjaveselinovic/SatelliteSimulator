@@ -189,30 +189,48 @@
 			</div>
 			<div class="loader"></div>
 			<div id="sim-menu" class="card">
-				<div class="sm-section wide">
-					<div class="section subtitle">
-						<i class="fas fa-stopwatch"></i>&nbsp;&nbsp;Simulation
+				<div class="menu-container">
+					<div class="sm-section wide">
+						<div class="section subtitle">
+							<i class="fas fa-stopwatch"></i>&nbsp;&nbsp;Simulation
+						</div>
+						<div class="input-with-labels">
+							<div class="iwl-section label-before">
+								Duration
+							</div>
+							<div class="iwl-section input">
+								<input type="text" id="" value="1" autocomplete="off" class="input-numeric input-dur in-static">
+							</div>
+							<div class="iwl-section label-after">
+								min
+							</div>
+						</div>
+						<div class="input-with-labels">
+							<div class="iwl-section label-before">
+								Step interval
+							</div>
+							<div class="iwl-section input">
+								<input type="text" id="" value="1" autocomplete="off" class="input-numeric input-int in-static">
+							</div>
+							<div class="iwl-section label-after">
+								s
+							</div>
+						</div>
 					</div>
-					<div class="input-with-labels">
-						<div class="iwl-section label-before">
-							Duration
-						</div>
-						<div class="iwl-section input">
-							<input type="text" id="" value="1" autocomplete="off" class="input-numeric input-dur in-static">
-						</div>
-						<div class="iwl-section label-after">
-							min
-						</div>
-					</div>
-					<div class="input-with-labels">
-						<div class="iwl-section label-before">
-							Step interval
-						</div>
-						<div class="iwl-section input">
-							<input type="text" id="" value="1" autocomplete="off" class="input-numeric input-int in-static">
-						</div>
-						<div class="iwl-section label-after">
-							s
+					<div class="sm-section results">
+						<div class="results-inner">
+							<div class="section subtitle">
+								<i class="fas fa-chart-line"></i></i>&nbsp;&nbsp;Results
+							</div>
+							<div class="section">
+								<small>Current step:</small><br>
+								<span id="step-num">1</span>
+								/
+								<span id="step-total">100</span>
+								@
+								<span id="step-time">30</span>
+								s
+							</div>
 						</div>
 					</div>
 				</div>
