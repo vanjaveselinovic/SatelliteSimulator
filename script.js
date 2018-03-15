@@ -637,6 +637,8 @@ $(document).ready(function () {
 		globe.applyOutput(
 				output.events[stepNumber].satelliteData,
 				output.rings,
+				output.events[stepNumber].paths,
+				output.groundStations,
 				output.startTime
 			);
 	};
