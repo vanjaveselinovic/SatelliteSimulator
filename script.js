@@ -553,7 +553,7 @@ $(document).ready(function () {
 				waitForSimulationToFinish,
 				function() {
 					$('#button-run').remove();
-					$('#button-step').show();
+					$('.result-button').show();
 					outputResults(testOutput);
 				}
 		);
@@ -577,7 +577,7 @@ $(document).ready(function () {
 				function(outputIn){
 					console.log('done!');
 					$('#button-run').remove();
-					$('#button-step').show();
+					$('.result-button').show();
 					outputResults(output);
 				},
 				function(){
@@ -617,14 +617,18 @@ $(document).ready(function () {
 		output = outputIn;
 
 		$('#step-total').text(output.events.length);
-		outputStep();
+		outputStep(1);
 
 		expandSimulationMenu();
 	};
 
-	var stepNumber = 0;
+	var stepNumber = -1;
 
-	var outputStep = function() {
+	var outputStep = function(increment) {
+		stepNumber += increment;
+		if (stepNumber >= output.events.length) stepNumber = 0;
+		if (stepNumber < 0) stepNumber = output.events.length - 1;
+
 		console.log('output step '+stepNumber);
 
 		$('#step-num').text(stepNumber+1);
@@ -635,12 +639,50 @@ $(document).ready(function () {
 				output.rings,
 				output.startTime
 			);
-
-		stepNumber++;
-		if (stepNumber >= output.events.length) stepNumber = 0;
 	};
 
-	$('#button-step').on('click', function() {
-		outputStep();
+	var playing = false;
+
+	var loopSteps = function() {
+		outputStep(1);
+		setTimeout(loopSteps, 1000);
+	}
+
+	var stopPlaying = function() {
+		$('.play-button-play-icon').show();
+		$('.play-button-pause-icon').hide();
+		$('#button-play .button-label').text('Play');
+		playing = false;
+		if (intervalID !== null)
+			clearInterval(intervalID);
+		intervalID = null;
+	};
+
+	$('#button-prev').on('click', function() {
+		stopPlaying();
+		outputStep(-1);
+	});
+
+	var intervalID = null;
+
+	$('#button-play').on('click', function() {
+		if (!playing) {
+			playing = true;
+			$('.play-button-play-icon').hide();
+			$('.play-button-pause-icon').show();
+			$('#button-play .button-label').text('Pause');
+			if (intervalID === null)
+				intervalID = setInterval(function() {
+					outputStep(1);
+				}, 1000);
+		}
+		else {
+			stopPlaying();
+		}
+	});
+
+	$('#button-next').on('click', function() {
+		stopPlaying();
+		outputStep(1);
 	});
 });

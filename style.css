@@ -522,17 +522,36 @@ button {
 				align-items: center;
 			}
 
+			#button-schedule {
+				background-color: hsl(35, 100%, 40%);
+			}
+
 			#button-run {
 				background-color: hsl(208, 100%, 45%);
 			}
 
-			#button-step {
-				background-color: green;
+			.result-button {
 				display: none;
 			}
 
-			#button-schedule {
+			#button-prev {
 				background-color: hsl(35, 100%, 40%);
+			}
+
+			#button-play {
+				background-color: green;
+			}
+
+				.play-button-play-icon {
+					display: block;
+				}
+
+				.play-button-pause-icon {
+					display: none;
+				}
+
+			#button-next {
+				background-color: hsl(208, 100%, 45%);
 			}
 
 			.button-icon {
