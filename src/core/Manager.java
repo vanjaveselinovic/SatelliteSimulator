@@ -341,9 +341,11 @@ public class Manager implements Runnable{
 		for(AutoPacketSender sender:senders) {
 			List<SmartDuplexLink> path = route(sender, sender.getSource(), sender.getDestination());
 			if(path == null) {
-				throw new RuntimeException(sender.getSource()+" cannot reach "+sender.getDestination());
+				System.out.println(sender.getSource().name+" cannot reach "+sender.getDestination().name+" at time:"+this.simTime);
+				paths.put(sender, new ArrayList<>());
+			}else {
+				paths.put(sender, path);
 			}
-			paths.put(sender, path);
 		}
 		
 		//first pass done
@@ -379,7 +381,7 @@ public class Manager implements Runnable{
 				}
 			}
 			if(stillBad) {
-				throw new RuntimeException("failed to route paths without using too many antenas");
+				System.err.println("failed to route paths without using too many antenas");
 			}else {
 				Set<AutoPacketSender> badSenders = new HashSet<>(badLink.usedBy); 
 				for(AutoPacketSender aps: badSenders) {
@@ -390,9 +392,11 @@ public class Manager implements Runnable{
 				for(AutoPacketSender aps: badSenders) {
 					List<SmartDuplexLink> path = route(aps, aps.getSource(), aps.getDestination());
 					if(path == null) {
-						throw new RuntimeException(aps.getSource()+" cannot reach "+aps.getDestination());
+						System.out.println(aps.getSource().name+" cannot reach "+aps.getDestination().name+" at time:"+this.simTime);
+						paths.put(aps, new ArrayList<>());
+					}else {
+						paths.put(aps, path);
 					}
-					paths.put(aps, path);
 				}
 			}
 		}

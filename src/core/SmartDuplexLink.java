@@ -78,9 +78,9 @@ public class SmartDuplexLink extends DuplexLink {
 			viable =  false;
 		}else if(stationA.isGroundStation()) {
 			//check for ground to sat
-			viable = (getError() <= RoutingUtil.MAX_ERROR_RATE) && (Earth.groundStationAngle(stationA, stationB, date) <= RoutingUtil.SATTELITE_ANTENNA_MAX_ANGLE);
+			viable = /*(getError() <= RoutingUtil.MAX_ERROR_RATE) && */(Earth.groundStationAngle(stationA, stationB, date) <= RoutingUtil.SATTELITE_ANTENNA_MAX_ANGLE);
 		}else {
-			viable = (getError() <= RoutingUtil.MAX_ERROR_RATE) && (Earth.lineOfSightConsideringAtmosphere(stationA, stationB, date));
+			viable = /*(getError() <= RoutingUtil.MAX_ERROR_RATE) && */(Earth.lineOfSightConsideringAtmosphere(stationA, stationB, date));
 		}
 		return viable;
 	}

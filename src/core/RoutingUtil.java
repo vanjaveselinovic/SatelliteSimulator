@@ -6,33 +6,34 @@ import org.orekit.time.AbsoluteDate;
 public class RoutingUtil {
 	public static final double BOLTZMANN_CONSTANT = 1.38064852e-23d;
 	public static final double dB_BOLTZMANN_CONSTANT = 10.0d*FastMath.log10(BOLTZMANN_CONSTANT);
-	public static final double MAX_ERROR_RATE = 1e-6;
+	public static final double MAX_ERROR_RATE = 1e-5;
 	public static final double SATTELITE_ANTENNA_MAX_ANGLE = 90.0d *FastMath.PI/180.0d;
 	public static final int MAX_SATTELITE_CONNECTIONS_PER_SATTELITE = 4;
 	//in SI units
-	public static double DISH_SIZE_GROUND = 1.0d;
+	public static double DISH_SIZE_GROUND = 1.8d;
 	public static double DISH_SIZE_SAT = 0.6d;
 
 	public static double FREQUENCY_FROM_GROUND = 2.75e10d;
 	public static double FREQUENCY_FROM_SAT = 1.97e10d;
 
-	public static double GROUND_ANTENNA_GAIN = 10.0d*FastMath.log10(60.0d*FREQUENCY_FROM_GROUND*FREQUENCY_FROM_GROUND*DISH_SIZE_GROUND*DISH_SIZE_GROUND);
-	public static double SAT_ANTENNA_GAIN = 10.0d*FastMath.log10(60.0d*FREQUENCY_FROM_SAT*FREQUENCY_FROM_SAT*DISH_SIZE_SAT*DISH_SIZE_SAT);
+	public static double GROUND_ANTENNA_GAIN = 60.0d*(FREQUENCY_FROM_GROUND*1e-9d)*(FREQUENCY_FROM_GROUND*1e-9d)*DISH_SIZE_GROUND*DISH_SIZE_GROUND;
+	public static double SAT_ANTENNA_GAIN = 60.0d*(FREQUENCY_FROM_SAT*1e-9d)*(FREQUENCY_FROM_SAT*1e-9d)*DISH_SIZE_SAT*DISH_SIZE_SAT;
 	
-	public static double RAIN_ATENUATION = -40.0d;
+	public static double RAIN_ATENUATION = 1e-4d;
 	
-	public static double POWER_TRANSMIT_FROM_GROUND = 10*FastMath.log10(0.225d);
-	public static double POWER_TRANSMIT_FROM_SAT = 10*FastMath.log10(0.2d);
+	public static double POWER_TRANSMIT_FROM_GROUND = 5d;
+	public static double POWER_TRANSMIT_FROM_SAT = 0.2d;
 	
-	public static double LINE_LOSS_FROM_GROUND = 1.16d;
-	public static double LINE_LOSS_FROM_SAT = 1.16d;
+	public static double LINE_LOSS_FROM_GROUND = FastMath.pow(10d,1.16d/10d);
+	public static double LINE_LOSS_FROM_SAT = FastMath.pow(10d,1.16d/10d);
 	
 	
 	//Effective Isotropic Radiated Power
-	public static double EIRP_FROM_GROUND = POWER_TRANSMIT_FROM_GROUND + LINE_LOSS_FROM_GROUND + GROUND_ANTENNA_GAIN;
-	public static double EIRP_FROM_SAT = POWER_TRANSMIT_FROM_SAT + LINE_LOSS_FROM_GROUND + SAT_ANTENNA_GAIN;
-	
-	public static double SYSTEM_NOISE_TEMPORATURE = 10.0d*FastMath.log10(300.d);/*300K*/
+	public static double EIRP_FROM_GROUND = POWER_TRANSMIT_FROM_GROUND * GROUND_ANTENNA_GAIN / LINE_LOSS_FROM_GROUND;
+	public static double EIRP_FROM_SAT = POWER_TRANSMIT_FROM_SAT * SAT_ANTENNA_GAIN / LINE_LOSS_FROM_GROUND;
+
+	public static double GROUND_SYSTEM_NOISE_TEMPORATURE = 300d;/*300Kelvin*/
+	public static double SAT_SYSTEM_NOISE_TEMPORATURE = 72d;/*72Kelvin*/
 	
 	/**
 	 * @param frequency
@@ -40,20 +41,25 @@ public class RoutingUtil {
 	 * @return path loss in dB
 	 */
 	public static double path_loss(double frequency, double distance) {
-		return 10.0d*Math.log10((3e8d/(4.0d*Math.PI*distance*frequency))*(3.0e8d/(4.0d*Math.PI*distance*frequency)));
+		return (3e8d/(4.0d*Math.PI*distance*frequency))*(3.0e8d/(4.0d*Math.PI*distance*frequency));
 	}
 		
 	public static double error(AbsoluteDate date, Station tx, Station rx) {
-		//double stn = signal_to_noise(date, tx, rx);
-		//double rootStn = FastMath.sqrt(stn);
-		//return org.apache.commons.math3.special.Erf.erfc(rootStn);
+		if(Earth.distance(date, tx, rx)<1000000) {// && rx.isGroundStation()
+			Earth.distance(date, tx, rx);
+		}
+		double stn = 10*FastMath.log10(signal_to_noise(date, tx, rx));
+		if(stn <= 0) {
+			return 1d;
+		}
+		double rootStn = FastMath.sqrt(stn);
 		
-		double distance = Earth.distance(date, tx, rx);
-		//double dBpower = (tx.isGroundStation()?(POWER_TRANSMIT_FROM_GROUND):(POWER_TRANSMIT_FROM_SAT));
-		//double E = FastMath.PI
+		double erfc = org.hipparchus.special.Erf.erfc(rootStn);
+		double halfErfc = erfc/2d;
 		
-		
-		return 9e-7;//FastMath.pow(10d, (6.02*bandwidth(date, tx, rx)+1.761)/10);//Math.min(1/distance, 9e-7);
+		if(halfErfc<0) {return 0d;}
+		if(halfErfc>1) {return 1d;}
+		return halfErfc;
 		
 	}
 	
@@ -75,8 +81,8 @@ public class RoutingUtil {
 				
 		double pathLoss = path_loss(frequency, Earth.distance(date, tx, rx));
 		
-		double rain = 0d;
-		if(tx.isGroundStation() || rx.isGroundStation()) {
+		double rain = 1d;
+		if(tx.isGroundStation() || rx.isGroundStation()) {//or skims the atmo
 			rain = RAIN_ATENUATION;
 		}
 		
@@ -87,11 +93,18 @@ public class RoutingUtil {
 			gain = SAT_ANTENNA_GAIN;
 		}
 		
+		double temporature;
+		if(tx.isGroundStation()) {
+			temporature = GROUND_SYSTEM_NOISE_TEMPORATURE;
+		}else {
+			temporature = SAT_SYSTEM_NOISE_TEMPORATURE;
+		}
+		
+		
 		double baud = bandwidth(date, tx, rx);
 		
-		return (eirp+pathLoss+rain+gain)-(baud+SYSTEM_NOISE_TEMPORATURE+dB_BOLTZMANN_CONSTANT);
+		return (eirp*pathLoss*rain*gain)/(baud*temporature*BOLTZMANN_CONSTANT);
 	}
-
 	
 	public static double bandwidth(AbsoluteDate date, Station tx, Station rx) {
 		double modulation = 4.d;
@@ -102,6 +115,35 @@ public class RoutingUtil {
 	public static double delay(AbsoluteDate date, Station tx, Station rx) {
 		
 		return Earth.distance(date, tx, rx)/(3e8d);
+	}
+	
+	public static double errorChance(double bitwiseErrorRate, int packetLenthInBytes) {
+		/*
+		 * p = odds that a specific bit has been fliped
+		 * 
+		 * k = 0, we accept only 0 flips
+		 * 
+		 * n = the length of the packet in bits
+		 * 
+		 * (n choose k) (p^k) ((1-p)^(n-k))
+		 * 
+		 * (n!/(k!(n-k)!)) (p^k) ((1-p)^(n-k))
+		 * 
+		 * (n!/(0!(n-0)!)) (p^0) ((1-p)^(n-0))
+		 * 
+		 * (n!/n!) (1) ((1-p)^(n))
+		 * 
+		 * (1) (1) (1-p)^(n)
+		 * 
+		 * (1-p)^(n)
+		 * 
+		 * the odds that a given bit survives the trip ^ #of bits
+		 */
+		return FastMath.pow((1-bitwiseErrorRate),(packetLenthInBytes<<3));
+	}
+	
+	public static double errorChange(double bitwiseErrorRate) {
+		return errorChance(bitwiseErrorRate, (int)AutoPacketSender.meanPacketSize());
 	}
 	
 }

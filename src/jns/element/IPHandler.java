@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 public class IPHandler extends Element implements CL_Agent {
-	public static int MAX_BUFFER_LENGTH = 128;
+	public static int MAX_BUFFER_LENGTH = 1024;
 	private Vector<Interface> m_interfaces;
 
 	private LinkedList<IPPacket> m_packets_send;//jns.util.Queue m_packets_send; // Packets waiting to be sent
@@ -117,7 +117,6 @@ public class IPHandler extends Element implements CL_Agent {
 			IPPacket curpacket = m_packets_send.remove(0);
 			
 			Interface target = m_route.getRoute(curpacket.destination);
-			
 
 			if(target == null) {
 				Simulator.getInstance().getManager().dropPacket(curpacket);
@@ -173,8 +172,10 @@ public class IPHandler extends Element implements CL_Agent {
 
 				m_packets_send.add(curpacket);
 
+				/*
 				Simulator.getInstance().schedule(new ElementUpdateCommand(this,
 						Simulator.getInstance().getTime() + Preferences.delay_ip_to_ifacequeue));
+						*/
 			} else {
 				// Not a fragment because we do not use fragments
 

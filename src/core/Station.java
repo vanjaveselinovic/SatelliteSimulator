@@ -39,7 +39,7 @@ public abstract class Station {
 	public boolean updateLength(List<SmartDuplexLink> path) {
 		double delay = 0;
 		for(SmartDuplexLink link:path) {
-			delay += link.getDelay() + AutoPacketSender.meanPacketSize()/link.getBandwidth();
+			delay += (link.getDelay() + AutoPacketSender.meanPacketSize()/link.getBandwidth())/RoutingUtil.errorChange(link.getError());
 		}
 		if(distance == null || distance > delay) {
 			distance = delay;

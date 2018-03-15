@@ -25,7 +25,6 @@ public class SmartLink extends SimplexLink {
 	}
 
 	
-	
 	synchronized public void setDate(AbsoluteDate newDate) {
 		synchronized(dateLock){
 			this.date = newDate;
