@@ -183,7 +183,7 @@ var Globe = function(params) {
 	placemarkAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
 	placemarkAttributes.imageSource =
-			new WorldWind.ImageSource(CanvasIcon.Circle({size: 10, r: 255, g: 0, b: 0}));
+			new WorldWind.ImageSource(CanvasIcon.Circle({size: 5, r: 255, g: 0, b: 0}));
 
 	highlightAttributes =
 			new WorldWind.PlacemarkAttributes(placemarkAttributes);
@@ -194,6 +194,7 @@ var Globe = function(params) {
 	var tempPlacemarkAttributes;
 
 	var ringAttributes = new WorldWind.ShapeAttributes(null);
+	ringAttributes.outlineColor = new WorldWind.Color(1,0,0,0.75);
 	ringAttributes.interiorColor = new WorldWind.Color(0, 0, 0, 0);
 	ringAttributes.applyLighting = false;
 
@@ -304,9 +305,11 @@ var Globe = function(params) {
 
 	//var outputSatellites = {};
 
-	this.applyOutput = function(satellites, startTime) {
+	this.applyOutput = function(satellites, rings, startTime) {
 		ringLayer.removeAllRenderables();
 		satelliteLayer.removeAllRenderables();
+
+		var satelliteIds = {};
 
 		for (var i = 0; i < satellites.length; i++) {
 			/*var positionXYZ = {
@@ -333,19 +336,18 @@ var Globe = function(params) {
 							null));
 			*/
 
-			var position = {
-				latitude: satellites[i].x,
-				longitude: satellites[i].y,
-				altitude: satellites[i].z
-			}
-
-			var newPlacemark = new WorldWind.Placemark(
-					new WorldWind.Position(
-							position.latitude,
-							position.longitude,
-		    				position.altitude,
+			var position = new WorldWind.Position(
+							satellites[i].x,
+							satellites[i].y,
+		    				satellites[i].z,
 							false,
-							null));
+							null)
+
+			satelliteIds['s'+satellites[i].id] = {
+				position: position
+			};
+
+			var newPlacemark = new WorldWind.Placemark(position);
 
 			newPlacemark.altitudeMode = WorldWind.ABSOLUTE;
 			newPlacemark.attributes = placemarkAttributes;
@@ -355,5 +357,18 @@ var Globe = function(params) {
 
 			satelliteLayer.addRenderable(newPlacemark);
 		}
+
+		for (var i = 0; i < rings.length; i++) {
+			var pathPositions = [];
+
+			for (var j = 0; j < rings[i].stationIds.length; j++) {
+				pathPositions.push(satelliteIds['s'+rings[i].stationIds[j]].position);
+			}
+			pathPositions.push(satelliteIds['s'+rings[i].stationIds[0]].position);
+
+			ringLayer.addRenderable(new WorldWind.Path(pathPositions, ringAttributes));
+		}
+
+		this.wwd.redraw();
 	};
 }

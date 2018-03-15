@@ -476,6 +476,11 @@ button {
 				background-color: hsl(208, 100%, 45%);
 			}
 
+			#button-step {
+				background-color: green;
+				display: none;
+			}
+
 			#button-schedule {
 				background-color: hsl(35, 100%, 40%);
 			}
