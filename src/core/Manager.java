@@ -110,6 +110,16 @@ public class Manager implements Runnable{
 			ConstellationData constelation;
 			for(int c = 0; c<inputData.constellations.length; c++) {
 				constelation = inputData.constellations[c];
+				
+		        int n = constelation.numberOfRings;
+		        primeLoop:
+		        for (int i = 2; i <= n; i++) {
+		            if (n % i == 0) {
+		            	constelation.offsetBetweenRings = (1d/((double)i));
+		            	break primeLoop;
+		            }
+		        }
+		 
 				double eccentricity = constelation.eccentricity+0.005d;//it is plus some small amount to cause orbits to pass one another
 			    double inclination = constelation.inclination*(Math.PI/180d);					//{in rad} vertical tilt of the ellipse with respect to the reference plane, measured at the ascending node (where the orbit passes upward through the reference plane, the green angle i in the diagram). Tilt angle is measured perpendicular to line of intersection between orbital plane and reference plane. Any three points on an ellipse will define the ellipse orbital plane. The plane and the ellipse are both two-dimensional objects defined in three-dimensional space.
 			    double longitudeOfAscendingNode = constelation.longitudeOfAscendingNode*(Math.PI/180d);	//{in rad} horizontally orients the ascending node of the ellipse (where the orbit passes upward through the reference plane) with respect to the reference frame's vernal point
