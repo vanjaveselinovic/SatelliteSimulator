@@ -75,6 +75,9 @@ public class GroundStation extends Station{
 	}
 
 	public void setSatLink(SmartDuplexLink bestLink) {
+		if(this.satLink != null) {
+			this.satLink.otherStation(this).addRoute(this.ip, bestLink);
+		}
 		this.satLink = bestLink;
 		this.connectedSat = (Satellite) bestLink.otherStation(this);
 		this.connectedSat.addRoute(this.ip, satLink);

@@ -129,6 +129,7 @@ public class SmartDuplexLink extends DuplexLink {
 		}
 		
 		q.add(p);
+		//System.out.println("Queue length:"+q.size());
 		
 		if(q.size() == 1) {
 			new PacketSendEvent(Simulator.getInstance().getTime()+this.getDelay(rx, p.length), this, q, rx);

@@ -82,7 +82,7 @@ public class Earth {
 	
 	
 	public static double distance(AbsoluteDate date, Station s1, Station s2) {
-		
+		/*
 		Earth.shape.getA();
 		GeodeticPoint s1p = s1.getGroundPoint(date);
 		GeodeticPoint s2p = s2.getGroundPoint(date);
@@ -99,9 +99,9 @@ public class Earth {
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
 		return Earth.shape.getA() * c;
+		*/
 		
 		
-		/*
 		Vector3D a = s1.getSpacePositionVector(date);
 		Vector3D b = s2.getSpacePositionVector(date);
 		
@@ -111,7 +111,7 @@ public class Earth {
 				(b.getY()-a.getY())*(b.getY()-a.getY())+
 				(b.getZ()-a.getZ())*(b.getZ()-a.getZ()));
 		
-		*/
+		
 	}
 	
 	

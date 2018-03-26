@@ -106,8 +106,4 @@ public abstract class Station {
 	public abstract boolean isGroundStation();
 
 
-
-
-	
-
 }

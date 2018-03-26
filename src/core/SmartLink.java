@@ -56,6 +56,6 @@ public class SmartLink extends SimplexLink {
 	}
 
 	public double getDelay(int length) {
-		return this.getDelay()+(length<<3)/this.getBandwidth();
+		return this.getDelay()+(length/this.getBandwidth());
 	}
 }
