@@ -65,10 +65,8 @@ var WebService = function(params) {
 					console.log(data);
 					if (data.done === true) {
 						successByDone(data.output);
-						load();
 					}
 					else failByDone();
-					$('.loader').css('display','none');
 				})
 				.fail(function() {
 					endLoad();

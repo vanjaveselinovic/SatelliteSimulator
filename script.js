@@ -576,12 +576,19 @@ $(document).ready(function () {
 				'http://localhost:1234/check',
 				function(outputIn){
 					console.log('done!');
+
+					endLoad();
+
 					$('#button-run').remove();
 					$('.result-button').show();
+
 					outputResults(outputIn);
 				},
 				function(){
 					console.log('back to waiting...');
+
+					load();
+					
 					setTimeout(waitForSimulationToFinish, timeBetweenChecksInSeconds * 1000);
 				}
 			);
