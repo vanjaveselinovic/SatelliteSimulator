@@ -56,12 +56,12 @@ public class Satellite extends Station{
 
 	@Override
 	public Vector3D getGroundPositionVector(AbsoluteDate date) {
-		return Earth.toGroundPosition(this.getSpacePositionVector(date), date);
+		return Earth.fromSpacePositionToGroundPosition(this.getSpacePositionVector(date), date);
 	}
 
 	@Override
 	public GeodeticPoint getGroundPoint(AbsoluteDate date) {
-		return Earth.toGroundPoint(this.getGroundPositionVector(date));
+		return Earth.fromGroundPositionToGeo(this.getGroundPositionVector(date));
 	}
 
 	@Override

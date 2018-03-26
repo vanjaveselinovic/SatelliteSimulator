@@ -25,18 +25,19 @@ public abstract class Station {
 	private List<SmartDuplexLink> links = new ArrayList<>();
 	private List<SmartDuplexLink> viableLinks = new ArrayList<>();
 	
-	public Double cError = null;
+	public Double cSuccessChange = null;
 	public List<SmartDuplexLink> path = null;
 	
 	
 	public boolean updateLength(List<SmartDuplexLink> path) {
 		double success = 1;
 		for(SmartDuplexLink link:path) {
-			success *= RoutingUtil.errorChange(link.getError(link.otherStation(this)));
+			success *= RoutingUtil.successChange(link.getError(link.otherStation(this)));
 		}
-		if(cError == null || cError < success) {
-			cError = success;
+		if(cSuccessChange == null || cSuccessChange < success) {
+			cSuccessChange = success;
 			this.path = path;
+			
 			return true;
 		}
 		return false;
@@ -60,7 +61,7 @@ public abstract class Station {
 			links.add(link);
 		}
 	}
-	
+	/*
 	public void updateViableLinks() {
 		viableLinks = new ArrayList<>();
 		for(SmartDuplexLink link : links) {
@@ -68,19 +69,20 @@ public abstract class Station {
 				viableLinks.add(link);
 			}
 		}
-	}
+	}*/
 	
 	public List<SmartDuplexLink> getLinks(){
 		return links;
 	}
 	
+	/*
 	public List<SmartDuplexLink> getViableLinks(){
 		return viableLinks;
-	}
+	}*/
 	
 	public void send(IPPacket packet) {
 		SmartDuplexLink link;
-		if(this.ip.equals(packet.destination)) {
+		if(this.ip.getIntegerAddress() == packet.destination.getIntegerAddress()) {
 			Simulator.getInstance().getManager().gotPacket(packet, this);
 		}else if((link = getRout(packet.destination)) == null) {
 			Simulator.getInstance().getManager().dropPacket(packet, this);

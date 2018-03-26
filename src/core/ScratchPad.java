@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.math3.util.FastMath;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.junit.jupiter.api.Test;
 import org.orekit.bodies.GeodeticPoint;
@@ -24,29 +25,45 @@ class ScratchPad {
 
 	@Test
 	void test() throws Exception {
-		List<Integer> ld = new ArrayList<>();
-		
-		System.out.println(ld.remove(0));
-		/*
-		Earth.setStartDate(2018, 1, 1, 1, 1);
-		Earth.getInitialDate();
-		GeodeticPoint gp = new GeodeticPoint(45.18,-75.7,114.0);//null island
-		
-		Orbit initialOrbit = new KeplerianOrbit(42164000, 0, 0, 0, 0, 0, PositionAngle.TRUE,	Earth.spaceFrame, Earth.getInitialDate(), Earth.mu);
-		KeplerianPropagator kepler = new KeplerianPropagator(initialOrbit);
-		kepler.setSlaveMode();
-		
-		
-		for(double i = 0d; i<2*24*60; i+=1) {
-			//every minute for 2 days
-			AbsoluteDate ad = Earth.getInitialDate().shiftedBy(60d*i);
+		AbsoluteDate now = new AbsoluteDate();
 
-			Vector3D orbit = kepler.propagate(ad).getOrbit().getPVCoordinates().getPosition();
-			System.out.println(i+": "+Earth.toGroundPosition(orbit, ad));
-			//System.out.println(Earth.getPositionVector(gp)+"\t:\t"+Earth.getGeopoint(Earth.getPositionVector(gp),ad));
+		
+		//GeodeticPoint gp = new GeodeticPoint(Math.PI, Math.PI/2, 10);
+		//Vector3D spacePoint = Earth.toSpacePosition(gp, now);
+		//Vector3D groundPoint = Earth.toGroundPosition(gp);
+		//GeodeticPoint gpFromSpace = Earth.toGroundPoint(groundPosition, date)
+		
+		
+		/*
+		System.out.println(Earth.shape.getA());
+		Orbit initialOrbita = new KeplerianOrbit(20000000, 0.01, 0, 0, 0, 0, PositionAngle.TRUE,	Earth.spaceFrame, now, Earth.mu);
+		System.out.println(initialOrbita.getKeplerianPeriod());
+		KeplerianPropagator keplera = new KeplerianPropagator(initialOrbita);
+		keplera.setSlaveMode();
+		Satellite sata = new Satellite("[a]", keplera, initialOrbita);
+		
+
+		Orbit initialOrbitb = new KeplerianOrbit(10000000, 0.02, 0, 0, 0, 0, PositionAngle.TRUE,	Earth.spaceFrame, now, Earth.mu);
+		KeplerianPropagator keplerb = new KeplerianPropagator(initialOrbitb);
+		keplerb.setSlaveMode();
+		Satellite satb = new Satellite("[b]", keplerb, initialOrbitb);
+		
+		for(int i = 0; i<1000; i++) {
+			now = now.shiftedBy(60d);//advance 1 minute
+			sata.updatePosition(now);
+			satb.updatePosition(now);
 			
-		}
-	*/	
+			Vector3D a = sata.getSpacePositionVector(now);
+			Vector3D b = satb.getSpacePositionVector(now);
+
+			R3 ra = new R3(a.getX(), a.getY(), a.getZ());
+			R3 rb = new R3(b.getX(), b.getY(), b.getZ());
+			R3 rp = new R3(0,0,0);
+			R3.distanceToSegment(rp, ra, rb);
+			
+			System.out.println(Earth.distance(now, sata, satb)+","+R3.distanceToSegment(rp, ra, rb));
+		}*/
+		
 	}
 
 }

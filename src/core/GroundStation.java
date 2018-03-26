@@ -22,25 +22,24 @@ public class GroundStation extends Station{
 	
 	public GroundStation(GroundStationData data) {
 		super(data.name);
-		this.groundPoint = new GeodeticPoint(data.latitude, data.longitude, data.altitude);
+		this.groundPoint = new GeodeticPoint(data.latitude*Math.PI/180d, data.longitude*Math.PI/180d, data.altitude);
 		this.rate = data.rate*1000d/(AutoPacketSender.meanPacketSize());
-		
 		
 	}
 
 	@Override
 	public Vector3D getSpacePositionVector(AbsoluteDate date) {
-		return Earth.toSpacePosition(groundPoint, date);
+		return Earth.fromGeoToSpacePosition(groundPoint, date);
 	}
 
 	@Override
 	public Vector3D getSpaceVelocityVector(AbsoluteDate date) {
-		return Earth.toSpaceVelocity(groundPoint, date);
+		return Earth.fromGeoToSpaceVelocity(groundPoint, date);
 	}
 
 	@Override
 	public Vector3D getGroundPositionVector(AbsoluteDate date) {
-		return Earth.toGroundPosition(groundPoint);
+		return Earth.fromGeoToGroundPosition(groundPoint);
 	}
 
 	@Override
@@ -52,7 +51,6 @@ public class GroundStation extends Station{
 	public boolean isGroundStation() {
 		return true;
 	}
-	
 	
 	public GroundStationData asData() {
 		GroundStationData data = new GroundStationData();
@@ -77,10 +75,9 @@ public class GroundStation extends Station{
 	}
 
 	public void setSatLink(SmartDuplexLink bestLink) {
-		// TODO Auto-generated method stub
-		satLink = bestLink;
-		connectedSat = (Satellite) bestLink.otherStation(this);
-		connectedSat.addRoute(this.ip, satLink);
+		this.satLink = bestLink;
+		this.connectedSat = (Satellite) bestLink.otherStation(this);
+		this.connectedSat.addRoute(this.ip, satLink);
 	}
 
 	public SmartDuplexLink getSatLink() {

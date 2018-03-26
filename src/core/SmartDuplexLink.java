@@ -66,10 +66,11 @@ public class SmartDuplexLink extends DuplexLink {
 		b.addLink(this);
 	}
 	
+	/*
 	public boolean isViable() {
 		return viable;
 	}
-	
+	*/
 	public void isNotViable() {
 		viable = false;
 	}
@@ -82,17 +83,18 @@ public class SmartDuplexLink extends DuplexLink {
 		}
 	}
 	
+	/*
 	public boolean testViable() {
 		if(stationA.isGroundStation() && stationB.isGroundStation()) {
 			viable =  false;
 		}else if(stationA.isGroundStation()) {
 			//check for ground to sat
-			viable = /*(getError() <= RoutingUtil.MAX_ERROR_RATE) && */(Earth.groundStationAngle(stationA, stationB, date) <= RoutingUtil.SATTELITE_ANTENNA_MAX_ANGLE);
-		}else {
-			viable = /*(getError() <= RoutingUtil.MAX_ERROR_RATE) && */(Earth.lineOfSightConsideringAtmosphere(stationA, stationB, date));
-		}
-		return viable;
-	}
+			//viable = /*(getError() <= RoutingUtil.MAX_ERROR_RATE) && *///(Earth.groundStationAngle(stationA, stationB, date) <= RoutingUtil.SATTELITE_ANTENNA_MAX_ANGLE);
+		//}else {
+		//	viable = /*(getError() <= RoutingUtil.MAX_ERROR_RATE) && *///(Earth.lineOfSightConsideringAtmosphere(stationA, stationB, date));
+		//}
+		//return viable;
+//	}*/
 	
 	public void attachToSim(Simulator sim) {
 		sim.attach(a_interface);
@@ -174,7 +176,7 @@ class PacketSendEvent extends Command{
 	public void execute() {
 		IPPacket p = q.remove(0);
 		
-		if (RoutingUtil.errorChance(link.getError(rx), p.length) < bitFlipRng.nextDouble()) {
+		if (RoutingUtil.successChance(link.getError(rx), p.length) < bitFlipRng.nextDouble()) {
 			p.crc_is_corrupt = true;
 			Simulator.getInstance().getManager().damagedPacket(p, link);
 		}else {

@@ -95,7 +95,7 @@ public class SimplexLink extends Link {
 
 		
 		
-		if (RoutingUtil.errorChance(getError(), packet.length) < bitFlipRng.nextDouble()) {
+		if (RoutingUtil.successChance(getError(), packet.length) < bitFlipRng.nextDouble()) {
 			packet.crc_is_corrupt = true;
 		}
 		

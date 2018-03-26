@@ -45,9 +45,13 @@ public class RoutingUtil {
 	}
 		
 	public static double error(AbsoluteDate date, Station tx, Station rx) {
-		if(Earth.distance(date, tx, rx)<1000000) {// && rx.isGroundStation()
-			Earth.distance(date, tx, rx);
+		
+		if(!rx.isGroundStation() && !tx.isGroundStation()) {
+			if(!Earth.lineOfSightConsideringAtmosphere(rx, tx, date)) {
+				return 1d;
+			}
 		}
+		
 		double stn = 10*FastMath.log10(signal_to_noise(date, tx, rx));
 		if(stn <= 0) {
 			return 1d;
@@ -117,7 +121,7 @@ public class RoutingUtil {
 		return Earth.distance(date, tx, rx)/(3e8d);
 	}
 	
-	public static double errorChance(double bitwiseErrorRate, int packetLenthInBytes) {
+	public static double successChance(double bitwiseErrorRate, int packetLenthInBytes) {
 		/*
 		 * p = odds that a specific bit has been fliped
 		 * 
@@ -142,8 +146,8 @@ public class RoutingUtil {
 		return FastMath.pow((1-bitwiseErrorRate),(packetLenthInBytes<<3));
 	}
 	
-	public static double errorChange(double bitwiseErrorRate) {
-		return errorChance(bitwiseErrorRate, (int)AutoPacketSender.meanPacketSize());
+	public static double successChange(double bitwiseErrorRate) {
+		return successChance(bitwiseErrorRate, (int)AutoPacketSender.meanPacketSize());
 	}
 	
 }

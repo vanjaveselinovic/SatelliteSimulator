@@ -90,32 +90,20 @@ public class Manager implements Runnable{
 				groundStationMap.put(data.name, g);
 			}
 			
-			for(GroundStationData data : inputData.groundStations) {
-				if(data.senders.length > 0) {
-					for(PacketSenderData senderData:data.senders) {
+			groundStations.addAll(groundStationMap.values());
+
+			int rollingSenderId = 1;
+			for(GroundStation tx : groundStations) {
+				for(GroundStation rx : groundStations) {
+					if(tx!=rx) {
 						senders.add(new AutoPacketSender(
-								groundStationMap.get(data.name), 
-								groundStationMap.get(senderData.receverName),
-								senderData.rate,
-								senderData.id));
-					}
-				}else {
-					int rollingSenderId = 1;
-					for(GroundStation tx : groundStationMap.values()) {
-						for(GroundStation rx : groundStationMap.values()) {
-							if(tx!=rx) {
-								senders.add(new AutoPacketSender(
-										tx, 
-										rx,
-										tx.rate,
-										rollingSenderId++));
-							}
-						}
+								tx, 
+								rx,
+								tx.rate,
+								rollingSenderId++));
 					}
 				}
 			}
-			
-			groundStations.addAll(groundStationMap.values());
 			
 			List<RingData> rings = new ArrayList<>();
 			int ringIdNumber = 1;
@@ -241,8 +229,10 @@ public class Manager implements Runnable{
 			pathData.packetSenderID = aps.id;////////////////////////////////////////////
 			
 			List<Integer> ids = new ArrayList<>();
-			Station tx = aps.getSource();
-			ids.add(tx.ip.getIntegerAddress()); 
+			GroundStation source = aps.getSource();
+			ids.add(source.ip.getIntegerAddress()); 
+			ids.add(source.getBestSat().ip.getIntegerAddress());
+			Station tx = source;
 			for(SmartDuplexLink link : paths.get(aps)) {
 				tx = link.otherStation(tx);
 				ids.add(tx.ip.getIntegerAddress());
@@ -328,11 +318,12 @@ public class Manager implements Runnable{
 		for(SmartDuplexLink l : links) {
 			l.usedBy = new HashSet<>();
 			l.setDate(time);
-			l.testViable();
+			//l.testViable();
 		}
+		/*
 		for(Station s : stations) {
 			s.updateViableLinks();
-		}
+		}*/
 		
 		paths = new HashMap<>();
 		
@@ -354,8 +345,8 @@ public class Manager implements Runnable{
 		
 		for(AutoPacketSender aps:paths.keySet()) {
 			List<SmartDuplexLink> links = paths.get(aps);
-			Station tx = aps.getSource();
-			for(int i = 0; i<links.size()-1; i++) {
+			Station tx = aps.getSource().getBestSat();
+			for(int i = 0; i<links.size(); i++) {
 				tx.addRoute(aps.getDestination().ip, links.get(i));
 				tx = links.get(i).otherStation(tx);
 			}
@@ -381,17 +372,17 @@ public class Manager implements Runnable{
 	private void setupGroundStationUplinks() {
 		for(GroundStation gs : groundStations) {
 			SmartDuplexLink bestLink = null;
-			double error = 0d;
-			double newError= 0d;
+			double dist = 0d;
+			double newDist= 0d;
 			for(SmartDuplexLink link : gs.getLinks()) {
 				if(bestLink == null) {
 					bestLink = link;
-					error = link.getError(link.otherStation(gs));
+					dist = Earth.distance(time, gs, link.otherStation(gs));
 				}else {
-					newError = link.getError(link.otherStation(gs));
-					if(newError < error) {
+					newDist = Earth.distance(time, gs, link.otherStation(gs));
+					if(newDist < dist) {
 						bestLink = link;
-						error = newError;
+						dist = newDist;
 					}
 				}
 			}
@@ -401,12 +392,13 @@ public class Manager implements Runnable{
 	
 	private List<SmartDuplexLink> route(AutoPacketSender sender, Satellite source, Satellite dest){
 		for(Station s : stations) {
-			s.cError = null;
+			s.cSuccessChange = null;
 			s.path = null;
 		}
 		
 		List<Station> queue = new ArrayList<>();
-		source.updateLength(new ArrayList<>());
+		List<SmartDuplexLink> firstPath = new ArrayList<>();
+		source.updateLength(firstPath);
 		queue.add(source);
 		
 		//Collections.sort(queue, comparator);
@@ -419,16 +411,18 @@ public class Manager implements Runnable{
 					l.add(link);
 					Station s = link.otherStation(point);
 					if(s.updateLength(l)) {
-						queue.remove(s);
+						//queue.remove(s);
 						queue.add(s);
 					}
 				}
+				
 				Collections.sort(queue, new Comparator<Station>() {
 					@Override
 					public int compare(Station s1, Station s2) {
-						return Double.valueOf(s2.cError).compareTo(s1.cError);
+						return Double.valueOf(s2.cSuccessChange).compareTo(s1.cSuccessChange);
 					}
 				});
+				
 			}
 		}
 		
@@ -440,7 +434,9 @@ public class Manager implements Runnable{
 					link.usedBy.add(sender);
 				}
 			}
-			return queue.get(0).path;
+			List<SmartDuplexLink> path = queue.get(0).path;
+			
+			return path;
 		}
 	}
 	
